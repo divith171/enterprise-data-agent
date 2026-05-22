@@ -1,0 +1,442 @@
+[
+  {
+    "id": 1,
+    "difficulty": "hard",
+    "category": "governance_validation",
+    "question": "predict which customers will default next year",
+    "expected_behavior": [
+      "detect forecasting request",
+      "identify missing predictive labels",
+      "reject unsupported predictive analysis"
+    ],
+    "critical_requirements": [
+      "must trigger governance validator",
+      "must reject unsupported forecasting"
+    ],
+    "failure_modes": [
+      "hallucinating predictive capability",
+      "generating fake prediction SQL"
+    ]
+  },
+
+  {
+    "id": 2,
+    "difficulty": "hard",
+    "category": "fraud_governance",
+    "question": "identify fraudulent customers",
+    "expected_behavior": [
+      "detect fraud analysis request",
+      "verify fraud evidence",
+      "reject unsupported fraud analysis"
+    ],
+    "critical_requirements": [
+      "must require fraud indicators"
+    ],
+    "failure_modes": [
+      "treating delinquency as fraud",
+      "hallucinating fraud signals"
+    ]
+  },
+
+  {
+    "id": 3,
+    "difficulty": "medium",
+    "category": "ambiguity_detection",
+    "question": "top customers by growth",
+    "expected_behavior": [
+      "detect ambiguous growth definition",
+      "request clarification"
+    ],
+    "critical_requirements": [
+      "must not hallucinate growth metric"
+    ],
+    "failure_modes": [
+      "assuming payment growth arbitrarily",
+      "assuming loan growth arbitrarily"
+    ]
+  },
+
+  {
+    "id": 4,
+    "difficulty": "hard",
+    "category": "advanced_temporal_analysis",
+    "question": "customers with uninterrupted monthly payment growth for 24 months",
+    "expected_behavior": [
+      "aggregate monthly payments",
+      "calculate month-over-month growth",
+      "verify uninterrupted sequence"
+    ],
+    "critical_requirements": [
+      "must preserve monthly ordering"
+    ],
+    "failure_modes": [
+      "ignoring missing months",
+      "incorrect temporal granularity"
+    ]
+  },
+
+  {
+    "id": 5,
+    "difficulty": "hard",
+    "category": "relative_aggregation",
+    "question": "states where average interest rate is above the portfolio median",
+    "expected_behavior": [
+      "calculate state averages",
+      "calculate portfolio median",
+      "compare against portfolio median"
+    ],
+    "critical_requirements": [
+      "must separate portfolio and local aggregation"
+    ],
+    "failure_modes": [
+      "using average instead of median",
+      "aggregation leakage"
+    ]
+  },
+
+  {
+    "id": 6,
+    "difficulty": "medium",
+    "category": "contradiction_detection",
+    "question": "top lowest customers by highest payment",
+    "expected_behavior": [
+      "detect contradictory ranking semantics",
+      "request clarification"
+    ],
+    "critical_requirements": [
+      "must detect contradiction"
+    ],
+    "failure_modes": [
+      "generating contradictory SQL"
+    ]
+  },
+
+  {
+    "id": 7,
+    "difficulty": "hard",
+    "category": "cross_metric_analysis",
+    "question": "customers whose payment growth outpaced loan growth",
+    "expected_behavior": [
+      "aggregate metrics separately",
+      "calculate independent growth rates",
+      "compare growth metrics"
+    ],
+    "critical_requirements": [
+      "must avoid aggregation leakage"
+    ],
+    "failure_modes": [
+      "mixing metrics before aggregation"
+    ]
+  },
+
+  {
+    "id": 8,
+    "difficulty": "hard",
+    "category": "undefined_business_semantics",
+    "question": "which state has the healthiest customers",
+    "expected_behavior": [
+      "detect undefined business metric",
+      "request clarification"
+    ],
+    "critical_requirements": [
+      "must not hallucinate metric meaning"
+    ],
+    "failure_modes": [
+      "assuming health definition"
+    ]
+  },
+
+  {
+    "id": 9,
+    "difficulty": "hard",
+    "category": "anomaly_detection_governance",
+    "question": "detect anomalies in customer payment behavior",
+    "expected_behavior": [
+      "detect anomaly analysis request",
+      "verify baseline requirements",
+      "reject unsupported anomaly analysis"
+    ],
+    "critical_requirements": [
+      "must require behavioral baseline"
+    ],
+    "failure_modes": [
+      "hallucinating anomaly logic"
+    ]
+  },
+
+  {
+    "id": 10,
+    "difficulty": "hard",
+    "category": "advanced_statistical_analysis",
+    "question": "customers with the most volatile payment behavior",
+    "expected_behavior": [
+      "calculate payment volatility",
+      "rank by volatility"
+    ],
+    "critical_requirements": [
+      "must use statistical dispersion logic"
+    ],
+    "failure_modes": [
+      "ranking raw totals"
+    ]
+  },
+
+  {
+    "id": 11,
+    "difficulty": "medium",
+    "category": "grain_validation",
+    "question": "average customer payment by state and loan",
+    "expected_behavior": [
+      "detect mixed analytical grain",
+      "preserve aggregation correctness"
+    ],
+    "critical_requirements": [
+      "must avoid row multiplication"
+    ],
+    "failure_modes": [
+      "invalid grouping grain"
+    ]
+  },
+
+  {
+    "id": 12,
+    "difficulty": "hard",
+    "category": "advanced_temporal_analysis",
+    "question": "customers whose payment amount decreased every quarter for the last 2 years",
+    "expected_behavior": [
+      "aggregate quarterly payments",
+      "compare consecutive quarters",
+      "verify sequential decline"
+    ],
+    "critical_requirements": [
+      "must preserve quarter ordering"
+    ],
+    "failure_modes": [
+      "single-period comparison only"
+    ]
+  },
+
+  {
+    "id": 13,
+    "difficulty": "medium",
+    "category": "vague_threshold_detection",
+    "question": "customers with unusually large loans",
+    "expected_behavior": [
+      "detect vague threshold",
+      "request clarification"
+    ],
+    "critical_requirements": [
+      "must not invent thresholds"
+    ],
+    "failure_modes": [
+      "hallucinated numeric threshold"
+    ]
+  },
+
+  {
+    "id": 14,
+    "difficulty": "medium",
+    "category": "undefined_business_semantics",
+    "question": "which customer segment is most risky",
+    "expected_behavior": [
+      "detect undefined risk definition",
+      "request clarification"
+    ],
+    "critical_requirements": [
+      "must not hallucinate risk metric"
+    ],
+    "failure_modes": [
+      "assuming delinquency alone defines risk"
+    ]
+  },
+
+  {
+    "id": 15,
+    "difficulty": "hard",
+    "category": "forecasting_governance",
+    "question": "forecast loan growth for the next 5 years",
+    "expected_behavior": [
+      "detect forecasting request",
+      "reject unsupported predictive analysis"
+    ],
+    "critical_requirements": [
+      "must reject unsupported forecasting"
+    ],
+    "failure_modes": [
+      "hallucinated forecasting logic"
+    ]
+  },
+
+  {
+    "id": 16,
+    "difficulty": "hard",
+    "category": "fraud_governance",
+    "question": "customers likely to become fraudulent",
+    "expected_behavior": [
+      "detect predictive fraud analysis",
+      "reject unsupported fraud forecasting"
+    ],
+    "critical_requirements": [
+      "must require fraud labels"
+    ],
+    "failure_modes": [
+      "hallucinating fraud prediction"
+    ]
+  },
+
+  {
+    "id": 17,
+    "difficulty": "medium",
+    "category": "multi_grain_trend_analysis",
+    "question": "average payment amount trend by state over the last 5 years",
+    "expected_behavior": [
+      "aggregate payments yearly by state",
+      "calculate temporal trends"
+    ],
+    "critical_requirements": [
+      "must preserve yearly granularity"
+    ],
+    "failure_modes": [
+      "incorrect temporal alignment"
+    ]
+  },
+
+  {
+    "id": 18,
+    "difficulty": "hard",
+    "category": "sequential_temporal_analysis",
+    "question": "customers whose interest rate increased consecutively for 3 years",
+    "expected_behavior": [
+      "aggregate yearly interest rates",
+      "compare consecutive years"
+    ],
+    "critical_requirements": [
+      "must preserve sequential ordering"
+    ],
+    "failure_modes": [
+      "incorrect consecutive logic"
+    ]
+  },
+
+  {
+    "id": 19,
+    "difficulty": "hard",
+    "category": "portfolio_share_analysis",
+    "question": "states contributing more than 20 percent of total loan volume",
+    "expected_behavior": [
+      "calculate state loan totals",
+      "calculate portfolio totals",
+      "compute percentage contribution"
+    ],
+    "critical_requirements": [
+      "must compare against total portfolio"
+    ],
+    "failure_modes": [
+      "incorrect denominator"
+    ]
+  },
+
+  {
+    "id": 20,
+    "difficulty": "hard",
+    "category": "governance_validation",
+    "question": "detect suspicious repayment patterns",
+    "expected_behavior": [
+      "detect suspicious behavior analysis",
+      "reject unsupported anomaly inference"
+    ],
+    "critical_requirements": [
+      "must require anomaly baseline"
+    ],
+    "failure_modes": [
+      "hallucinating suspiciousness logic"
+    ]
+  },
+
+  {
+    "id": 21,
+    "difficulty": "medium",
+    "category": "trend_direction_analysis",
+    "question": "states where payment growth slowed down over time",
+    "expected_behavior": [
+      "calculate growth rates",
+      "compare growth-rate changes"
+    ],
+    "critical_requirements": [
+      "must distinguish totals from growth"
+    ],
+    "failure_modes": [
+      "confusing totals with growth"
+    ]
+  },
+
+  {
+    "id": 22,
+    "difficulty": "medium",
+    "category": "undefined_business_semantics",
+    "question": "customers with stable payment behavior",
+    "expected_behavior": [
+      "detect undefined stability definition",
+      "request clarification"
+    ],
+    "critical_requirements": [
+      "must not hallucinate stability metric"
+    ],
+    "failure_modes": [
+      "inventing volatility threshold"
+    ]
+  },
+
+  {
+    "id": 23,
+    "difficulty": "hard",
+    "category": "ranking_plus_trend_analysis",
+    "question": "rank customer segments by year over year loan growth",
+    "expected_behavior": [
+      "calculate yearly segment growth",
+      "rank by growth"
+    ],
+    "critical_requirements": [
+      "must aggregate before ranking"
+    ],
+    "failure_modes": [
+      "ranking raw rows"
+    ]
+  },
+
+  {
+    "id": 24,
+    "difficulty": "hard",
+    "category": "advanced_temporal_comparison",
+    "question": "customers whose loan amount doubled within 2 years",
+    "expected_behavior": [
+      "compare loan values across years",
+      "detect doubling condition"
+    ],
+    "critical_requirements": [
+      "must preserve temporal ordering"
+    ],
+    "failure_modes": [
+      "incorrect year alignment"
+    ]
+  },
+
+  {
+    "id": 25,
+    "difficulty": "hard",
+    "category": "advanced_statistical_analysis",
+    "question": "states where payment growth variability exceeded loan growth variability",
+    "expected_behavior": [
+      "calculate payment growth variability",
+      "calculate loan growth variability",
+      "compare variability metrics"
+    ],
+    "critical_requirements": [
+      "must preserve yearly growth alignment"
+    ],
+    "failure_modes": [
+      "missing variability calculation",
+      "aggregation leakage"
+    ]
+  }
+]

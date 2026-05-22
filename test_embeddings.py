@@ -1,0 +1,2 @@
+from services.embedding_service import store_column_embeddings
+store_column_embeddings()

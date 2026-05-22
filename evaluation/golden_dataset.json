@@ -1,0 +1,26 @@
+[
+    {
+      "question": "Show all customers",
+      "expected_result_count": 3
+    },
+    {
+      "question": "List all loans",
+      "expected_result_count": 3
+    },
+    {
+      "question": "Show total loan amount by customer",
+      "expected_result": [
+        ["Charlie", 30000],
+        ["Alice", 20000],
+        ["Bob", 15000]
+      ]
+    },
+    {
+      "question": "Which customers have credit score below 650?",
+      "expected_result_count": 0
+    },
+    {
+      "question": "Show loan amounts greater than 15000",
+      "expected_result_count": 2
+    }
+  ]

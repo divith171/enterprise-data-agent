@@ -1,0 +1,12 @@
+venv/
+.env
+__pycache__/
+*.pyc
+*.sqlite
+.idea/
+.vscode/
+.DS_Store
+benchmark_results/
+logs/
+spider/__MACOSX/
+spider/.git
