@@ -1,10 +1,10 @@
-from openai import OpenAI
+from openai import AsyncOpenAI
 import os
+import time
+client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-
-def explain_result(question: str, sql: str, result):
+async def explain_result(question: str, sql: str, result):
     """
     Convert SQL result into natural language explanation
     """
@@ -25,11 +25,20 @@ Explain the result clearly in plain English.
 Be concise and accurate.
 Do not mention SQL syntax in the explanation.
 """
-
-    response = client.chat.completions.create(
+    start = time.time()
+    print("ENTERED explain_result()")
+    print("CLIENT TYPE:", type(client))
+    response = await client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[{"role": "user", "content": prompt}],
         temperature=0
     )
+    print("OPENAI CALL FINISHED")
+    print(type(response))
 
-    return response.choices[0].message.content.strip()
+    elapsed = round(time.time() - start, 2)
+
+    return {
+        "explanation": response.choices[0].message.content.strip(),
+        "elapsed": elapsed
+    }

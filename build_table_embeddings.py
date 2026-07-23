@@ -1,0 +1,3 @@
+from services.embedding_service import store_table_embeddings
+
+store_table_embeddings()

@@ -6,22 +6,37 @@ from agents.sql_agent import run_sql_agent
 from services.schema_service import get_schema
 from services.interpretation_service import parse_user_response
 from services.continuation_interpreter_service import interpret_continuation
+from services.session_service import (
+    create_session,
+    session_exists,
+    get_current_query,
+    get_context,
+    set_current_query,
+    set_context
+)
+from db.connection import open_pool, close_pool
 
 # -------------------------------
 # App setup
 # -------------------------------
-session_store = {}
+
 schema_cache = {}
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
 
     global schema_cache
-    schema_cache = get_schema()
+
+    await open_pool()
+
+    schema_cache = await get_schema()
 
     print("Schema loaded:", schema_cache)
 
     yield
+
+    await close_pool()
 
 
 app = FastAPI(
@@ -31,9 +46,11 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+
 # -------------------------------
 # Request Model
 # -------------------------------
+
 class QueryRequest(BaseModel):
     message: str
     session_id: str
@@ -54,11 +71,7 @@ def health_check():
 
 
 @app.post("/query")
-def query_agent(request: QueryRequest):
-
-    # --------------------------------
-    # TRACE LOG INITIALIZATION
-    # --------------------------------
+async def query_agent(request: QueryRequest):
 
     trace_log = {}
 
@@ -73,19 +86,26 @@ def query_agent(request: QueryRequest):
     trace_log["session_id"] = session_id
     trace_log["user_input"] = user_input
 
-    if session_id not in session_store:
+    # -------------------------------
+    # Create session if needed
+    # -------------------------------
 
-        session_store[session_id] = {
-            "current_query": user_input,
-            "context": {}
-        }
+    if not await session_exists(session_id):
 
-    current_query = session_store[session_id]["current_query"]
-    context = session_store[session_id]["context"]
+        await create_session(
+            session_id,
+            {
+                "current_query": user_input,
+                "context": {}
+            }
+        )
 
-    # --------------------------------
-    # Intent continuation classification
-    # --------------------------------
+    current_query = await get_current_query(session_id)
+    context = await get_context(session_id)
+
+    # -------------------------------
+    # Intent Classification
+    # -------------------------------
 
     intent_result = classify_intent_continuation(
         previous_query=current_query,
@@ -98,22 +118,21 @@ def query_agent(request: QueryRequest):
 
     intent_type = intent_result.get("intent_type")
 
-    # --------------------------------
-    # NEW QUERY → RESET CONTEXT
-    # --------------------------------
+    # -------------------------------
+    # NEW QUERY
+    # -------------------------------
 
     if intent_type == "new_query":
 
         current_query = user_input
-
         context = {}
 
-        session_store[session_id]["current_query"] = current_query
-        session_store[session_id]["context"] = context
+        await set_current_query(session_id, current_query)
+        await set_context(session_id, context)
 
-    # --------------------------------
-    # CONTINUATION / CLARIFICATION
-    # --------------------------------
+    # -------------------------------
+    # CONTINUATION
+    # -------------------------------
 
     else:
 
@@ -131,26 +150,25 @@ def query_agent(request: QueryRequest):
             current_query
         )
 
-        session_store[session_id]["current_query"] = current_query
+        await set_current_query(session_id, current_query)
 
-        # optional structured enrichments
         if continuation_result.get("group_by"):
             context["group_by"] = continuation_result["group_by"]
 
         if continuation_result.get("time_granularity"):
-            context["time_granularity"] = (
-                continuation_result["time_granularity"]
-            )
+            context["time_granularity"] = continuation_result["time_granularity"]
 
         if continuation_result.get("filter_condition"):
-            context["filter_condition"] = (
-                continuation_result["filter_condition"]
-            )
+            context["filter_condition"] = continuation_result["filter_condition"]
 
         if continuation_result.get("metric_refinement"):
-            context["metric_refinement"] = (
-                continuation_result["metric_refinement"]
-            )
+            context["metric_refinement"] = continuation_result["metric_refinement"]
+
+        await set_context(session_id, context)
+
+    # -------------------------------
+    # Parse user response
+    # -------------------------------
 
     parsed = parse_user_response(user_input)
 
@@ -158,9 +176,8 @@ def query_agent(request: QueryRequest):
 
     trace_log["parsed_response"] = parsed
 
-    context = session_store[session_id]["context"]
+    context = await get_context(session_id)
 
-    # update context with parsed values
     if parsed.get("threshold") is not None:
         context["threshold"] = parsed["threshold"]
 
@@ -170,13 +187,15 @@ def query_agent(request: QueryRequest):
     if parsed.get("time_range") is not None:
         context["time_range"] = parsed["time_range"]
 
+    await set_context(session_id, context)
+
     print("UPDATED CONTEXT:", context)
 
     trace_log["updated_context"] = context.copy()
 
-    # ----------------------------
+    # -------------------------------
     # Build refined query
-    # ----------------------------
+    # -------------------------------
 
     refined_query = current_query
 
@@ -193,22 +212,16 @@ def query_agent(request: QueryRequest):
 
     trace_log["refined_query"] = refined_query
 
-    # ----------------------------
-    # Run agent
-    # ----------------------------
+    # -------------------------------
+    # Run Agent
+    # -------------------------------
 
-    result = run_sql_agent(
+    result = await run_sql_agent(
         refined_query,
         context=context
     )
 
-    # --------------------------------
-    # ATTACH TRACE LOG
-    # --------------------------------
-
     result["trace_log"] = trace_log
-
-    # attach context + session info
     result["context"] = context
     result["session_id"] = session_id
 

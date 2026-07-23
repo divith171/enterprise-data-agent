@@ -1,12 +1,77 @@
+# =========================
+# Python
+# =========================
 venv/
-.env
+.venv/
 __pycache__/
-*.pyc
-*.sqlite
-.idea/
+*.py[cod]
+*$py.class
+
+# =========================
+# Environment
+# =========================
+.env
+.env.*
+
+# =========================
+# IDE
+# =========================
 .vscode/
+.idea/
+
+# =========================
+# OS Files
+# =========================
 .DS_Store
-benchmark_results/
+Thumbs.db
+
+# =========================
+# Logs
+# =========================
 logs/
-spider/__MACOSX/
-spider/.git
+*.log
+terminal.log
+
+# =========================
+# Local Databases
+# =========================
+*.sqlite
+
+# =========================
+# Generated Graphs
+# =========================
+*.dot
+callgraph.png
+graph.png
+
+# =========================
+# Graphviz Installation
+# =========================
+Graphviz-*/
+
+# =========================
+# Benchmark Outputs
+# =========================
+locust_results.jsonl
+agents/benchmarks/benchmark_results.json
+evaluation/bird_results.json
+
+# =========================
+# Benchmark Artifacts
+# =========================
+benchmark_results/
+
+# =========================
+# Evaluation Datasets
+# =========================
+evaluation/bird/
+
+# =========================
+# Temporary Files
+# =========================
+project_tree.txt
+
+# =========================
+# Jupyter
+# =========================
+.ipynb_checkpoints/

@@ -1,9 +1,9 @@
 import json
 import os
-
+from services.llm_gateway import generate_response
 from dotenv import load_dotenv
 from openai import OpenAI
-
+import time
 load_dotenv()
 
 client = OpenAI(
@@ -11,7 +11,7 @@ client = OpenAI(
 )
 
 
-def validate_analytical_capability(
+async def validate_analytical_capability(
     user_question,
     state,
     schema
@@ -161,24 +161,21 @@ Return ONLY valid JSON:
   ]
 }}
 """
+    start = time.time()
+    content = await generate_response(
 
-    response = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[
-            {
-                "role": "system",
-                "content":
-                "You are an expert enterprise analytical governance validator."
-            },
-            {
-                "role": "user",
-                "content": prompt
-            }
-        ],
-        temperature=0
+    layer="capability_validator",
+
+    prompt=prompt
     )
+    elapsed = round(time.time() - start, 2)
 
-    content = response.choices[0].message.content.strip()
+    print(
+    "CAPABILITY VALIDATOR TIME:",
+    elapsed,
+    "seconds"
+    )
+    content = content.strip()
 
     print("CAPABILITY VALIDATOR RAW:", content)
 
@@ -190,14 +187,20 @@ Return ONLY valid JSON:
             "```", ""
         ).strip()
 
-        return json.loads(content)
+        result = json.loads(content)
+
+        result["elapsed"] = elapsed
+
+        return result
 
     except Exception as e:
 
         print("CAPABILITY VALIDATOR PARSE ERROR:", e)
 
-        return {
+        result ={
             "feasible": True,
             "reason": "Validator fallback",
             "missing_requirements": []
         }
+        result["elapsed"] = elapsed
+        return result

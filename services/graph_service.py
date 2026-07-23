@@ -1,36 +1,46 @@
-from db.connection import get_connection
+from db.connection import get_pool
 from services.schema_service import get_schema
 
-
-def get_relationships():
-    conn = get_connection()
-    cursor = conn.cursor()
-
-    cursor.execute("""
-        SELECT
-            tc.table_name,
-            kcu.column_name,
-            ccu.table_name AS foreign_table,
-            ccu.column_name AS foreign_column
-        FROM information_schema.table_constraints AS tc
-        JOIN information_schema.key_column_usage AS kcu
-            ON tc.constraint_name = kcu.constraint_name
-        JOIN information_schema.constraint_column_usage AS ccu
-            ON ccu.constraint_name = tc.constraint_name
-        WHERE tc.constraint_type = 'FOREIGN KEY';
-    """)
-
-    rows = cursor.fetchall()
-
-    cursor.close()
-    conn.close()
-
-    return rows
+relationship_cache = None
 
 
-def build_graph():
-    relationships = get_relationships()
-    schema = get_schema()
+async def get_relationships():
+    global relationship_cache
+
+    print("GET_RELATIONSHIPS CALLED")
+
+    if relationship_cache is not None:
+        print("USING CACHED RELATIONSHIPS")
+        return relationship_cache
+
+    print("LOADING RELATIONSHIPS FROM DATABASE")
+
+    async with get_pool().connection() as conn:
+        async with conn.cursor() as cursor:
+            await cursor.execute("""
+                SELECT
+                    tc.table_name,
+                    kcu.column_name,
+                    ccu.table_name AS foreign_table,
+                    ccu.column_name AS foreign_column
+                FROM information_schema.table_constraints AS tc
+                JOIN information_schema.key_column_usage AS kcu
+                    ON tc.constraint_name = kcu.constraint_name
+                JOIN information_schema.constraint_column_usage AS ccu
+                    ON ccu.constraint_name = tc.constraint_name
+                WHERE tc.constraint_type = 'FOREIGN KEY';
+            """)
+
+            rows = await cursor.fetchall()
+
+    relationship_cache = rows
+
+    return relationship_cache
+
+
+async def build_graph():
+    relationships = await get_relationships()
+    schema = await get_schema()
 
     graph = {}
 
@@ -61,21 +71,18 @@ def build_graph():
                     graph.setdefault(t1, set()).add(t2)
                     graph.setdefault(t2, set()).add(t1)
 
-    # Convert sets → lists (clean output)
+    # Convert sets → lists
     graph = {k: list(v) for k, v in graph.items()}
 
     return graph
 
-def build_relationship_text():
 
-    relationships = get_relationships()
+async def build_relationship_text():
+    relationships = await get_relationships()
 
-    return "\n".join([
-
-        f"{table}.{column} = "
-        f"{foreign_table}.{foreign_column}"
-
-        for table, column,
-        foreign_table, foreign_column
-        in relationships
-    ])
+    return "\n".join(
+        [
+            f"{table}.{column} = {foreign_table}.{foreign_column}"
+            for table, column, foreign_table, foreign_column in relationships
+        ]
+    )

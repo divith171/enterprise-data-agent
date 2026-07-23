@@ -1,10 +1,10 @@
 import json
 from openai import OpenAI
-
+from services.llm_gateway import generate_response
 client = OpenAI()
+import time
 
-
-def generate_analysis_plan(user_question, state, schema,relationship_text):
+async def generate_analysis_plan(user_question, state, schema,relationship_text):
 
     prompt = f"""
 You are a senior PostgreSQL analytical planner.
@@ -104,22 +104,18 @@ JSON FORMAT:
     "analysis_plan": "concise SQL-oriented analytical execution plan"
 }}
 """
+    print("ANALYTICAL PLANNER FILE LOADED")
+    start = time.time()
+    content = await generate_response(
 
-    response = client.chat.completions.create(
+    layer="analysis_planner",
 
-        model="gpt-4o-mini",
-
-        messages=[
-            {
-                "role": "user",
-                "content": prompt
-            }
-        ],
-
-        temperature=0
+    prompt=prompt
     )
 
-    content = response.choices[0].message.content.strip()
+    elapsed = round(time.time() - start, 2)
+
+    print( "ANALYSIS PLAN TIME:", elapsed, "seconds")
 
     print("ANALYSIS PLAN RAW:", content)
 
@@ -131,13 +127,17 @@ JSON FORMAT:
             "```", ""
         ).strip()
 
-        return json.loads(content)
+        result = json.loads(content)
+
+        result["elapsed"] = elapsed
+
+        return result
 
     except Exception as e:
 
         print("ANALYSIS PLAN PARSE ERROR:", e)
 
-        return {
+        result = {
             
             "analysis_type": None,
 
@@ -155,3 +155,5 @@ JSON FORMAT:
 
             "analysis_plan": None
         }
+        result["elapsed"] = elapsed
+        return result

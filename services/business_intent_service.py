@@ -1,10 +1,10 @@
 from openai import OpenAI
 import json
-
+from services.llm_gateway import generate_response
 client = OpenAI()
-
-
-def resolve_business_intent(user_question, state, schema):
+import time
+import inspect
+async def resolve_business_intent(user_question, state, schema,metadata_context=""):
 
     prompt = f"""
 You are a senior enterprise business analyst.
@@ -24,13 +24,44 @@ USER QUESTION:
 CURRENT INTERPRETED STATE:
 {state.to_dict()}
 
+IMPORTANT STATE RESOLUTION RULES:
+
+- If the CURRENT INTERPRETED STATE already contains a resolved metric,
+  entity, comparison operator, threshold, or filters,
+  treat those as semantically grounded unless there is strong contradiction.
+
+- Do NOT reopen clarification for fields that were already resolved upstream.
+
+- Prefer continuity with previously resolved analytical meaning.
+
+- Clarification should only occur when the CURRENT STATE is still genuinely ambiguous.
+
 DATABASE SCHEMA:
 {schema}
+
+RETRIEVED COLUMN METADATA:
+{metadata_context}
 
 YOUR TASK:
 
 Interpret the business meaning behind the request
 ONLY when the meaning is sufficiently clear.
+
+CRITICAL METADATA GROUNDING RULES:
+
+- The retrieved column metadata contains business descriptions
+  and semantic meanings for columns.
+
+- Prefer metadata descriptions over assumptions based on
+  column names.
+
+- If metadata contradicts an inferred interpretation,
+  trust the metadata.
+
+- If the user references a business concept that cannot be
+  supported by the retrieved metadata, do NOT guess.
+
+- Instead request clarification or indicate uncertainty
 
 IMPORTANT:
 
@@ -115,25 +146,27 @@ RULES:
 - Keep interpretations business-oriented
 - Keep hints advisory
 """
+    start = time.time()
+    print("\nBUSINESS INTENT METADATA:")
+    print(metadata_context)
+    print("resolve_business_intent file:", __file__)
+    print("generate_response object:", generate_response)
+    print("is coroutine:", inspect.iscoroutinefunction(generate_response))
+    content = await generate_response(
 
-    response = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[
-            {
-                "role": "system",
-                "content":
-                "You are an expert enterprise business analyst."
-            },
-            {
-                "role": "user",
-                "content": prompt
-            }
-        ],
-        temperature=0
+    layer="business_intent",
+
+    prompt=prompt,
+
     )
-
-    content = response.choices[0].message.content.strip()
-
+    print(type(content))
+    print(content)
+    elapsed = round(time.time() - start, 2)
+    print(
+    "BUSINESS INTENT TIME:",
+   elapsed,
+    "seconds"
+    )
     print("BUSINESS INTENT RAW:", content)
 
     try:
@@ -157,7 +190,7 @@ RULES:
 
         if intent_type == "clarification":
 
-            return {
+            result = {
 
                 "intent_type":
                     "clarification",
@@ -179,12 +212,13 @@ RULES:
                         "low"
                     )
             }
-
+            result["elapsed"] = elapsed
+            return result
         # --------------------------------
         # BUSINESS INTERPRETATION RESPONSE
         # --------------------------------
 
-        return {
+        result1= {
 
             "intent_type":
                 "business_interpretation",
@@ -214,6 +248,10 @@ RULES:
                     "confidence"
                 )
         }
+        result1["elapsed"] = elapsed
+        print("RETURNING RESULT1:", result1)
+        return result1
+        
 
     except Exception as e:
 
@@ -222,7 +260,7 @@ RULES:
             e
         )
 
-        return {
+        result2 = {
 
             "intent_type":
                 "clarification",
@@ -236,3 +274,5 @@ RULES:
             "confidence":
                 "low"
         }
+        result2["elapsed"] = elapsed
+        return result2

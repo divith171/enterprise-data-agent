@@ -1,9 +1,11 @@
 from openai import OpenAI
 import os
 import re
+import time
 import json
 from services.embedding_service import get_embedding
 import numpy as np
+from services.embedding_service import get_table_embeddings
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 
@@ -115,27 +117,46 @@ def cosine_distance(vec1, vec2):
     return 1 - np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2))
 
 
-def map_entity_to_table(entity, schema):
+async def map_entity_to_table(entity, schema):
     """
     Map extracted entity (e.g., 'customers') to closest table using embeddings.
     """
-
+    print("\n========== ENTITY MAPPING START ==========")
     if not entity:
         return None
 
+    print("ENTITY:", entity)
+    start= time.time()
     entity_embedding = get_embedding(entity)
-
+    table_embeddings = await get_table_embeddings()
+    print(
+    "ENTITY EMBEDDING TIME:",
+    round(time.time() - start, 3)
+    )
     best_table = None
     best_score = float("inf")
 
-    for table in schema.keys():
-        table_embedding = get_embedding(table)
-        dist = cosine_distance(entity_embedding, table_embedding)
+    for table, table_embedding in table_embeddings:
+
+        print("CHECKING TABLE:", table)
+
+        dist = cosine_distance(
+            entity_embedding,
+            table_embedding
+        )
+
+        print(
+            "DISTANCE:",
+            round(dist, 4)
+        )  
 
         if dist < best_score:
             best_score = dist
             best_table = table
-
+        
+    
+    print("BEST TABLE:", best_table)
+    print("========== ENTITY MAPPING END ==========\n")    
     return best_table
 
 def expand_concepts(user_question, schema):
@@ -188,10 +209,12 @@ def map_concepts_to_columns(intent, stored_columns, schema_with_types):
     """
     Map concepts to meaningful metric columns using schema types
     """
-
+    print("\nINTENT RECEIVED BY MAPPER:")
+    print(intent)
     mapped = []
-
-    for table, col, dist in stored_columns:
+    if not intent.get("metrics"):
+        return []
+    for table, col,description,dist in stored_columns:
         # find column type from schema
         col_type = None
         for c, dtype in schema_with_types.get(table, []):
@@ -203,7 +226,14 @@ def map_concepts_to_columns(intent, stored_columns, schema_with_types):
             continue
 
         # ✅ keep only true metric columns (numeric types)
-        if col_type in ["numeric", "double precision"]:
+        NUMERIC_TYPES = [ "integer","bigint","smallint","numeric","real","double precision"]
+        if col_type in NUMERIC_TYPES and not col.endswith("_id") :
+            print(
+                "NUMERIC COLUMN FOUND:",
+                table,
+                col,
+                col_type
+            )
             mapped.append((table, col))
 
     # remove duplicates + keep top few

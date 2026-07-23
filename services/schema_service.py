@@ -1,19 +1,22 @@
-from db.connection import get_connection
+from db.connection import get_pool
 
 
-def get_schema():
+async def get_schema():
+    async with get_pool().connection() as conn:
+        async with conn.cursor() as cursor:
+            await cursor.execute("""
+                SELECT table_name, column_name
+                FROM information_schema.columns
+                WHERE table_schema = 'public'
+                  AND table_name NOT IN (
+                      'schema_embeddings',
+                      'schema_embeddings_backup',
+                      'table_embeddings'
+                  )
+                ORDER BY table_name, ordinal_position;
+            """)
 
-    conn = get_connection()
-    cursor = conn.cursor()
-
-    cursor.execute("""
-        SELECT table_name, column_name
-        FROM information_schema.columns
-        WHERE table_schema = 'public'
-        ORDER BY table_name, ordinal_position;
-    """)
-
-    rows = cursor.fetchall()
+            rows = await cursor.fetchall()
 
     schema = {}
 
@@ -22,22 +25,19 @@ def get_schema():
             schema[table] = []
         schema[table].append(column)
 
-    cursor.close()
-    conn.close()
-
     return schema
 
-def get_schema_with_types():
-    conn = get_connection()
-    cursor = conn.cursor()
 
-    cursor.execute("""
-        SELECT table_name, column_name, data_type
-        FROM information_schema.columns
-        WHERE table_schema = 'public';
-    """)
+async def get_schema_with_types():
+    async with get_pool().connection() as conn:
+        async with conn.cursor() as cursor:
+            await cursor.execute("""
+                SELECT table_name, column_name, data_type
+                FROM information_schema.columns
+                WHERE table_schema = 'public';
+            """)
 
-    rows = cursor.fetchall()
+            rows = await cursor.fetchall()
 
     schema = {}
 
@@ -45,8 +45,5 @@ def get_schema_with_types():
         if table not in schema:
             schema[table] = []
         schema[table].append((col, dtype))
-
-    cursor.close()
-    conn.close()
 
     return schema

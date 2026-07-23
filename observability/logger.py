@@ -40,13 +40,15 @@ def start_request(question):
 
     return {
 
-        "request_id": request_id,
+    "request_id": request_id,
 
-        "question": question,
+    "question": question,
 
-        "start_time": time.time(),
+    "start_time": time.time(),
 
-        "timestamp": datetime.utcnow().isoformat()
+    "timestamp": datetime.utcnow().isoformat(),
+
+    "timings": {}
     }
 
 
@@ -65,6 +67,8 @@ def finalize_request(
     event = {
 
         "request_id": log_data["request_id"],
+
+        "timings": log_data.get("timings", {}),
 
         "timestamp": log_data["timestamp"],
 

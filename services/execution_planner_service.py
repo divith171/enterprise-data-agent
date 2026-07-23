@@ -1,9 +1,9 @@
 import json
 import os
-
+from services.llm_gateway import generate_response
 from dotenv import load_dotenv
 from openai import OpenAI
-
+import time
 load_dotenv()
 
 client = OpenAI(
@@ -11,7 +11,7 @@ client = OpenAI(
 )
 
 
-def generate_execution_plan(
+async def generate_execution_plan(
     user_question,
     state,
     schema,
@@ -96,25 +96,18 @@ FORMAT:
     ]
 }}
 """
+    start = time.time()
+    content = await generate_response(
 
-    response = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[
-            {
-                "role": "system",
-                "content":
-                "You are an expert analytical execution planner."
-            },
-            {
-                "role": "user",
-                "content": prompt
-            }
-        ],
-        temperature=0
+    layer="execution_planner",
+
+    prompt=prompt
     )
-
-    content = response.choices[0].message.content.strip()
-
+    print(
+    "EXECUTION PLAN TIME:",
+    round(time.time() - start, 2),
+    "seconds"
+    )
     print("EXECUTION PLAN RAW:", content)
 
     try:

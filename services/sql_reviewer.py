@@ -1,9 +1,10 @@
 from openai import OpenAI
 import os
+import time
 from services.semantic_inference_service import infer_metric_semantics
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-
-def review_sql(question, sql_query, schema, state, reasoning_trace=None):
+from services.llm_gateway import generate_response
+async def review_sql(question, sql_query, schema, state, reasoning_trace=None):
 
     metric_semantics = infer_metric_semantics(
         state,
@@ -91,6 +92,63 @@ IMPORTANT REVIEW RULES:
 
 - Prefer correctness over stylistic preference
 
+EQUIVALENT SQL RULES:
+
+Do NOT reject SQL merely because an alternative SQL
+implementation exists.
+
+If the generated SQL produces the correct analytical result
+using an equivalent SQL technique, it MUST be considered valid.
+
+Examples of equivalent implementations include:
+
+- NTILE() vs PERCENT_RANK() vs CUME_DIST()
+  when they satisfy the requested analytical intent.
+
+- Different but mathematically equivalent CTE layouts.
+
+- Equivalent window function formulations.
+
+Reject SQL ONLY when the analytical result would differ,
+NOT because another SQL style is preferred.
+
+CORRECTIVE REVIEW REQUIREMENTS:
+
+If SQL is invalid, provide precise corrective guidance.
+
+IMPORTANT:
+
+Do NOT recommend improvements to SQL that is already
+analytically correct.
+
+Corrective guidance should ONLY be produced when there is
+a genuine analytical error affecting the correctness of
+the final result.
+
+Do NOT generate corrective guidance for stylistic,
+performance, or formatting preferences.
+
+The corrective guidance must:
+
+- identify the exact analytical issue
+- identify the expected analytical behavior
+- identify the incorrect SQL behavior
+- provide a concrete correction recommendation
+
+Examples of corrective guidance:
+
+- incorrect grouping dimension
+- missing GROUP BY
+- incorrect temporal alignment
+- invalid aggregation grain
+- incorrect ranking entity
+- aggregation performed after join
+- temporal comparison using inconsistent periods
+
+The reviewer should produce actionable corrections
+that can be directly used for SQL regeneration.
+
+
 Return your answer in JSON format:
 
 {{
@@ -121,33 +179,21 @@ Return your answer in JSON format:
     "reason": ""
   }},
 
+  "corrective_guidance": ""
+
   "final_verdict_reason": ""
 }}
 """
+    start = time.time()
+    content = await generate_response(
 
-    response = client.chat.completions.create(
+    layer="sql_reviewer",
 
-        model="gpt-4o-mini",
-
-        messages=[
-
-            {
-                "role": "system",
-                "content":
-                "You are an expert PostgreSQL reviewer."
-            },
-
-            {
-                "role": "user",
-                "content": prompt
-            }
-        ],
-
-        temperature=0
-    )
-
-    content = response.choices[0].message.content.strip()
-
+    prompt=prompt
+)
+    elapsed = round(time.time() - start, 2)
+    print("SQL REVIEW TIME:",elapsed,"seconds")
+    content = content.strip()
     print("REVIEW RAW:", content)
 
     import json
@@ -177,13 +223,14 @@ Return your answer in JSON format:
             and review["analytical_grain_correctness"]["valid"]
         )
 
+        review["elapsed"] = elapsed
         return review
 
     except Exception as e:
 
         print("REVIEW PARSE ERROR:", e)
 
-        return {
+        result = {
 
             "valid": False,
 
@@ -215,3 +262,5 @@ Return your answer in JSON format:
             "final_verdict_reason":
             "Reviewer returned invalid JSON"
         }
+        result["elapsed"] = elapsed
+        return  result

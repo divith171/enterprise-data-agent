@@ -3,10 +3,10 @@ from dotenv import load_dotenv
 from openai import OpenAI
 from services.graph_service import get_relationships
 load_dotenv()
+import time
+from services.llm_gateway import generate_response
 
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-
-def generate_sql(user_prompt: str, schema_context: str) -> str:
+async def generate_sql(user_prompt: str, schema_context: str) -> str:
     system_prompt = f"""
 You are a senior PostgreSQL expert.
 
@@ -25,19 +25,33 @@ STRICT RULES:
 Database Schema:
 {schema_context}
 """
+    start = time.time()
+    content = await generate_response(
 
-    response = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_prompt}
-        ],
-        temperature=0
+        layer="sql_generation",
+
+        prompt=f"""
+    SYSTEM:
+    {system_prompt}
+
+    USER:
+    {user_prompt}
+    """
     )
+    elapsed = round(time.time() - start, 2)
 
-    return response.choices[0].message.content.strip()
+    print(
+    "SQL GENERATION TIME:",
+    elapsed,
+    "seconds"
+    )
+    result = {
+    "sql": content.strip(),
+    "elapsed": elapsed
+}
 
-def generate_sql_from_state(
+    return result
+async def generate_sql_from_state(
 
     state,
     schema,
@@ -51,7 +65,7 @@ def generate_sql_from_state(
     # Foreign key relationship grounding
     # ---------------------------------
 
-    relationships = get_relationships()
+    relationships = await get_relationships()
 
     relationship_text = "\n".join([
 
@@ -102,6 +116,23 @@ REASONING TRACE:
 EXECUTION PLAN:
 
 {execution_plan}
+
+EXECUTION PRIORITY RULES:
+
+When multiple guidance sources are available,
+follow them in this order of priority:
+
+1. Database Schema
+2. Reviewer Guidance (during retries)
+3. Execution Plan
+4. Business Interpretation
+5. Reasoning Trace
+
+If two guidance sources disagree,
+follow the higher-priority source.
+
+Do NOT allow lower-priority reasoning
+to override reviewer corrections.
 
 DATABASE SCHEMA:
 
@@ -162,9 +193,71 @@ SQL REQUIREMENTS:
   - columns
   - relationships
 
-RETRY GUIDANCE:
+- CRITICAL:
+  The FINAL SQL must fully preserve
+  the analytical structure defined
+  in the execution plan.
+
+- NEVER simplify or collapse
+  analytical dimensions specified
+  in the execution plan.
+
+- If the execution plan defines:
+  - grouping
+  - segmentation
+  - categorization
+  - ranking dimensions
+  those dimensions MUST appear
+  in the final SQL.
+
+- Preserve the intended analytical grain
+  throughout SQL generation.
+
+- The final SQL must faithfully implement:
+  - aggregation strategy
+  - grouping strategy
+  - comparison strategy
+  defined in the execution plan.
+
+- NEVER reduce multi-dimensional analysis
+  into a single aggregate unless explicitly requested.
+
+CRITICAL SQL CORRECTION REQUIREMENTS:
+
+The previous SQL attempt was reviewed and rejected.
+
+Reviewer feedback is considered AUTHORITATIVE.
+
+You MUST treat every item in the reviewer guidance as a mandatory correction,
+not as a suggestion.
+
+Reviewer Guidance:
 
 {retry_guidance}
+
+You MUST explicitly modify the generated SQL so that every reviewer issue
+has been resolved.
+
+Do NOT regenerate the previous SQL with superficial edits.
+
+If the reviewer recommends:
+
+- a different window function
+- a different aggregation strategy
+- a different grouping dimension
+- a different ranking method
+- a different temporal comparison
+
+you MUST adopt that recommendation unless it contradicts the schema.
+
+Failure to implement the reviewer guidance means the regenerated SQL is invalid.
+You MUST:
+- preserve the requested analytical grain
+- preserve the required grouping dimension
+- correct all reviewer-identified issues
+- avoid regenerating the same analytical mistake
+
+Do NOT repeat previously rejected SQL patterns.
 
 OUTPUT:
 
@@ -173,6 +266,6 @@ Return ONLY the SQL query.
 
     print(instruction)
 
-    sql = generate_sql(instruction, schema)
+    result = await generate_sql(instruction, schema)
 
-    return sql
+    return result

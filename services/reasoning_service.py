@@ -1,10 +1,11 @@
 import json
+import time
 from openai import OpenAI
 import os
 from services.semantic_inference_service import infer_metric_semantics
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-
-def generate_reasoning_trace(
+from services.llm_gateway import generate_response
+async def generate_reasoning_trace(
     user_question,
     state,
     schema,
@@ -52,6 +53,38 @@ def generate_reasoning_trace(
     7. Conditions necessary for analytical correctness
     8. The logical order in which the analysis must be performed
 
+    IMPORTANT GROUNDING RULES:
+
+The QUERY STATE, BUSINESS INTERPRETATION, ANALYSIS PLAN and
+METRIC SEMANTICS have already resolved the business meaning.
+
+Your role is NOT to reinterpret business metrics.
+
+Your role is ONLY to reason about the computational steps
+required to correctly implement those already-resolved metrics.
+
+DO NOT:
+
+- replace resolved metrics
+- derive alternative metrics
+- reinterpret business terminology
+- substitute schema columns
+- invent mathematically equivalent metrics
+
+If the QUERY STATE or METRIC SEMANTICS specify a metric
+(e.g. AVG(loan.payments)),
+you MUST preserve it throughout your reasoning.
+
+Reason ONLY about:
+
+- aggregation order
+- dependency order
+- temporal alignment
+- ranking logic
+- analytical correctness
+
+Never change the analytical definition supplied upstream.
+
     Reason carefully about:
     - aggregation order
     - temporal comparison validity
@@ -78,29 +111,15 @@ def generate_reasoning_trace(
         "correctness_conditions": []
     }}
     """
+    start = time.time()
+    content = await generate_response(
 
-    response = client.chat.completions.create(
+    layer="reasoning",
 
-        model="gpt-4o-mini",
-
-        messages=[
-            {
-                "role": "system",
-                "content":
-                "You are an expert analytical reasoning engine."
-            },
-            {
-                "role": "user",
-                "content": prompt
-            }
-        ],
-
-        temperature=0
-
+    prompt=prompt
     )
-
-    content = response.choices[0].message.content.strip()
-
+    elapsed = round(time.time() - start, 2)
+    print("REASONING TIME:", elapsed, "seconds")
     print("REASONING TRACE RAW:", content)
 
     try:
@@ -111,16 +130,22 @@ def generate_reasoning_trace(
             "```", ""
         ).strip()
 
-        return json.loads(content)
+        result = json.loads(content)
+
+        result["elapsed"] = elapsed
+
+        return result
 
     except Exception as e:
 
         print("REASONING TRACE PARSE ERROR:", e)
 
-        return {
+        result =  {
             "reasoning_steps": [],
             "required_operations": [],
             "temporal_requirements": [],
             "comparison_requirements": [],
             "correctness_conditions": []
         }
+        result["elapsed"] = elapsed
+        return result
