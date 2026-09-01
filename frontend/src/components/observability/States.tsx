@@ -77,7 +77,8 @@ export function ErrorState({ onRetry, message }: { onRetry: () => void; message?
       <AlertTriangle className="mx-auto size-6 text-[#F87171]" strokeWidth={1.8} />
       <h3 className="mt-3 text-[15px] font-semibold text-[#F1F5F9]">Telemetry unavailable</h3>
       <p className="mx-auto mt-1.5 max-w-md text-[13px] text-[#8A94A8]">
-        {message ?? "The observability source did not respond. Metrics below are not being updated."}
+        {message ??
+          "GET /api/observability/overview did not return telemetry. No metrics are shown rather than stale or mock values."}
       </p>
       <button
         type="button"

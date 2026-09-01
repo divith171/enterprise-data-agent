@@ -27,7 +27,7 @@ export default function PerformanceHotspots({ hotspots }: { hotspots: Hotspot[] 
   if (hotspots.length === 0) {
     return (
       <div className="py-10 text-center text-[13px] text-[#5D6880]" data-testid="hotspots-empty">
-        No hotspots detected in this range
+        No hotspot records available from this telemetry source
       </div>
     );
   }

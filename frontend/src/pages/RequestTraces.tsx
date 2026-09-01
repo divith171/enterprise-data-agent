@@ -69,7 +69,14 @@ export default function RequestTraces() {
             }
           >
             {traces.length === 0 ? (
-              <EmptyState title="No traces match this filter" hint="Try a different search term or time range" />
+              (data.traces ?? []).length === 0 ? (
+                <EmptyState
+                  title="No request traces available from this telemetry source"
+                  hint="The observability endpoint does not expose per-request traces"
+                />
+              ) : (
+                <EmptyState title="No traces match this filter" hint="Try a different search term" />
+              )
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[760px] border-collapse" data-testid="traces-table">

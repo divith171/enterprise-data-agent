@@ -12,13 +12,18 @@ import Panel from "@/components/observability/Panel";
 import { ErrorState, OverviewSkeleton, StatusBanner } from "@/components/observability/States";
 import { fmtDuration, fmtInt, fmtPercent, fmtSeconds, ratio } from "@/lib/format";
 import { TIME_RANGE_LABELS, type TimeRange } from "@/lib/telemetry/types";
-import { overviewQueryKey } from "@/lib/telemetry/source";
+import { overviewQueryKey, RANGE_IS_SERVER_FILTERED } from "@/lib/telemetry/source";
 import { useOverview } from "@/lib/telemetry/useTelemetry";
 
 export default function Observability() {
   const [range, setRange] = useState<TimeRange>("24h");
   const queryClient = useQueryClient();
   const { data, isPending, isFetching, isError, refetch } = useOverview(range);
+
+  // The real source is not range-filtered, so never claim a window it did not apply.
+  const rangeNote = RANGE_IS_SERVER_FILTERED
+    ? TIME_RANGE_LABELS[range].toLowerCase()
+    : "all recorded data · source is not range-filtered";
 
   const refresh = () => {
     void queryClient.invalidateQueries({ queryKey: overviewQueryKey(range) });
@@ -49,10 +54,10 @@ export default function Observability() {
           <div className="flex flex-wrap items-center justify-between gap-3">
             <StatusBanner
               status={data.status}
-              summary={`${fmtInt(data.requests.total)} AI requests · ${TIME_RANGE_LABELS[range].toLowerCase()}`}
+              summary={`${fmtInt(data.requests.total)} AI requests · ${rangeNote}`}
             />
             <div className="font-mono text-[11px] text-[#4C566E]">
-              mock telemetry source · swappable with GET /observability/overview
+              live telemetry · GET /api/observability/overview
             </div>
           </div>
 
@@ -104,7 +109,7 @@ export default function Observability() {
           <Panel
             testid="panel-request-performance"
             title="Request performance"
-            description={`End-to-end AI request latency · ${TIME_RANGE_LABELS[range].toLowerCase()}`}
+            description={`End-to-end AI request latency · ${rangeNote}`}
             action={
               <span className="font-mono text-[11px] text-[#4C566E]">{data.series.length} buckets</span>
             }

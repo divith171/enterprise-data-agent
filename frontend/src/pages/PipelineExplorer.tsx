@@ -7,13 +7,17 @@ import PipelineGroupChart from "@/components/observability/PipelineGroupChart";
 import { ErrorState, OverviewSkeleton } from "@/components/observability/States";
 import { fmtDuration, fmtInt } from "@/lib/format";
 import { TIME_RANGE_LABELS, type TimeRange } from "@/lib/telemetry/types";
-import { overviewQueryKey } from "@/lib/telemetry/source";
+import { overviewQueryKey, RANGE_IS_SERVER_FILTERED } from "@/lib/telemetry/source";
 import { useOverview } from "@/lib/telemetry/useTelemetry";
 
 export default function PipelineExplorer() {
   const [range, setRange] = useState<TimeRange>("24h");
   const queryClient = useQueryClient();
   const { data, isPending, isFetching, isError, refetch } = useOverview(range);
+
+  const rangeNote = RANGE_IS_SERVER_FILTERED
+    ? TIME_RANGE_LABELS[range].toLowerCase()
+    : "all recorded data · source is not range-filtered";
 
   const refresh = () => {
     void queryClient.invalidateQueries({ queryKey: overviewQueryKey(range) });
@@ -45,7 +49,7 @@ export default function PipelineExplorer() {
           <Panel
             testid="panel-pipeline-groups"
             title="Pipeline groups"
-            description={`Average latency per group · ${TIME_RANGE_LABELS[range].toLowerCase()}`}
+            description={`Average latency per group · ${rangeNote}`}
           >
             <PipelineGroupChart groups={data.pipeline} />
           </Panel>

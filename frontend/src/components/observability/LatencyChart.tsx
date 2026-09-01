@@ -64,7 +64,7 @@ export default function LatencyChart({ data }: { data: LatencyPoint[] }) {
         className="flex h-[300px] items-center justify-center text-[13px] text-[#5D6880]"
         data-testid="latency-chart-empty"
       >
-        No data for this time range
+        No historical latency series available from this telemetry source
       </div>
     );
   }

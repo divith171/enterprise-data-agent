@@ -1,6 +1,7 @@
 import { NavLink } from "react-router-dom";
 import { Activity, GitBranch, ListTree, Database } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { TELEMETRY_SOURCE_LABEL } from "@/lib/telemetry/source";
 
 const NAV = [
   { to: "/", label: "Observability", icon: Activity, testid: "nav-item-observability" },
@@ -71,7 +72,7 @@ export default function Sidebar() {
           <span className="size-1.5 rounded-full bg-[#10B981] shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
           Telemetry stream
         </div>
-        <div className="mt-1.5 font-mono text-[11px] text-[#4C566E]">prototype · mock source</div>
+        <div className="mt-1.5 font-mono text-[11px] text-[#4C566E]">{TELEMETRY_SOURCE_LABEL}</div>
       </div>
     </aside>
   );

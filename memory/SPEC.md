@@ -9,11 +9,22 @@ No backend routes were added; the template's `/api/status` skeleton is untouched
 
 ## Telemetry source (the one seam)
 `src/lib/telemetry/`
-- `types.ts` — the telemetry contract (`ObservabilityOverview`, `Metric = number | null`).
-- `mock.ts` — deterministic-per-range mock telemetry generator.
-- `source.ts` — `TELEMETRY_MODE` (`"mock"` today). Flip to `"api"` to call
-  `GET /observability/overview?range=…` through the same-origin `/api` proxy. No component changes.
+- `types.ts` — the telemetry contract (`ObservabilityOverview`, `Metric = number | null`). UNCHANGED.
+- `mock.ts` — deterministic-per-range mock telemetry generator. INTACT and still switchable.
+- `mapper.ts` — maps the REAL backend payload (`http`, `endpoints`, `requests`, `retries`,
+  `sql_execution`, `groups`, `stages`) into `ObservabilityOverview`. Pipeline `*_duration_ms`
+  values are converted ms→s; request/SQL values are already seconds.
+- `source.ts` — `TELEMETRY_MODE = "api"` (live). Set it to `"mock"` to switch back; the
+  loaders are a `Record<TelemetryMode, …>` lookup so either value compiles.
+  Calls plain `GET /observability/overview` — **no `?range=` is ever sent** because the
+  backend is not verified to support it. `RANGE_IS_SERVER_FILTERED` is false in api mode,
+  so screens say "all recorded data · source is not range-filtered".
 - `useTelemetry.ts` — `useOverview(range)` TanStack Query hook; the only read path.
+
+### Not provided by the real backend
+`series` (historical latency), `traces`, `hotspots` are returned as `[]` — never faked.
+The existing empty states render instead. Status is *derived* from the reported failure
+counts (0 failures → healthy, some → degraded, >25% → unhealthy).
 
 ## Data semantics
 `Metric` is `number | null`. `0` renders as `0` / `0.00%` / `0 failures`;
@@ -32,4 +43,7 @@ endpoint row deliberately has `max: null` to exercise that path.
 None. No accounts, no login.
 
 ## MOCKED
-All telemetry is MOCKED in the frontend. No live metrics.
+Telemetry is LIVE (`TELEMETRY_MODE = "api"`) against `GET /api/observability/overview`.
+That route does NOT exist on this pod's template backend, so the preview shows the
+"Telemetry unavailable" error state until the real data-agent service is served behind
+this origin. Set `TELEMETRY_MODE = "mock"` in `source.ts` to demo with mock telemetry.
