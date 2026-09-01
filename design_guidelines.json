@@ -1,0 +1,242 @@
+{
+  "theme": "dark",
+  "project_name": "Enterprise Data Agent - Observability Control Center",
+  "archetype": "THE PERFORMANCE PRO / LINEAR-PRECISION OBSERVABILITY",
+  "summary": "Engineering-grade AI observability control center inspired by Linear's dark canvas precision. Features deep obsidian/navy surfaces, hairline borders, restrained indigo/blue accents, semantic indicators, Geist sans-serif typography, and JetBrains Mono for SQL/code.",
+  "colors": {
+    "surfaces": [
+      {
+        "name": "page",
+        "kind": "solid",
+        "bg": "#0B0D13",
+        "on_bg": "#F8FAFC",
+        "on_bg_muted": "#94A3B8",
+        "roles": {
+          "brand": "#6366F1",
+          "link": "#818CF8",
+          "border": "#1E2330",
+          "border_subtle": "#161A24",
+          "success": "#10B981",
+          "warning": "#F59E0B",
+          "error": "#EF4444",
+          "info": "#38BDF8"
+        }
+      },
+      {
+        "name": "sidebar",
+        "kind": "solid",
+        "bg": "#080A0F",
+        "on_bg": "#F1F5F9",
+        "on_bg_muted": "#64748B",
+        "roles": {
+          "active_bg": "#141824",
+          "active_indicator": "#6366F1",
+          "active_text": "#EEF2FF",
+          "hover_bg": "#0F121C",
+          "border": "#161A24"
+        }
+      },
+      {
+        "name": "card",
+        "kind": "solid",
+        "bg": "#11141E",
+        "on_bg": "#F8FAFC",
+        "on_bg_muted": "#94A3B8",
+        "roles": {
+          "border": "#1E2433",
+          "border_hover": "#2D3748",
+          "highlight": "#6366F1",
+          "subtle_badge_bg": "#181D2B",
+          "code_bg": "#0D1017"
+        }
+      },
+      {
+        "name": "card_elevated",
+        "kind": "solid",
+        "bg": "#151926",
+        "on_bg": "#F8FAFC",
+        "on_bg_muted": "#94A3B8",
+        "roles": {
+          "border": "#283044",
+          "border_hover": "#3B4764"
+        }
+      },
+      {
+        "name": "tooltip",
+        "kind": "solid",
+        "bg": "#0F131D",
+        "on_bg": "#F8FAFC",
+        "on_bg_muted": "#94A3B8",
+        "roles": {
+          "border": "#2B3245"
+        }
+      },
+      {
+        "name": "status_banner_healthy",
+        "kind": "solid",
+        "bg": "#06281E",
+        "on_bg": "#6EE7B7",
+        "on_bg_muted": "#34D399",
+        "roles": {
+          "border": "#0D533C",
+          "dot": "#10B981"
+        }
+      },
+      {
+        "name": "status_banner_degraded",
+        "kind": "solid",
+        "bg": "#2A1E08",
+        "on_bg": "#FDE68A",
+        "on_bg_muted": "#FBBF24",
+        "roles": {
+          "border": "#543C10",
+          "dot": "#F59E0B"
+        }
+      },
+      {
+        "name": "table_row_highlight",
+        "kind": "solid",
+        "bg": "#141A29",
+        "on_bg": "#F8FAFC",
+        "on_bg_muted": "#94A3B8",
+        "roles": {
+          "border": "#222D42",
+          "badge_bg": "#1E293B",
+          "badge_text": "#818CF8"
+        }
+      }
+    ],
+    "accent": "#6366F1",
+    "on_accent": "#FFFFFF",
+    "chart_palette": {
+      "p95": "#818CF8",
+      "p50": "#38BDF8",
+      "avg": "#34D399",
+      "max": "#F43F5E",
+      "grid": "#1E2433",
+      "planning": "#818CF8",
+      "validation": "#A78BFA",
+      "understanding": "#38BDF8",
+      "retrieval": "#34D399",
+      "generation": "#FBBF24"
+    }
+  },
+  "typography": {
+    "fonts": {
+      "sans": "'Geist Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+      "heading": "'Geist Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+      "mono": "'JetBrains Mono Variable', 'Geist Mono Variable', monospace"
+    },
+    "scale_px": {
+      "display": 48,
+      "h1": 32,
+      "h2": 24,
+      "h3": 18,
+      "body": 14,
+      "caption": 12
+    },
+    "letter_spacing": {
+      "heading_tight": "-0.025em",
+      "mono_data": "-0.01em",
+      "overline_wide": "0.08em"
+    }
+  },
+  "entry_surfaces": {
+    "/": "Linear-precision observability command center — left compact sidebar, sticky topbar with system health status & range controls, 5 KPI metric cards, hero latency chart (Avg/P50/P95), 2-column split with endpoint health table and pipeline horizontal stages + performance hotspots",
+    "/explorer": "Pipeline Explorer — Interactive multi-stage AI workflow inspector with expandable stage execution graph, step-by-step latency breakdown, token distribution, and prompt/schema inspection panels",
+    "/traces": "Request Traces — Searchable and filterable AI query trace table with real-time status badges, waterfall flamegraph visualization, SQL query inspection modal with syntax highlighting, and retry event logs"
+  },
+  "grids_and_layouts": {
+    "app_shell": "flex h-screen w-screen overflow-hidden bg-[#0B0D13] text-[#F8FAFC]",
+    "sidebar": "w-64 shrink-0 border-r border-[#161A24] bg-[#080A0F] flex flex-col justify-between p-4",
+    "main_content": "flex-1 flex flex-col overflow-y-auto min-w-0",
+    "header": "sticky top-0 z-30 flex items-center justify-between border-b border-[#161A24] bg-[#0B0D13]/90 backdrop-blur-md px-8 py-4",
+    "kpi_grid": "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 px-8 pt-6 pb-2",
+    "charts_section": "px-8 py-4",
+    "split_section": "grid grid-cols-1 xl:grid-cols-12 gap-6 px-8 py-4"
+  },
+  "component_structure": {
+    "MetricCard": {
+      "path": "frontend/src/components/observability/MetricCard.tsx",
+      "description": "Compact KPI card displaying metric title, formatted primary value, secondary benchmark text, trend delta indicator, and optional sparkline or subtle status badge."
+    },
+    "LatencyChart": {
+      "path": "frontend/src/components/observability/LatencyChart.tsx",
+      "description": "Hero responsive line chart using Recharts with Average, P50, and P95 latency series, custom styled dark tooltip, custom legend, and range switcher integration."
+    },
+    "EndpointTable": {
+      "path": "frontend/src/components/observability/EndpointTable.tsx",
+      "description": "Clean engineering table listing endpoints (/query, /docs, /openapi.json, /observability/overview) with Requests, Success, Failures, Average, P50, P95, Max columns. /query visually highlighted."
+    },
+    "PipelineGroupChart": {
+      "path": "frontend/src/components/observability/PipelineGroupChart.tsx",
+      "description": "Horizontal bar visualization representing the AI pipeline stages (Understanding 1.76s, Retrieval 0.37s, Planning 3.71s, Validation 2.74s, Generation 1.01s). Features expandable nested sub-stages and visual emphasis on bottleneck stages."
+    },
+    "PerformanceHotspots": {
+      "path": "frontend/src/components/observability/PerformanceHotspots.tsx",
+      "description": "Targeted hotspot cards ranking the slowest stages (Business Intent 5.72s, Reasoning 4.75s, SQL Review 3.80s, Intent Classification 2.70s) using engineering descriptors like 'Slowest' and 'High Latency' (avoiding misleading 'Critical' labels)."
+    },
+    "TraceViewerModal": {
+      "path": "frontend/src/components/observability/TraceViewerModal.tsx",
+      "description": "Detailed trace inspection drawer/dialog showing request timeline, prompt input, generated SQL query in JetBrains Mono, execution logs, and pipeline latency waterfall."
+    },
+    "TelemetryProvider": {
+      "path": "frontend/src/lib/telemetryContext.tsx",
+      "description": "Mock telemetry state provider supporting 1h/6h/24h/7d time ranges, auto-refresh toggle, manual refresh trigger, and simulated telemetry data models readily swappable with GET /observability/overview."
+    }
+  },
+  "motion": {
+    "durations": {
+      "fast": "150ms",
+      "normal": "250ms",
+      "slow": "400ms"
+    },
+    "easings": {
+      "linear_standard": "cubic-bezier(0.16, 1, 0.3, 1)",
+      "hover": "ease-out"
+    },
+    "rules": "Respect prefers-reduced-motion. Apply subtle scale(0.98) on active button click, opacity/translate-y micro transitions for expanding accordion stages, and smooth 250ms transition on metric value shifts."
+  },
+  "accessibility": {
+    "wcag_target": "APCA & WCAG AA (Minimum 4.5:1 text contrast for all standard copy)",
+    "data_testids": {
+      "sidebar_nav": "nav-item-[route-name]",
+      "range_selector": "time-range-selector",
+      "refresh_button": "btn-refresh-telemetry",
+      "status_indicator": "system-status-indicator",
+      "kpi_metric": "kpi-metric-[metric-name]",
+      "latency_chart": "latency-overview-chart",
+      "endpoint_row": "endpoint-row-[endpoint-path]",
+      "pipeline_group": "pipeline-group-[stage-name]",
+      "hotspot_item": "hotspot-item-[stage-name]"
+    },
+    "focus_rings": "focus-visible:ring-2 focus-visible:ring-[#6366F1] focus-visible:outline-none"
+  },
+  "instructions_to_main_agent": {
+    "font_setup": "Import '@fontsource-variable/geist' and '@fontsource-variable/jetbrains-mono' in frontend/src/index.css. Set --font-sans to Geist Variable and --font-mono to JetBrains Mono Variable.",
+    "theme_setup": "Ensure frontend/index.html uses <html class='dark'> and index.css defines dark tokens with page background #0B0D13, card surface #11141E, and border #1E2330.",
+    "data_semantics_rule": "Strict rule: Never confuse 0 with No Data. When value is 0, display '0' (e.g., '0.00%', '0 failures'). Display 'No data' only when metric is null or unrecorded.",
+    "navigation_routes": [
+      { "path": "/", "name": "Observability", "icon": "Activity" },
+      { "path": "/explorer", "name": "Pipeline Explorer", "icon": "GitBranch" },
+      { "path": "/traces", "name": "Request Traces", "icon": "FileCode2" }
+    ],
+    "time_ranges": ["1h", "6h", "24h", "7d"]
+  },
+  "UNIVERSAL_GUIDELINES_FOR_MAIN_AGENT": {
+    "design_standard": "Linear-quality dark UI polish for AI observability platform.",
+    "anti_patterns": [
+      "NO generic light themes or bright neon cyberpunk glows",
+      "NO terminal/hacker green text over black",
+      "NO unstyled raw HTML tables — use refined cell spacing and muted badges",
+      "NO default Inter font for headers; use Geist Variable with tight tracking",
+      "NO generic cards for every element; use structured grids, dividers, and surface elevation"
+    ],
+    "layout_polish": [
+      "Use 1px hairline borders with rgba(255,255,255,0.08) or #1E2433",
+      "Add subtle pill badges with dot indicators for status",
+      "Make /query row in Endpoint Table highlighted with a subtle blue/indigo left border or tint",
+      "Use JetBrains Mono for SQL queries, latencies (e.g., 36.24s, 0.486s), and endpoint paths"
+    ]
+  }
+}
