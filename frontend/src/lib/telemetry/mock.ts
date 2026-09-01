@@ -242,7 +242,11 @@ export function buildMockOverview(range: TimeRange): ObservabilityOverview {
   const p50s = series.map((p) => p.p50 ?? 0);
   const mean = (xs: number[]) => round(xs.reduce((a, b) => a + b, 0) / Math.max(1, xs.length));
 
-  const pipelineTotal = PIPELINE_BASE.reduce((a, g) => a + (g.avg ?? 0), 0);
+  // Share is measured against the summed stage budget so the four shares stay additive.
+  const pipelineTotal = PIPELINE_BASE.reduce(
+    (a, g) => a + g.stages.reduce((b, s) => b + (s.avg ?? 0), 0),
+    0,
+  );
   const hotspots: Hotspot[] = HOTSPOT_BASE.map((h) => ({
     ...h,
     share: Math.min(1, (h.avg ?? 0) / Math.max(pipelineTotal, 1)),
