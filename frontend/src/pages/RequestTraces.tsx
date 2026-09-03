@@ -1,149 +1,104 @@
-import { useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-import { Search } from "lucide-react";
-import AppShell from "@/components/layout/AppShell";
-import Header from "@/components/layout/Header";
+import { ListTree, Plug } from "lucide-react";
+import TelemetryPage from "@/components/layout/TelemetryPage";
 import Panel from "@/components/observability/Panel";
+import StatList from "@/components/observability/StatList";
 import TraceViewerModal from "@/components/observability/TraceViewerModal";
-import { EmptyState, ErrorState, OverviewSkeleton } from "@/components/observability/States";
-import { fmtDateTime, fmtDuration, fmtInt } from "@/lib/format";
-import type { RequestTrace, TimeRange, TraceStatus } from "@/lib/telemetry/types";
-import { overviewQueryKey } from "@/lib/telemetry/source";
-import { useOverview } from "@/lib/telemetry/useTelemetry";
+import { Unavailable } from "@/components/observability/States";
+import { fmtDuration, fmtInt, fmtSeconds } from "@/lib/format";
+import { useState } from "react";
+import type { RequestTrace } from "@/lib/telemetry/types";
+import TraceTable from "@/components/observability/TraceTable";
 
-const STATUS_STYLE: Record<TraceStatus, string> = {
-  success: "border-[#0D533C] bg-[#06281E] text-[#6EE7B7]",
-  retried: "border-[#543C10] bg-[#2A1E08] text-[#FDE68A]",
-  failed: "border-[#4C2126] bg-[#2A1215] text-[#FCA5A5]",
-};
-
+/**
+ * Request-level traces are not exposed by the current telemetry source. The page is
+ * built so a future traces API only has to populate `data.traces` and flip
+ * `availability.requestTraces` — no redesign, no fake route.
+ */
 export default function RequestTraces() {
-  const [range, setRange] = useState<TimeRange>("24h");
-  const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<RequestTrace | null>(null);
-  const queryClient = useQueryClient();
-  const { data, isPending, isFetching, isError, refetch } = useOverview(range);
-
-  const refresh = () => {
-    void queryClient.invalidateQueries({ queryKey: overviewQueryKey(range) });
-  };
-
-  const traces = (data?.traces ?? []).filter((t) =>
-    t.question.toLowerCase().includes(query.trim().toLowerCase()),
-  );
 
   return (
-    <AppShell>
-      <Header
-        title="Request Traces"
-        subtitle="Individual AI request timelines and generated SQL"
-        range={range}
-        onRangeChange={setRange}
-        lastUpdated={data?.generatedAt}
-        isRefreshing={isFetching}
-        onRefresh={refresh}
-      />
+    <TelemetryPage
+      title="Request Traces"
+      subtitle="Per-request timelines, attempts and generated SQL"
+    >
+      {(data) => {
+        const hasTraces = data.availability.requestTraces && data.traces.length > 0;
 
-      {isPending ? (
-        <OverviewSkeleton />
-      ) : isError || !data ? (
-        <ErrorState onRetry={() => void refetch()} />
-      ) : (
-        <div className="px-6 py-6 xl:px-8" data-testid="request-traces-content">
-          <Panel
-            testid="panel-request-traces"
-            title="Recent requests"
-            description="Select a request to inspect its pipeline waterfall and SQL"
-            flush
-            action={
-              <div className="relative">
-                <Search className="absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2 text-[#4C566E]" />
-                <input
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Filter questions"
-                  data-testid="trace-search-input"
-                  className="w-[220px] rounded-md border border-[#232A3B] bg-[#0E111A] py-[6px] pr-3 pl-8 text-[12px] text-[#E2E8F0] placeholder:text-[#4C566E] focus-visible:border-[#3B4764] focus-visible:ring-2 focus-visible:ring-[#6366F1] focus-visible:outline-none"
-                />
-              </div>
-            }
-          >
-            {traces.length === 0 ? (
-              (data.traces ?? []).length === 0 ? (
-                <EmptyState
-                  title="No request traces available from this telemetry source"
-                  hint="The observability endpoint does not expose per-request traces"
-                />
-              ) : (
-                <EmptyState title="No traces match this filter" hint="Try a different search term" />
-              )
+        return (
+          <>
+            {hasTraces ? (
+              <Panel
+                testid="panel-request-traces"
+                title="Recent requests"
+                description="Select a request to inspect its pipeline waterfall and SQL"
+                flush
+              >
+                <TraceTable traces={data.traces} onSelect={setSelected} />
+              </Panel>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full min-w-[760px] border-collapse" data-testid="traces-table">
-                  <thead>
-                    <tr className="border-b border-[#1A1F2C]">
-                      {["QUESTION", "STATUS", "STARTED"].map((h) => (
-                        <th
-                          key={h}
-                          className="px-5 py-2.5 text-left text-[10px] font-semibold tracking-[0.1em] text-[#4C566E]"
-                        >
-                          {h}
-                        </th>
-                      ))}
-                      {["TOTAL", "SQL", "ROWS", "RETRIES"].map((h) => (
-                        <th
-                          key={h}
-                          className="px-4 py-2.5 text-right text-[10px] font-semibold tracking-[0.1em] text-[#4C566E]"
-                        >
-                          {h}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {traces.map((t) => (
-                      <tr
-                        key={t.id}
-                        onClick={() => setSelected(t)}
-                        data-testid={`trace-row-${t.id}`}
-                        className="cursor-pointer border-b border-[#161A24] transition-colors duration-150 last:border-b-0 hover:bg-[#141824]"
-                      >
-                        <td className="max-w-[320px] truncate px-5 py-3 text-[12.5px] text-[#E2E8F0]">
-                          {t.question}
-                        </td>
-                        <td className="px-5 py-3">
-                          <span
-                            className={`rounded-full border px-2 py-[2px] text-[9px] font-semibold tracking-[0.08em] ${STATUS_STYLE[t.status]}`}
-                          >
-                            {t.status.toUpperCase()}
-                          </span>
-                        </td>
-                        <td className="px-5 py-3 font-mono text-[11.5px] whitespace-nowrap text-[#7C8698]">
-                          {fmtDateTime(t.startedAt)}
-                        </td>
-                        <td className="px-4 py-3 text-right font-mono text-[12px] text-[#F1F5F9]">
-                          {fmtDuration(t.totalSeconds)}
-                        </td>
-                        <td className="px-4 py-3 text-right font-mono text-[12px] text-[#A5B4FC]">
-                          {fmtDuration(t.sqlSeconds)}
-                        </td>
-                        <td className="px-4 py-3 text-right font-mono text-[12px] text-[#8A94A8]">
-                          {fmtInt(t.rows)}
-                        </td>
-                        <td className="px-4 py-3 text-right font-mono text-[12px] text-[#5D6880]">
-                          {fmtInt(t.retries)}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </Panel>
-        </div>
-      )}
+              <>
+                <Unavailable
+                  testid="traces-unavailable"
+                  icon={ListTree}
+                  title="No request-level traces are exposed by the current telemetry source"
+                  explanation="The observability endpoint reports aggregate counters and percentiles for the whole system. Individual request records — question text, request ids, per-request SQL and span waterfalls — are not part of that response, so none are shown."
+                  availableInstead="Aggregate observability is fully available: request totals, latency percentiles, pipeline stage timings, SQL execution health, retries and endpoint health."
+                />
 
-      <TraceViewerModal trace={selected} onClose={() => setSelected(null)} />
-    </AppShell>
+                <Panel
+                  testid="panel-aggregate-instead"
+                  title="What is available instead"
+                  description="System-wide figures covering the same traffic these traces would describe"
+                >
+                  <StatList
+                    columns={4}
+                    testid="traces-aggregate-stats"
+                    items={[
+                      { label: "AI requests", value: fmtInt(data.requests.total) },
+                      {
+                        label: "Successful",
+                        value: fmtInt(data.requests.successful),
+                        tone: "positive",
+                      },
+                      {
+                        label: "Failed",
+                        value: fmtInt(data.requests.failed),
+                        tone: (data.requests.failed ?? 0) > 0 ? "negative" : "muted",
+                      },
+                      {
+                        label: "Retried",
+                        value: fmtInt(data.requests.retried),
+                        tone: (data.requests.retried ?? 0) > 0 ? "warning" : "muted",
+                      },
+                      { label: "Average latency", value: fmtSeconds(data.latency.avg) },
+                      { label: "P50 latency", value: fmtSeconds(data.latency.p50), tone: "muted" },
+                      { label: "P95 latency", value: fmtSeconds(data.latency.p95), tone: "accent" },
+                      { label: "Average SQL", value: fmtDuration(data.sql.avg), tone: "muted" },
+                    ]}
+                  />
+                </Panel>
+
+                <div
+                  className="flex items-start gap-3 rounded-xl border border-[#1E2433] bg-[#0E111A] px-5 py-4"
+                  data-testid="traces-future-note"
+                >
+                  <Plug className="mt-[2px] size-4 shrink-0 text-[#5D6880]" strokeWidth={1.8} />
+                  <p className="text-[12.5px] leading-relaxed text-[#7C8698]">
+                    This screen is wired to the normalized telemetry model. When a
+                    request-traces API becomes available, the telemetry mapper populates{" "}
+                    <span className="font-mono text-[#8A94A8]">traces</span> and sets{" "}
+                    <span className="font-mono text-[#8A94A8]">availability.requestTraces</span> —
+                    the table and trace inspector below render with no page redesign.
+                  </p>
+                </div>
+              </>
+            )}
+
+            <TraceViewerModal trace={selected} onClose={() => setSelected(null)} />
+          </>
+        );
+      }}
+    </TelemetryPage>
   );
 }

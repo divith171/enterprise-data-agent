@@ -1,49 +1,65 @@
 # Enterprise Data Agent — Observability Control Center
 
-Frontend-only observability UI for an EXISTING natural-language-to-SQL AI agent.
-No backend routes were added; the template's `/api/status` skeleton is untouched.
+Production frontend for an EXISTING natural-language-to-SQL AI agent. **No backend code
+was written in any session.** `/app/backend/` is the untouched Emergent starter template
+and the frontend does not call it.
 
-## Stack / layout
-- Frontend: Vite + React 19 + Tailwind v4, dark-only (`<html class="dark">`), Geist + JetBrains Mono.
-- Routes (`src/App.tsx`): `/` Observability, `/explorer` Pipeline Explorer, `/traces` Request Traces.
+## Stack
+Vite + React 19 + TypeScript strict, Tailwind v4, dark-only (`<html class="dark">`),
+Geist (UI) + JetBrains Mono (metrics/SQL/ids), recharts, TanStack Query.
 
-## Telemetry source (the one seam)
+## Routes (src/App.tsx ↔ src/components/layout/nav.ts)
+| Route | Page | Purpose |
+|---|---|---|
+| `/` | Overview | Executive/operational summary |
+| `/pipeline` | Pipeline Explorer | Stage-level investigation (sort, filter, select) |
+| `/traces` | Request Traces | Not exposed by source → intentional empty state |
+| `/sql` | SQL Execution | Aggregate SQL health |
+| `/errors` | AI Errors | Error totals + categories |
+| `/endpoints` | HTTP Endpoints | Per-route health, sortable |
+| `/retries` | Retries & Attempts | Attempt counters |
+| `/alerts` | Alerts | Detected conditions (NOT configured alerts) |
+`*` falls back to Overview so no URL renders blank.
+
+## Telemetry architecture (the one seam)
 `src/lib/telemetry/`
-- `types.ts` — the telemetry contract (`ObservabilityOverview`, `Metric = number | null`). UNCHANGED.
-- `mock.ts` — deterministic-per-range mock telemetry generator. INTACT and still switchable.
-- `mapper.ts` — maps the REAL backend payload (`http`, `endpoints`, `requests`, `retries`,
-  `sql_execution`, `groups`, `stages`) into `ObservabilityOverview`. Pipeline `*_duration_ms`
-  values are converted ms→s; request/SQL values are already seconds.
-- `source.ts` — `TELEMETRY_MODE = "api"` (live). Set it to `"mock"` to switch back; the
-  loaders are a `Record<TelemetryMode, …>` lookup so either value compiles.
-  Calls plain `GET /observability/overview` — **no `?range=` is ever sent** because the
-  backend is not verified to support it. `RANGE_IS_SERVER_FILTERED` is false in api mode,
-  so screens say "all recorded data · source is not range-filtered".
-- `useTelemetry.ts` — `useOverview(range)` TanStack Query hook; the only read path.
+- `types.ts` — normalized model. `Metric = number | null`; percentages are 0–100.
+- `mapper.ts` — **the only module that reads raw API field names.** Maps `http`,
+  `endpoints`, `requests`, `retries`, `sql_execution`, `groups`, `stages`. Converts
+  pipeline `*_duration_ms` → seconds. Recomputes all percentages from raw counts
+  (backend `*_rate` units are ambiguous). Sets `availability` flags.
+- `mock.ts` — mock provider, preserved and switchable. Never a silent fallback.
+- `source.ts` — `TELEMETRY_MODE = "api"` (one line to switch). Calls plain
+  `GET /observability/overview` — **no `?range=` is ever sent.**
+- `derive.ts` — pure derivations: bottleneck groups, stage ranking/share, detected
+  conditions + `MONITORED_RULES`.
+- `usePageTelemetry.ts` / `useTelemetry.ts` — the only read path. Components never fetch.
 
-### Not provided by the real backend
-`series` (historical latency), `traces`, `hotspots` are returned as `[]` — never faked.
-The existing empty states render instead. Status is *derived* from the reported failure
-counts (0 failures → healthy, some → degraded, >25% → unhealthy).
+## Honesty rules encoded in the UI
+- `0` renders as `0`; `null` renders as **"Not available"** (`src/lib/format.ts`).
+- `availability.latencySeries|requestTraces|queryLevelSql|activityLog|alertRecords` are
+  all `false` in api mode → `Unavailable` panels explain what IS available instead.
+  No "0 buckets", no fabricated chart, no fake traces.
+- `availability.rangeFiltered` is false in api mode → the header shows a note that the
+  source is not range-filtered.
+- Alerts are labelled "detected conditions"; nothing is dispatched.
+- Recent operational activity is omitted entirely (no real event data exists).
 
-## Data semantics
-`Metric` is `number | null`. `0` renders as `0` / `0.00%` / `0 failures`;
-`null` renders as `No data` (see `src/lib/format.ts`). The `/observability/overview`
-endpoint row deliberately has `max: null` to exercise that path.
+## Proxy — IMPORTANT
+`frontend/vite.config.ts` in this repo still targets `http://localhost:8001` with no
+rewrite (the pod default). The user's working local setup proxies `/api/*` →
+`127.0.0.1:8000/*` **with an `/api` rewrite**; that edit lives only on their machine and
+must be re-applied after cloning. It was deliberately not committed here.
 
-## Key flows
-1. Observability: status banner, 5 KPI cards (success, latency P95, error rate, retry rate, SQL exec),
-   latency chart (Avg/P50/P95, recharts, hover tooltip), endpoint health table (`/query` highlighted),
-   pipeline group bars (expandable sub-stages, bottleneck tags), performance hotspots.
-2. Time range 1h/6h/24h/7d regenerates the series (visible chart change). Refresh invalidates the query key.
-3. Pipeline Explorer: group bars + flat stage breakdown table sorted by avg latency.
-4. Request Traces: filterable trace table → dialog with latency waterfall + generated SQL (mono).
-
-## Auth
-None. No accounts, no login.
+## Verification status
+`yarn typecheck`, `yarn build`, `yarn lint` (0 errors) all pass. All 8 routes verified in
+a browser against a payload using the real field names and all 15 real stage keys —
+0 console errors, 0 failed requests.
 
 ## MOCKED
-Telemetry is LIVE (`TELEMETRY_MODE = "api"`) against `GET /api/observability/overview`.
-That route does NOT exist on this pod's template backend, so the preview shows the
-"Telemetry unavailable" error state until the real data-agent service is served behind
-this origin. Set `TELEMETRY_MODE = "mock"` in `source.ts` to demo with mock telemetry.
+Nothing is mocked in api mode. `GET /api/observability/overview` returns 404 in this pod
+(the real service is not running here), so the preview shows the "Telemetry source
+unreachable" state. Set `TELEMETRY_MODE = "mock"` in `source.ts` to demo.
+
+## Auth
+None.

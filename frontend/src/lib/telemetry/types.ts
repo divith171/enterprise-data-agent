@@ -1,6 +1,5 @@
-// Telemetry contract. These interfaces mirror the shape the real
-// GET /observability/overview endpoint is expected to return. Nothing else in the
-// app talks to a data source directly — swap the implementation in ./source.ts.
+// Normalized frontend telemetry model. Components consume ONLY this shape — raw API
+// parsing lives exclusively in ./mapper.ts, behind ./source.ts.
 
 export type TimeRange = "1h" | "6h" | "24h" | "7d";
 
@@ -15,13 +14,21 @@ export const TIME_RANGE_LABELS: Record<TimeRange, string> = {
 
 export type SystemStatus = "healthy" | "degraded" | "unhealthy";
 
-/** A metric that may legitimately be 0, or genuinely unrecorded (null → "No data"). */
+/** A metric that may legitimately be 0, or be genuinely unrecorded (null → "Not available"). */
 export type Metric = number | null;
 
+/** Percentages are normalized to 0–100 by the mapper, always computed from raw counts. */
+export type Percent = Metric;
+
+export interface LatencySummary {
+  avg: Metric;
+  p50: Metric;
+  p95: Metric;
+  max: Metric;
+}
+
 export interface LatencyPoint {
-  /** ISO-8601 UTC timestamp of the bucket. */
   t: string;
-  /** Short axis label for the bucket. */
   label: string;
   avg: Metric;
   p50: Metric;
@@ -33,6 +40,48 @@ export interface RequestTotals {
   successful: Metric;
   failed: Metric;
   retried: Metric;
+  successRate: Percent;
+  failureRate: Percent;
+}
+
+export interface ErrorType {
+  name: string;
+  count: number;
+  share: Percent;
+}
+
+export interface ErrorSummary {
+  total: Metric;
+  rate: Percent;
+  types: ErrorType[];
+}
+
+export interface RetrySummary {
+  totalRequests: Metric;
+  firstAttemptSuccesses: Metric;
+  requestsRetried: Metric;
+  totalRetries: Metric;
+  retryRate: Percent;
+  averageAttempts: Metric;
+  maxAttempts: Metric;
+  /** Requests that still failed after every attempt, when derivable from counts. */
+  failedAfterRetry: Metric;
+}
+
+export interface SqlSummary {
+  executions: Metric;
+  successful: Metric;
+  failed: Metric;
+  successRate: Percent;
+  avg: Metric;
+  p50: Metric;
+  p95: Metric;
+  max: Metric;
+  avgRows: Metric;
+  p50Rows: Metric;
+  maxRows: Metric;
+  emptyResults: Metric;
+  emptyResultRate: Percent;
 }
 
 export interface EndpointHealth {
@@ -40,42 +89,44 @@ export interface EndpointHealth {
   requests: Metric;
   success: Metric;
   failures: Metric;
+  successRate: Percent;
   avg: Metric;
   p50: Metric;
   p95: Metric;
   max: Metric;
-  /** Marks the primary AI workload endpoint so the UI can emphasise it. */
+  /** The primary AI workload route, emphasised but never shown in isolation. */
   primary: boolean;
 }
 
-export interface PipelineSubStage {
+export interface Stage {
+  /** Raw key from the backend, e.g. "business_intent". Stable identity. */
+  key: string;
+  /** Display label, e.g. "Business Intent". */
   name: string;
+  /** Owning group key, e.g. "planning". */
+  group: string;
+  groupName: string;
   executions: Metric;
-  avg: Metric;
-  p95: Metric;
+  successCount: Metric;
   failures: Metric;
+  successRate: Percent;
+  avg: Metric;
+  p50: Metric;
+  p95: Metric;
+  max: Metric;
 }
 
 export interface PipelineGroup {
+  key: string;
   name: string;
   executions: Metric;
-  avg: Metric;
-  p95: Metric;
+  successCount: Metric;
   failures: Metric;
-  stages: PipelineSubStage[];
-}
-
-export type HotspotLabel = "Slowest" | "High latency" | "Elevated";
-
-export interface Hotspot {
-  stage: string;
-  group: string;
+  successRate: Percent;
   avg: Metric;
+  p50: Metric;
   p95: Metric;
-  executions: Metric;
-  label: HotspotLabel;
-  /** Share of the pipeline budget, 0–1. */
-  share: number;
+  stages: Stage[];
 }
 
 export type TraceStatus = "success" | "failed" | "retried";
@@ -87,6 +138,10 @@ export interface TraceSpan {
   group: string;
 }
 
+/**
+ * Request-level traces are NOT exposed by the current telemetry source. The type is
+ * retained so a future request-traces API can be plugged into the same page.
+ */
 export interface RequestTrace {
   id: string;
   question: string;
@@ -100,16 +155,37 @@ export interface RequestTrace {
   spans: TraceSpan[];
 }
 
+/**
+ * What the active telemetry source can actually answer. Screens read these flags to
+ * render an intentional "not available from this source" state instead of a fake value.
+ */
+export interface TelemetryAvailability {
+  latencySeries: boolean;
+  requestTraces: boolean;
+  queryLevelSql: boolean;
+  activityLog: boolean;
+  alertRecords: boolean;
+  /** True only when the source itself filtered by the selected range. */
+  rangeFiltered: boolean;
+}
+
 export interface ObservabilityOverview {
   generatedAt: string;
   range: TimeRange;
   status: SystemStatus;
   requests: RequestTotals;
-  latency: { p95: Metric; avg: Metric; p50: Metric };
-  sql: { avg: Metric; p95: Metric; executions: Metric };
-  series: LatencyPoint[];
+  /** AI request latency (the /query workload). */
+  latency: LatencySummary;
+  /** All HTTP traffic, which includes non-AI routes. */
+  httpLatency: LatencySummary;
+  errors: ErrorSummary;
+  retries: RetrySummary;
+  sql: SqlSummary;
   endpoints: EndpointHealth[];
   pipeline: PipelineGroup[];
-  hotspots: Hotspot[];
+  /** Flattened stage list across every group, for ranking and tables. */
+  stages: Stage[];
+  series: LatencyPoint[];
   traces: RequestTrace[];
+  availability: TelemetryAvailability;
 }

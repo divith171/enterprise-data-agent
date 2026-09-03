@@ -5,13 +5,13 @@ import type { ObservabilityOverview, TimeRange } from "./types";
 
 /**
  * Single seam between the UI and the telemetry backend. Components never fetch
- * telemetry directly — they go through useOverview() → fetchOverview().
+ * telemetry directly — they go through usePageTelemetry() → useOverview() → here.
  *
- * "api"  — the real existing FastAPI service: GET /observability/overview, mapped into
- *          the frontend contract by ./mapper.ts.
- * "mock" — the original in-browser mock provider, kept intact and fully switchable.
+ * "api"  — the real FastAPI service: GET /observability/overview (reached as
+ *          /api/observability/overview through the Vite proxy), normalized by mapper.ts.
+ * "mock" — the local mock provider, preserved and switchable. Never a silent fallback.
  *
- * Switching data sources is this one line:
+ * Switching telemetry sources is exactly one line: TELEMETRY_MODE below.
  */
 export type TelemetryMode = "mock" | "api";
 
@@ -23,10 +23,10 @@ export const OVERVIEW_PATH = "/observability/overview";
 const MOCK_LATENCY_MS = 420;
 
 /**
- * Loaders are a lookup rather than an if/else so that flipping TELEMETRY_MODE never
- * leaves a dead literal comparison behind (TS narrows the const and errors on it).
+ * Loaders are a lookup rather than an if/else so flipping TELEMETRY_MODE never leaves a
+ * dead literal comparison behind (TS narrows the const and errors on it).
  *
- * The real endpoint is NOT known to accept ?range=, so no range parameter is ever sent:
+ * No `?range=` is ever sent: the backend is not verified to support range filtering, so
  * the request is a plain GET /observability/overview.
  */
 const LOADERS: Record<TelemetryMode, (range: TimeRange) => Promise<ObservabilityOverview>> = {
@@ -37,19 +37,13 @@ const LOADERS: Record<TelemetryMode, (range: TimeRange) => Promise<Observability
   },
 };
 
-/** Per-mode facts the UI needs so it never overstates what the source did. */
 const MODE_FACTS = {
-  api: { rangeIsServerFiltered: false, label: "live · /observability/overview" },
-  mock: { rangeIsServerFiltered: true, label: "prototype · mock source" },
-} satisfies Record<TelemetryMode, { rangeIsServerFiltered: boolean; label: string }>;
-
-/** False in api mode: the range selector is a client control, the source is unfiltered. */
-export const RANGE_IS_SERVER_FILTERED: boolean = MODE_FACTS[TELEMETRY_MODE].rangeIsServerFiltered;
+  api: { label: "Live telemetry", detail: "GET /api/observability/overview" },
+  mock: { label: "Mock telemetry", detail: "local mock provider" },
+} satisfies Record<TelemetryMode, { label: string; detail: string }>;
 
 export const TELEMETRY_SOURCE_LABEL: string = MODE_FACTS[TELEMETRY_MODE].label;
-
-/** Sections the real payload does not carry today — rendered as empty, never faked. */
-export const API_MISSING_SECTIONS = ["series", "traces", "hotspots"] as const;
+export const TELEMETRY_SOURCE_DETAIL: string = MODE_FACTS[TELEMETRY_MODE].detail;
 
 export function fetchOverview(range: TimeRange): Promise<ObservabilityOverview> {
   return LOADERS[TELEMETRY_MODE](range);
