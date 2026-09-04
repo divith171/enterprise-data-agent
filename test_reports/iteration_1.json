@@ -1,0 +1,73 @@
+{
+  "iteration": 1,
+  "mode": "generate",
+  "summary": "All 8 acceptance criteria verified. Root cause confirmed: pages/Observability.tsx and components/observability/PerformanceHotspots.tsx do NOT exist in this repo (deleted upstream in commit 19172b5); user's local orphan copies were the source of the reported TS errors, not this codebase. yarn typecheck and yarn build both exit 0 with zero 'error TS' lines. No application/backend code was modified.",
+  "passed": 8,
+  "failed": 0,
+  "flaky": 0,
+  "blocked": 0,
+  "test_error": 0,
+  "retest_needed": false,
+  "bugs": [],
+  "action_items": [
+    "No API-bearing criteria required a backend pytest artifact: the app has a single unauthenticated GET consumed entirely client-side, and the real telemetry service is intentionally absent from this pod (confirmed 404), so backend coverage is exercised via the browser check that deliberately does NOT stub the endpoint (refresh-works-and-unstubbed-shows-error-state) rather than a pytest file."
+  ],
+  "checks": [
+    {
+      "criterion": "No stale-module or missing-export errors remain; app compiles and boots",
+      "name": "app-boots-no-stale-module-errors",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "yarn typecheck -> 'Done in 1.14s' (0 error TS lines). yarn build -> '✓ built in 1.07s' exit 0. Confirmed via `ls` that pages/Observability.tsx and components/observability/PerformanceHotspots.tsx do not exist under /app/frontend/src. Browser check navigated to Overview with stubbed payload, zero console errors, and asserted no Hotspot/HotspotLabel/OverviewSkeleton/RANGE_IS_SERVER_FILTERED/hotspots tokens present. Re-ran successfully against the public ingress URL (pipeline-control-5.preview.emergentagent.com)."
+    },
+    {
+      "criterion": "All 9 sidebar routes load without console errors",
+      "name": "all-nine-routes-load",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Clicked all 9 nav-item-* testids in sequence; page-title matched each expected title (Overview, Pipeline Explorer, Request Traces, SQL Execution, LLM Usage & Cost, AI Errors, HTTP Endpoints, Retries & Attempts, Alerts) and page-content was visible after each click; zero console errors captured."
+    },
+    {
+      "criterion": "Overview shows 5 KPI cards mapped from stubbed payload",
+      "name": "overview-kpi-cards-correct",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "kpi-metric-ai-request-success-value='100%', kpi-metric-ai-latency-value='36.24s', kpi-metric-error-rate-value='0.00%', kpi-metric-retry-rate-value='0%', kpi-metric-sql-execution-value='0.486s'. All exact matches, no NaN/undefined."
+    },
+    {
+      "criterion": "Overview LLM panel shows mapped totals and links to LLM page",
+      "name": "overview-llm-panel-links-to-llm-page",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "llm-overview-stats text contained '50', '276.84k', '$0.7105', '3.12s'. Clicking link-llm-usage navigated to page-title='LLM Usage & Cost'."
+    },
+    {
+      "criterion": "LLM Usage page shows KPIs and all three breakdown dimensions with sortable columns",
+      "name": "llm-usage-page-breakdowns-and-sort",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "kpi-llm-calls-value='50', kpi-llm-tokens-value='276.84k', kpi-llm-cost-value='$0.7105', kpi-llm-latency-value='3.12s'. llm-tab-provider -> llm-breakdown-provider contained openai & anthropic rows; llm-tab-model -> llm-breakdown-model contained gpt-4o-mini, gpt-4o, claude-sonnet-4-5; llm-tab-layer -> llm-breakdown-layer contained Planning & Validation. Clicking llm-breakdown-layer-col-calls reordered the first row (verified via data-testid change)."
+    },
+    {
+      "criterion": "When payload omits llm object, both LLM surfaces show honest empty state, never fake zeros",
+      "name": "llm-empty-state-no-fake-zeros",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "With llm key removed from payload: Overview showed llm-overview-unavailable, LLM page showed llm-unavailable, zero kpi-llm-* elements rendered, and page text on both did not contain '$0.00'."
+    },
+    {
+      "criterion": "Pipeline Explorer stage interactions work",
+      "name": "pipeline-explorer-stage-interactions",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "stage-row-business_intent click showed stage-detail-content. stage-group-filter-retrieval reduced stage-count from the full list. stage-col-p95 click reordered rows (checked pre/post first-row testid). stage-group-filter-all restored the original stage-count text."
+    },
+    {
+      "criterion": "Refresh works with stubbing; unstubbed 404 produces honest error state",
+      "name": "refresh-works-and-unstubbed-shows-error-state",
+      "lane": "browser",
+      "status": "passed",
+      "evidence": "Stubbed: last-updated populated before and after clicking btn-refresh-telemetry (awaited the re-issued GET /api/observability/overview response). Unstubbed: real backend 404 confirmed (curl GET /api/observability/overview -> 404) produced telemetry-error-state with btn-retry-telemetry visible and zero kpi-metric-* elements rendered. The single console 'Failed to load resource: 404' entry is the expected/intentional error path per briefing spec_deviations, not a bug."
+    }
+  ]
+}
