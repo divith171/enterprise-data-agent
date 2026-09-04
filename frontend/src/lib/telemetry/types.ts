@@ -156,6 +156,56 @@ export interface RequestTrace {
 }
 
 /**
+ * One row of an LLM usage breakdown — by provider, by model or by layer. All three
+ * breakdowns share this shape, so a single component can render any of them.
+ *
+ * Cost is an *engineering* figure: an estimate the backend attributes to observed token
+ * usage, for spotting which provider/model/layer is consuming budget. It is not billing.
+ */
+export interface LlmBreakdown {
+  /** Raw key from the backend, e.g. "openai" / "gpt-4o-mini" / "planning". Stable identity. */
+  key: string;
+  /** Display label, e.g. "OpenAI" / "GPT-4o Mini" / "Planning". */
+  name: string;
+  calls: Metric;
+  inputTokens: Metric;
+  outputTokens: Metric;
+  totalTokens: Metric;
+  /** Estimated cost in USD attributed to this row. */
+  estimatedCost: Metric;
+  avg: Metric;
+  p95: Metric;
+  /** Derived by the mapper: this row's share of total estimated cost, 0–100. */
+  costShare: Percent;
+  /** Derived by the mapper: estimated cost per call, USD. */
+  costPerCall: Metric;
+  /** Derived by the mapper: estimated cost per 1,000 tokens, USD. */
+  costPer1kTokens: Metric;
+  /** Derived by the mapper: average total tokens per call. */
+  tokensPerCall: Metric;
+}
+
+/**
+ * Aggregate LLM provider usage and cost for the current telemetry window.
+ * `latency` reuses LatencySummary because the backend reports the same four figures.
+ */
+export interface LlmSummary {
+  calls: Metric;
+  successful: Metric;
+  failed: Metric;
+  successRate: Percent;
+  inputTokens: Metric;
+  outputTokens: Metric;
+  totalTokens: Metric;
+  /** Total estimated cost in USD across every call. */
+  estimatedCost: Metric;
+  latency: LatencySummary;
+  byProvider: LlmBreakdown[];
+  byModel: LlmBreakdown[];
+  byLayer: LlmBreakdown[];
+}
+
+/**
  * What the active telemetry source can actually answer. Screens read these flags to
  * render an intentional "not available from this source" state instead of a fake value.
  */
@@ -165,6 +215,11 @@ export interface TelemetryAvailability {
   queryLevelSql: boolean;
   activityLog: boolean;
   alertRecords: boolean;
+  /**
+   * True when the source reports LLM provider usage and cost.
+   * Optional only until the mapper and mock providers set it in Step 2.
+   */
+  llmUsage?: boolean;
   /** True only when the source itself filtered by the selected range. */
   rangeFiltered: boolean;
 }
@@ -187,5 +242,11 @@ export interface ObservabilityOverview {
   stages: Stage[];
   series: LatencyPoint[];
   traces: RequestTrace[];
+  /**
+   * LLM provider usage and cost. `null` when the source does not report an `llm` object,
+   * so screens can show an honest empty state instead of zeros.
+   * Optional only until the mapper and mock providers populate it in Step 2.
+   */
+  llm?: LlmSummary | null;
   availability: TelemetryAvailability;
 }
