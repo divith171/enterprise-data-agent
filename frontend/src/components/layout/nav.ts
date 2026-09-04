@@ -6,6 +6,7 @@ import {
   Repeat2,
   ServerCog,
   ShieldAlert,
+  Sparkles,
   TriangleAlert,
   type LucideIcon,
 } from "lucide-react";
@@ -41,6 +42,13 @@ export const PLATFORM_NAV: NavItem[] = [
     short: "SQL",
     icon: Database,
     testid: "nav-item-sql-execution",
+  },
+  {
+    to: "/llm",
+    label: "LLM Usage & Cost",
+    short: "LLM",
+    icon: Sparkles,
+    testid: "nav-item-llm-usage",
   },
   {
     to: "/errors",

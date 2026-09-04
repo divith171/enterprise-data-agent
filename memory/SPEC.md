@@ -15,6 +15,7 @@ Geist (UI) + JetBrains Mono (metrics/SQL/ids), recharts, TanStack Query.
 | `/pipeline` | Pipeline Explorer | Stage-level investigation (sort, filter, select) |
 | `/traces` | Request Traces | Not exposed by source → intentional empty state |
 | `/sql` | SQL Execution | Aggregate SQL health |
+| `/llm` | LLM Usage & Cost | Provider / model / layer token + cost attribution |
 | `/errors` | AI Errors | Error totals + categories |
 | `/endpoints` | HTTP Endpoints | Per-route health, sortable |
 | `/retries` | Retries & Attempts | Attempt counters |
@@ -34,6 +35,17 @@ Geist (UI) + JetBrains Mono (metrics/SQL/ids), recharts, TanStack Query.
 - `derive.ts` — pure derivations: bottleneck groups, stage ranking/share, detected
   conditions + `MONITORED_RULES`.
 - `usePageTelemetry.ts` / `useTelemetry.ts` — the only read path. Components never fetch.
+
+### LLM usage & cost
+`llm` is mapped from the backend's `llm` object into `LlmSummary` (types.ts):
+totals, token counts, `estimatedCost`, `latency` (reuses `LatencySummary`), and three
+`LlmBreakdown[]` arrays (`byProvider`, `byModel`, `byLayer`). Each row carries the 7 raw
+fields plus four mapper-derived engineering figures — `costShare`, `costPerCall`,
+`costPer1kTokens`, `tokensPerCall` — sorted most-expensive first. Model names render
+verbatim (identifiers engineers recognise); providers use canonical casing
+(`PROVIDER_LABELS`); layers are titleized. `llm` is `null` and `availability.llmUsage`
+is `false` when the payload omits the object → honest empty state, never zeros.
+Cost is framed as an engineering estimate, explicitly not billing.
 
 ## Honesty rules encoded in the UI
 - `0` renders as `0`; `null` renders as **"Not available"** (`src/lib/format.ts`).

@@ -215,11 +215,8 @@ export interface TelemetryAvailability {
   queryLevelSql: boolean;
   activityLog: boolean;
   alertRecords: boolean;
-  /**
-   * True when the source reports LLM provider usage and cost.
-   * Optional only until the mapper and mock providers set it in Step 2.
-   */
-  llmUsage?: boolean;
+  /** True when the source reports LLM provider usage and cost. */
+  llmUsage: boolean;
   /** True only when the source itself filtered by the selected range. */
   rangeFiltered: boolean;
 }
@@ -245,8 +242,7 @@ export interface ObservabilityOverview {
   /**
    * LLM provider usage and cost. `null` when the source does not report an `llm` object,
    * so screens can show an honest empty state instead of zeros.
-   * Optional only until the mapper and mock providers populate it in Step 2.
    */
-  llm?: LlmSummary | null;
+  llm: LlmSummary | null;
   availability: TelemetryAvailability;
 }

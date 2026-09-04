@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Activity, ArrowUpRight, Database, LineChart, Repeat2, Timer, TriangleAlert } from "lucide-react";
+import { Activity, ArrowUpRight, Database, LineChart, Repeat2, Sparkles, Timer, TriangleAlert } from "lucide-react";
 import TelemetryPage from "@/components/layout/TelemetryPage";
 import MetricCard from "@/components/observability/MetricCard";
 import LatencyChart from "@/components/observability/LatencyChart";
@@ -9,7 +9,7 @@ import TopStages from "@/components/observability/TopStages";
 import Panel from "@/components/observability/Panel";
 import StatList from "@/components/observability/StatList";
 import { StatusBanner, Unavailable } from "@/components/observability/States";
-import { fmtDuration, fmtInt, fmtPercent, fmtPercentSmart, fmtSeconds } from "@/lib/format";
+import { fmtCost, fmtDuration, fmtInt, fmtPercent, fmtPercentSmart, fmtSeconds, fmtTokens } from "@/lib/format";
 import { bottleneckGroups, topStages } from "@/lib/telemetry/derive";
 
 const drillLink =
@@ -22,6 +22,7 @@ export default function Overview() {
         const ranked = topStages(data.stages, 6);
         const bottlenecks = bottleneckGroups(data.pipeline);
         const firstBottleneck = data.pipeline.find((g) => bottlenecks.has(g.key));
+        const topLlmCost = data.llm?.byProvider[0] ?? null;
 
         return (
           <>
@@ -207,6 +208,74 @@ export default function Overview() {
                 <EndpointTable rows={data.endpoints} limit={3} />
               </Panel>
             </div>
+
+            {/* --------------------------- LLM usage --------------------------- */}
+            <Panel
+              testid="panel-llm-summary"
+              title="LLM provider usage & cost"
+              description="Token consumption and estimated engineering spend"
+              action={
+                <Link to="/llm" className={drillLink} data-testid="link-llm-usage">
+                  LLM detail <ArrowUpRight className="size-3" />
+                </Link>
+              }
+            >
+              {data.llm && data.availability.llmUsage ? (
+                <div className="space-y-5" data-testid="llm-overview-summary">
+                  <StatList
+                    columns={4}
+                    testid="llm-overview-stats"
+                    items={[
+                      {
+                        label: "LLM calls",
+                        value: fmtInt(data.llm.calls),
+                        hint: `${fmtInt(data.llm.failed)} failed`,
+                      },
+                      {
+                        label: "Total tokens",
+                        value: fmtTokens(data.llm.totalTokens),
+                        tone: "accent",
+                        hint: `${fmtTokens(data.llm.inputTokens)} in · ${fmtTokens(data.llm.outputTokens)} out`,
+                      },
+                      {
+                        label: "Estimated cost",
+                        value: fmtCost(data.llm.estimatedCost),
+                        tone: "warning",
+                        hint: "engineering estimate, not billing",
+                      },
+                      {
+                        label: "LLM P95",
+                        value: fmtDuration(data.llm.latency.p95),
+                        tone: "accent",
+                        hint: `${fmtDuration(data.llm.latency.avg)} average`,
+                      },
+                    ]}
+                  />
+                  {topLlmCost && (
+                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1 border-t border-[#1A1F2C] pt-4 text-[12px] text-[#8A94A8]">
+                      Highest spend provider:
+                      <span className="text-[#E2E8F0]">{topLlmCost.name}</span>
+                      <span className="font-mono text-[#FCD34D]">
+                        {fmtCost(topLlmCost.estimatedCost)}
+                      </span>
+                      {topLlmCost.costShare !== null && (
+                        <span className="font-mono text-[11px] text-[#6E7A94]">
+                          ({topLlmCost.costShare.toFixed(1)}% of LLM cost)
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <Unavailable
+                  testid="llm-overview-unavailable"
+                  icon={Sparkles}
+                  title="LLM usage not reported by this telemetry source"
+                  explanation="The observability response contains no llm object, so call counts, token totals and cost estimates are not shown."
+                  compact
+                />
+              )}
+            </Panel>
           </>
         );
       }}

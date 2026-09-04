@@ -6,6 +6,8 @@ import { titleize } from "@/lib/format";
 import type {
   EndpointHealth,
   LatencyPoint,
+  LlmBreakdown,
+  LlmSummary,
   ObservabilityOverview,
   PipelineGroup,
   RequestTrace,
@@ -227,6 +229,73 @@ function buildTraces(range: TimeRange, now: number, stages: Stage[]): RequestTra
   }).reverse();
 }
 
+/** Mock LLM usage. Only ever served in "mock" mode — never a fallback in api mode. */
+const MOCK_LLM: LlmSummary = (() => {
+  const rows: [string, string, number, number, number, number, number][] = [
+    // key, kind-label, calls, inputTokens, outputTokens, cost, avgLatency
+    ["openai", "OpenAI", 38, 184_320, 21_440, 0.4231, 1.84],
+    ["anthropic", "Anthropic", 12, 61_200, 9_880, 0.2874, 2.41],
+  ];
+  const models: [string, number, number, number, number, number][] = [
+    ["gpt-4o-mini", 26, 121_400, 13_900, 0.1142, 1.42],
+    ["claude-sonnet-4-5", 12, 61_200, 9_880, 0.2874, 2.41],
+    ["gpt-4o", 12, 62_920, 7_540, 0.3089, 2.63],
+  ];
+  const layers: [string, number, number, number, number, number][] = [
+    ["planning", 20, 108_600, 14_200, 0.3612, 2.71],
+    ["validation", 14, 74_300, 8_960, 0.2088, 1.94],
+    ["understanding", 10, 42_120, 5_240, 0.0982, 1.21],
+    ["generation", 6, 20_500, 2_920, 0.0423, 1.08],
+  ];
+
+  const totalCost = rows.reduce((a, r) => a + r[5], 0);
+  const mk = (
+    key: string,
+    name: string,
+    calls: number,
+    input: number,
+    output: number,
+    cost: number,
+    avg: number,
+  ): LlmBreakdown => {
+    const totalTokens = input + output;
+    return {
+      key,
+      name,
+      calls,
+      inputTokens: input,
+      outputTokens: output,
+      totalTokens,
+      estimatedCost: cost,
+      avg,
+      p95: round(avg * 1.42),
+      costShare: (cost / totalCost) * 100,
+      costPerCall: cost / calls,
+      costPer1kTokens: (cost / totalTokens) * 1000,
+      tokensPerCall: totalTokens / calls,
+    };
+  };
+
+  const totalCalls = rows.reduce((a, r) => a + r[2], 0);
+  const totalInput = rows.reduce((a, r) => a + r[3], 0);
+  const totalOutput = rows.reduce((a, r) => a + r[4], 0);
+
+  return {
+    calls: totalCalls,
+    successful: totalCalls,
+    failed: 0,
+    successRate: 100,
+    inputTokens: totalInput,
+    outputTokens: totalOutput,
+    totalTokens: totalInput + totalOutput,
+    estimatedCost: round(totalCost, 4),
+    latency: { avg: 1.98, p50: 1.74, p95: 3.12, max: 4.08 },
+    byProvider: rows.map((r) => mk(r[0], r[1], r[2], r[3], r[4], r[5], r[6])),
+    byModel: models.map((m) => mk(m[0], m[0], m[1], m[2], m[3], m[4], m[5])),
+    byLayer: layers.map((l) => mk(l[0], titleize(l[0]), l[1], l[2], l[3], l[4], l[5])),
+  };
+})();
+
 export function buildMockOverview(range: TimeRange): ObservabilityOverview {
   const now = Date.now();
   const series = buildSeries(range, now);
@@ -284,12 +353,14 @@ export function buildMockOverview(range: TimeRange): ObservabilityOverview {
     stages,
     series,
     traces: buildTraces(range, now, stages),
+    llm: MOCK_LLM,
     availability: {
       latencySeries: true,
       requestTraces: true,
       queryLevelSql: false,
       activityLog: false,
       alertRecords: false,
+      llmUsage: true,
       rangeFiltered: true,
     },
   };

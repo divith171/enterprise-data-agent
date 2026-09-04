@@ -15,6 +15,8 @@ import type {
   EndpointHealth,
   ErrorType,
   LatencySummary,
+  LlmBreakdown,
+  LlmSummary,
   Metric,
   ObservabilityOverview,
   Percent,
@@ -99,6 +101,34 @@ export interface RawStage {
   max_duration_ms?: number | null;
 }
 
+export interface RawLlmBreakdown {
+  calls?: number | null;
+  input_tokens?: number | null;
+  output_tokens?: number | null;
+  total_tokens?: number | null;
+  estimated_cost?: number | null;
+  average_latency_seconds?: number | null;
+  p95_latency_seconds?: number | null;
+}
+
+export interface RawLlm {
+  total_calls?: number | null;
+  successful_calls?: number | null;
+  failed_calls?: number | null;
+  success_rate?: number | null;
+  total_input_tokens?: number | null;
+  total_output_tokens?: number | null;
+  total_tokens?: number | null;
+  total_estimated_cost?: number | null;
+  average_latency_seconds?: number | null;
+  p50_latency_seconds?: number | null;
+  p95_latency_seconds?: number | null;
+  max_latency_seconds?: number | null;
+  by_provider?: Record<string, RawLlmBreakdown> | null;
+  by_model?: Record<string, RawLlmBreakdown> | null;
+  by_layer?: Record<string, RawLlmBreakdown> | null;
+}
+
 export interface RawOverview {
   http?: RawLatencyBlock | null;
   endpoints?: Record<string, RawEndpoint> | null;
@@ -107,6 +137,7 @@ export interface RawOverview {
   sql_execution?: RawSqlExecution | null;
   groups?: Record<string, RawGroup> | null;
   stages?: Record<string, RawStage> | null;
+  llm?: RawLlm | null;
 }
 
 /* ------------------------------------ helpers ----------------------------------- */
@@ -151,6 +182,117 @@ function deriveStatus(total: Metric, failed: Metric): SystemStatus {
   if (failed === 0) return "healthy";
   if (total === null || total === 0) return "degraded";
   return failed / total > 0.25 ? "unhealthy" : "degraded";
+}
+
+/* ---------------------------------- LLM usage ----------------------------------- */
+
+/** Providers whose canonical casing titleize() cannot infer from the raw key. */
+const PROVIDER_LABELS: Record<string, string> = {
+  openai: "OpenAI",
+  azure_openai: "Azure OpenAI",
+  anthropic: "Anthropic",
+  google: "Google",
+  google_genai: "Google GenAI",
+  gemini: "Gemini",
+  vertex_ai: "Vertex AI",
+  bedrock: "AWS Bedrock",
+  groq: "Groq",
+  mistral: "Mistral",
+  cohere: "Cohere",
+  ollama: "Ollama",
+  deepseek: "DeepSeek",
+  xai: "xAI",
+  openrouter: "OpenRouter",
+  together: "Together AI",
+  fireworks: "Fireworks AI",
+  perplexity: "Perplexity",
+  huggingface: "Hugging Face",
+};
+
+type LlmBreakdownKind = "provider" | "model" | "layer";
+
+/**
+ * Model identifiers ("gpt-4o-mini", "claude-sonnet-4-5") are what engineers recognise,
+ * so they are shown verbatim. Providers use canonical casing, layers are titleized.
+ */
+function breakdownLabel(key: string, kind: LlmBreakdownKind): string {
+  if (kind === "model") return key;
+  if (kind === "provider") return PROVIDER_LABELS[key.toLowerCase()] ?? titleize(key);
+  return titleize(key);
+}
+
+function mapLlmBreakdown(
+  raw: Record<string, RawLlmBreakdown> | null | undefined,
+  kind: LlmBreakdownKind,
+  totalCost: Metric,
+): LlmBreakdown[] {
+  return Object.entries(raw ?? {})
+    .map(([key, entry]) => {
+      const calls = num(entry?.calls);
+      const inputTokens = num(entry?.input_tokens);
+      const outputTokens = num(entry?.output_tokens);
+      const estimatedCost = num(entry?.estimated_cost);
+      // Prefer the reported total; fall back to input+output only when both are present.
+      const totalTokens =
+        num(entry?.total_tokens) ??
+        (inputTokens !== null && outputTokens !== null ? inputTokens + outputTokens : null);
+
+      return {
+        key,
+        name: breakdownLabel(key, kind),
+        calls,
+        inputTokens,
+        outputTokens,
+        totalTokens,
+        estimatedCost,
+        avg: num(entry?.average_latency_seconds),
+        p95: num(entry?.p95_latency_seconds),
+        costShare: pct(estimatedCost, totalCost),
+        costPerCall:
+          estimatedCost === null || calls === null || calls === 0 ? null : estimatedCost / calls,
+        costPer1kTokens:
+          estimatedCost === null || totalTokens === null || totalTokens === 0
+            ? null
+            : (estimatedCost / totalTokens) * 1000,
+        tokensPerCall:
+          totalTokens === null || calls === null || calls === 0 ? null : totalTokens / calls,
+      };
+    })
+    // Most expensive first — the operational question is "what is costing us".
+    .sort((a, b) => (b.estimatedCost ?? 0) - (a.estimatedCost ?? 0) || (b.calls ?? 0) - (a.calls ?? 0));
+}
+
+/** Returns null when the source reports no `llm` object at all, so the UI can say so. */
+function mapLlm(raw: RawLlm | null | undefined): LlmSummary | null {
+  if (!raw || typeof raw !== "object") return null;
+
+  const calls = num(raw.total_calls);
+  const successful = num(raw.successful_calls);
+  const inputTokens = num(raw.total_input_tokens);
+  const outputTokens = num(raw.total_output_tokens);
+  const totalCost = num(raw.total_estimated_cost);
+
+  return {
+    calls,
+    successful,
+    failed: num(raw.failed_calls),
+    successRate: pct(successful, calls),
+    inputTokens,
+    outputTokens,
+    totalTokens:
+      num(raw.total_tokens) ??
+      (inputTokens !== null && outputTokens !== null ? inputTokens + outputTokens : null),
+    estimatedCost: totalCost,
+    latency: {
+      avg: num(raw.average_latency_seconds),
+      p50: num(raw.p50_latency_seconds),
+      p95: num(raw.p95_latency_seconds),
+      max: num(raw.max_latency_seconds),
+    },
+    byProvider: mapLlmBreakdown(raw.by_provider, "provider", totalCost),
+    byModel: mapLlmBreakdown(raw.by_model, "model", totalCost),
+    byLayer: mapLlmBreakdown(raw.by_layer, "layer", totalCost),
+  };
 }
 
 /* ------------------------------------ mapping ----------------------------------- */
@@ -270,6 +412,10 @@ export function mapOverview(raw: RawOverview, range: TimeRange): ObservabilityOv
   const sqlSuccessful = num(sql.successful_executions);
   const sqlEmpty = num(sql.empty_results);
 
+  /* --------------------------------- LLM ---------------------------------------- */
+  // null when the payload carries no `llm` object — the UI then shows an empty state.
+  const llm = mapLlm(raw.llm);
+
   return {
     // The payload carries no server timestamp; this is when the client read it.
     generatedAt: new Date().toISOString(),
@@ -321,12 +467,14 @@ export function mapOverview(raw: RawOverview, range: TimeRange): ObservabilityOv
     // NOT PROVIDED by this source. Empty, never faked.
     series: [],
     traces: [],
+    llm,
     availability: {
       latencySeries: false,
       requestTraces: false,
       queryLevelSql: false,
       activityLog: false,
       alertRecords: false,
+      llmUsage: llm !== null,
       rangeFiltered: false,
     },
   };

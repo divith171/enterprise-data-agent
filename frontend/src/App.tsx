@@ -3,6 +3,7 @@ import Overview from "@/pages/Overview";
 import PipelineExplorer from "@/pages/PipelineExplorer";
 import RequestTraces from "@/pages/RequestTraces";
 import SqlExecution from "@/pages/SqlExecution";
+import LlmUsage from "@/pages/LlmUsage";
 import AiErrors from "@/pages/AiErrors";
 import HttpEndpoints from "@/pages/HttpEndpoints";
 import RetriesAttempts from "@/pages/RetriesAttempts";
@@ -17,6 +18,7 @@ export default function App() {
       <Route path="/pipeline" element={<PipelineExplorer />} />
       <Route path="/traces" element={<RequestTraces />} />
       <Route path="/sql" element={<SqlExecution />} />
+      <Route path="/llm" element={<LlmUsage />} />
       <Route path="/errors" element={<AiErrors />} />
       <Route path="/endpoints" element={<HttpEndpoints />} />
       <Route path="/retries" element={<RetriesAttempts />} />

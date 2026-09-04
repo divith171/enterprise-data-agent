@@ -44,6 +44,28 @@ export function fmtNumber(value: Metric | undefined, digits = 2): string {
   return Number.isInteger(value) ? value.toLocaleString() : value.toFixed(digits);
 }
 
+/**
+ * Engineering cost figures, not billing. LLM costs are frequently fractions of a cent,
+ * so precision scales with magnitude instead of rounding everything to $0.00.
+ */
+export function fmtCost(value: Metric | undefined): string {
+  if (!present(value)) return NOT_AVAILABLE;
+  if (value === 0) return "$0.00";
+  if (value >= 1) return `$${value.toFixed(2)}`;
+  if (value >= 0.01) return `$${value.toFixed(4)}`;
+  return `$${value.toFixed(6)}`;
+}
+
+/** Compact token counts: 1,240 → "1.24k", 1,240,000 → "1.24M". */
+export function fmtTokens(value: Metric | undefined): string {
+  if (!present(value)) return NOT_AVAILABLE;
+  if (value === 0) return "0";
+  const abs = Math.abs(value);
+  if (abs >= 1_000_000) return `${(value / 1_000_000).toFixed(2)}M`;
+  if (abs >= 1_000) return `${(value / 1_000).toFixed(2)}k`;
+  return Math.round(value).toLocaleString();
+}
+
 export function fmtMillis(ms: number): string {
   if (ms < 1000) return `${Math.round(ms)}ms`;
   return `${(ms / 1000).toFixed(2)}s`;
