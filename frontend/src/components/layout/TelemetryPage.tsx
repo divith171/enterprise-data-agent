@@ -8,6 +8,8 @@ import type { ObservabilityOverview } from "@/lib/telemetry/types";
 interface TelemetryPageProps {
   title: string;
   subtitle: string;
+  /** Overview sets this to show the full source-limitation banner once, not on every page. */
+  prominentDisclosure?: boolean;
   /** Rendered only once real telemetry is present. */
   children: (data: ObservabilityOverview) => ReactNode;
 }
@@ -17,7 +19,12 @@ interface TelemetryPageProps {
  * loading skeleton and a single error state. No screen renders fabricated values while
  * the source is unavailable.
  */
-export default function TelemetryPage({ title, subtitle, children }: TelemetryPageProps) {
+export default function TelemetryPage({
+  title,
+  subtitle,
+  prominentDisclosure = false,
+  children,
+}: TelemetryPageProps) {
   const { range, setRange, refresh, data, isPending, isFetching, isError, refetch } =
     usePageTelemetry();
 
@@ -35,6 +42,7 @@ export default function TelemetryPage({ title, subtitle, children }: TelemetryPa
         onRefresh={refresh}
         connected={connected}
         rangeFiltered={data?.availability.rangeFiltered ?? false}
+        prominentDisclosure={prominentDisclosure}
       />
 
       {isPending ? (

@@ -17,7 +17,11 @@ const drillLink =
 
 export default function Overview() {
   return (
-    <TelemetryPage title="Overview" subtitle="AI system health and performance at a glance">
+    <TelemetryPage
+      title="Overview"
+      subtitle="AI system health and performance at a glance"
+      prominentDisclosure
+    >
       {(data) => {
         const ranked = topStages(data.stages, 6);
         const bottlenecks = bottleneckGroups(data.pipeline);

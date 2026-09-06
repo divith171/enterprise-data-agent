@@ -15,7 +15,17 @@ interface HeaderProps {
   connected: boolean | null;
   /** True only when the source itself filtered by the selected range. */
   rangeFiltered: boolean;
+  /**
+   * Overview shows the full explanatory banner. Detail pages get a compact chip with the
+   * same text as its tooltip, so the limitation is never hidden but is not repeated at
+   * full size on every page.
+   */
+  prominentDisclosure?: boolean;
 }
+
+/** Single source of truth for the wording, used by both the banner and the chip. */
+const RANGE_NOT_FILTERED_TEXT =
+  "The current telemetry source returns live aggregate totals and does not filter by time range. Range controls are retained for future source support.";
 
 export default function Header({
   title,
@@ -27,6 +37,7 @@ export default function Header({
   onRefresh,
   connected,
   rangeFiltered,
+  prominentDisclosure = false,
 }: HeaderProps) {
   return (
     <header
@@ -92,6 +103,17 @@ export default function Header({
             {isRefreshing ? "Refreshing" : "Refresh"}
           </button>
 
+          {!rangeFiltered && !prominentDisclosure && (
+            <span
+              title={RANGE_NOT_FILTERED_TEXT}
+              data-testid="range-not-filtered-chip"
+              className="flex items-center gap-1.5 rounded-md border border-[#232A3B] bg-[#0E111A] px-2.5 py-[6px] text-[11px] text-[#6E7A94] transition-colors hover:text-[#8A94A8]"
+            >
+              <Info className="size-3.5 shrink-0 text-[#4C566E]" strokeWidth={1.9} />
+              Aggregate
+            </span>
+          )}
+
           <div
             className="flex items-center gap-0.5 rounded-md border border-[#232A3B] bg-[#0E111A] p-0.5"
             data-testid="time-range-selector"
@@ -117,14 +139,13 @@ export default function Header({
         </div>
       </div>
 
-      {!rangeFiltered && (
+      {!rangeFiltered && prominentDisclosure && (
         <div
           className="flex items-center gap-2 border-t border-[#141824] bg-[#0A0C12] px-6 py-[7px] text-[11.5px] text-[#6E7A94] xl:px-10"
           data-testid="range-not-filtered-note"
         >
           <Info className="size-3.5 shrink-0 text-[#4C566E]" strokeWidth={1.9} />
-          The current telemetry source returns aggregate totals and does not filter by time
-          range. Range controls are retained for future source support.
+          {RANGE_NOT_FILTERED_TEXT}
         </div>
       )}
     </header>

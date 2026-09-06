@@ -45,6 +45,12 @@ export function stageShare(stage: Stage, stages: Stage[]): number {
 const pctText = (v: number | null) => (v === null ? "unknown" : `${v.toFixed(2)}%`);
 
 /**
+ * Shared rule strings. The Alerts screen matches a detected condition to its monitored
+ * rule by exact string, so the wording must come from one place.
+ */
+const PIPELINE_SHARE_RULE = "Group average above the even share across groups";
+
+/**
  * Conditions the UI *detects* from live metrics. These are explicitly NOT configured
  * alerts and nothing is dispatched anywhere — the Alerts screen labels them as such.
  */
@@ -84,11 +90,12 @@ export function detectedConditions(data: ObservabilityOverview): DetectedConditi
     if (!bottlenecks.has(group.key)) continue;
     out.push({
       id: `bottleneck-${group.key}`,
-      title: `${group.name} dominates pipeline time`,
-      detail: `This group averages more than an even share of total pipeline duration.`,
+      title: `${group.name} holds an above-average share of pipeline time`,
+      detail:
+        "This group's average duration exceeds the even share across measured groups. Share of duration only — not a critical-path or causal analysis.",
       severity: "info",
       observed: `${(group.avg ?? 0).toFixed(2)}s avg`,
-      rule: "Group average above the even share across groups",
+      rule: PIPELINE_SHARE_RULE,
     });
   }
 
@@ -152,7 +159,7 @@ export function detectedConditions(data: ObservabilityOverview): DetectedConditi
 export const MONITORED_RULES: { label: string; rule: string }[] = [
   { label: "AI request failures", rule: "Any failed AI request" },
   { label: "Retry rate", rule: "Retry rate above 0%" },
-  { label: "Pipeline bottleneck", rule: "Group average above even share" },
+  { label: "Pipeline time share", rule: PIPELINE_SHARE_RULE },
   { label: "SQL latency", rule: "SQL P95 above 2s" },
   { label: "SQL failures", rule: "Any failed SQL execution" },
   { label: "Empty result sets", rule: "Any empty result set" },

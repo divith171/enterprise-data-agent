@@ -58,10 +58,30 @@ Cost is framed as an engineering estimate, explicitly not billing.
 - Recent operational activity is omitted entirely (no real event data exists).
 
 ## Proxy — IMPORTANT
-`frontend/vite.config.ts` in this repo still targets `http://localhost:8001` with no
-rewrite (the pod default). The user's working local setup proxies `/api/*` →
-`127.0.0.1:8000/*` **with an `/api` rewrite**; that edit lives only on their machine and
-must be re-applied after cloning. It was deliberately not committed here.
+`frontend/vite.config.ts` proxies `/api` → **`http://127.0.0.1:8000`** with
+`rewrite: (path) => path.replace(/^\/api/, "")`. The rewrite is load-bearing: the
+frontend calls `/api/observability/overview` while FastAPI exposes
+`/observability/overview` without the prefix. Verified functionally by curling
+`localhost:3000/api/observability/overview` against a temporary echo listener, which
+received `/observability/overview`.
+
+NOTE: the public preview URL does **not** exercise this proxy — the platform ingress
+sends `/api` straight to port 8001, bypassing the Vite dev server. Only
+`http://localhost:3000` goes through the config above. No backend runs on :8000 in this
+pod, so the preview shows the "Telemetry source unreachable" state; that is expected.
+
+## Disclosure UI
+Source limitations are disclosed without repetition: the sidebar carries a persistent
+live/offline source badge, the header carries a LIVE/DISCONNECTED pill, Overview shows
+the full "not range-filtered" banner once (`prominentDisclosure`), and every other page
+shows a compact `range-not-filtered-chip` ("Aggregate") whose `title` holds the identical
+sentence. Per-capability `Unavailable` panels remain on their own pages.
+
+## Wording
+Pipeline groups above the even share are labelled **HIGH SHARE** (not "BOTTLENECK"), with
+a tooltip stating it reflects share of duration, not a critical-path or causal analysis.
+`PIPELINE_SHARE_RULE` in derive.ts is the single source for that rule string so a detected
+condition matches its monitored rule exactly.
 
 ## Verification status
 `yarn typecheck`, `yarn build`, `yarn lint` (0 errors) all pass. All 8 routes verified in

@@ -69,11 +69,14 @@ export default defineConfig({
     hmr: !hotReloadDisabled,
     watch: hotReloadDisabled ? null : { usePolling: true, interval: 300 },
     // The /api proxy convention: frontend code calls relative /api/*, never an
-    // absolute backend URL. Target is the FastAPI dev server (supervisor: backend).
+    // absolute backend URL. Target is the local FastAPI service on port 8000.
+    // The rewrite is REQUIRED: the frontend requests /api/observability/overview while
+    // FastAPI exposes /observability/overview without the /api prefix.
     proxy: {
       "/api": {
-        target: "http://localhost:8001",
+        target: "http://127.0.0.1:8000",
         changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ""),
       },
     },
   },

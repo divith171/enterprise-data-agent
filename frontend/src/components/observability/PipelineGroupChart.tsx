@@ -68,10 +68,11 @@ export default function PipelineGroupChart({
                   </span>
                   {isBottleneck && (
                     <span
+                      title="This group's average duration is above the even share across measured groups. It reflects share of total duration, not a critical-path or causal analysis."
                       className="shrink-0 rounded-full px-2 py-[2px] text-[9px] font-semibold tracking-[0.08em]"
                       style={{ background: `${color}1F`, color, border: `1px solid ${color}3D` }}
                     >
-                      BOTTLENECK
+                      HIGH SHARE
                     </span>
                   )}
                   <span className="shrink-0 text-[10.5px] text-[#4C566E]">
