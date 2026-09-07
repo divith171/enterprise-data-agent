@@ -1,7 +1,8 @@
 import os
 import time
 import asyncio
-
+from observability.context import get_request_context
+from observability.logger import log_event
 from openai import (
     AsyncOpenAI,
     RateLimitError,
@@ -150,31 +151,49 @@ MODEL_ROUTING = {
 # PROVIDER HELPERS
 # ---------------------------------
 
-async def _anthropic_chat(
-    model: str,
-    prompt: str
-):
-    return await _execute_with_retry(
+async def _anthropic_chat(model: str, prompt: str, layer: str):
+    start_time = time.time()
+
+    response = await _execute_with_retry(
         operation=lambda: anthropic_client.messages.create(
             model=model,
             max_tokens=1024,
-            messages=[
-                {
-                    "role": "user",
-                    "content": prompt
-                }
-            ]
+            messages=[{"role": "user", "content": prompt}]
         ),
         provider="Anthropic",
         model=model
     )
 
+    latency = round(time.time() - start_time, 3)
+    context = get_request_context()
+    usage = response.usage
 
-async def _openai_chat(
-    model: str,
-    messages: list
-):
-    return await _execute_with_retry(
+    log_event({
+        "event_type": "llm_completed",
+        "request_id": context.request_id if context else None,
+        "trace_id": context.trace_id if context else None,
+        "session_id": context.session_id if context else None,
+        "provider": "Anthropic",
+        "model": model,
+        "layer": layer,
+        "latency_seconds": latency,
+        "input_tokens": usage.input_tokens,
+        "output_tokens": usage.output_tokens,
+        "total_tokens": usage.input_tokens + usage.output_tokens,
+        "cached_tokens": usage.cache_read_input_tokens or 0,
+        "cache_creation_input_tokens": usage.cache_creation_input_tokens or 0,
+        "reasoning_tokens": None,
+        "estimated_cost": None,
+        "status": "success",
+    })
+
+    return response
+
+
+async def _openai_chat(model: str, messages: list, layer: str):
+    start_time = time.time()
+
+    response = await _execute_with_retry(
         operation=lambda: openai_client.chat.completions.create(
             model=model,
             messages=messages
@@ -182,6 +201,41 @@ async def _openai_chat(
         provider="OpenAI",
         model=model
     )
+
+    latency = round(time.time() - start_time, 3)
+    context = get_request_context()
+    usage = response.usage
+
+    completion_details = usage.completion_tokens_details
+    prompt_details = usage.prompt_tokens_details
+
+    log_event({
+        "event_type": "llm_completed",
+        "request_id": context.request_id if context else None,
+        "trace_id": context.trace_id if context else None,
+        "session_id": context.session_id if context else None,
+        "provider": "OpenAI",
+        "model": model,
+        "layer": layer,
+        "latency_seconds": latency,
+        "input_tokens": usage.prompt_tokens,
+        "output_tokens": usage.completion_tokens,
+        "total_tokens": usage.total_tokens,
+        "cached_tokens": (
+            prompt_details.cached_tokens
+            if prompt_details and prompt_details.cached_tokens is not None
+            else 0
+        ),
+        "reasoning_tokens": (
+            completion_details.reasoning_tokens
+            if completion_details and completion_details.reasoning_tokens is not None
+            else 0
+        ),
+        "estimated_cost": None,
+        "status": "success",
+    })
+
+    return response
 
 
 # ---------------------------------
@@ -210,7 +264,8 @@ async def generate_response(
 
         response = await _anthropic_chat(
             model=model,
-            prompt=prompt
+            prompt=prompt,
+            layer=layer
         )
 
         print(
@@ -248,7 +303,8 @@ async def generate_response(
 
         response = await _openai_chat(
             model=model,
-            messages=messages
+            messages=messages,
+            layer=layer
         )
 
         print(

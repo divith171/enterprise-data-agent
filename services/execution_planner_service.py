@@ -4,11 +4,10 @@ from services.llm_gateway import generate_response
 from dotenv import load_dotenv
 from openai import OpenAI
 import time
-load_dotenv()
+from observability.telemetry import TelemetryStageContext
+from observability.constants import PipelineStages
 
-client = OpenAI(
-    api_key=os.getenv("OPENAI_API_KEY")
-)
+load_dotenv()
 
 
 async def generate_execution_plan(
@@ -18,8 +17,9 @@ async def generate_execution_plan(
     reasoning_trace=None,
     relationship_text=None
 ):
+    with TelemetryStageContext(PipelineStages.EXECUTION_PLANNER):
 
-    prompt = f"""
+        prompt = f"""
 You are an expert analytical execution planner.
 
 Your task is to convert the analytical intent
@@ -63,6 +63,7 @@ Your task:
 Break the analysis into explicit execution stages.
 
 Focus on:
+
 - aggregation stages
 - temporal comparison stages
 - growth calculation stages
@@ -71,6 +72,7 @@ Focus on:
 - ordering stages
 
 IMPORTANT:
+
 - Separate aggregation from comparison
 - Separate metric computation from final filtering
 - Preserve analytical correctness
@@ -84,7 +86,6 @@ FORMAT:
 
 {{
     "execution_stages": [
-
         {{
             "stage": 1,
             "operation": "",
@@ -92,38 +93,45 @@ FORMAT:
             "grain": "",
             "dependencies": []
         }}
-
     ]
 }}
 """
-    start = time.time()
-    content = await generate_response(
 
-    layer="execution_planner",
+        start = time.time()
 
-    prompt=prompt
-    )
-    print(
-    "EXECUTION PLAN TIME:",
-    round(time.time() - start, 2),
-    "seconds"
-    )
-    print("EXECUTION PLAN RAW:", content)
+        content = await generate_response(
+            layer="execution_planner",
+            prompt=prompt
+        )
 
-    try:
+        print(
+            "EXECUTION PLAN TIME:",
+            round(time.time() - start, 2),
+            "seconds"
+        )
 
-        content = content.replace(
-            "```json", ""
-        ).replace(
-            "```", ""
-        ).strip()
+        print("EXECUTION PLAN RAW:", content)
 
-        return json.loads(content)
+        try:
+            content = content.replace(
+                "```json", ""
+            ).replace(
+                "```", ""
+            ).strip()
 
-    except Exception as e:
+            execution_plan = json.loads(content)
 
-        print("EXECUTION PLAN PARSE ERROR:", e)
+            execution_plan["elapsed"] = round(
+                time.time() - start,
+                3
+            )
 
-        return {
-            "execution_stages": []
-        }
+            return execution_plan
+
+        except Exception as e:
+            print("EXECUTION PLAN PARSE ERROR:", e)
+
+            return {
+            "execution_stages": [],
+            "elapsed": round(time.time() - start, 3)
+                   }

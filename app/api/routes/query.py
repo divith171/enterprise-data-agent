@@ -1,50 +1,9 @@
-from fastapi import FastAPI
-from contextlib import asynccontextmanager
-from observability.middleware import RequestContextMiddleware
-from services.schema_service import get_schema
-from db.connection import open_pool, close_pool
-from app.api.router import api_router
-
-# -------------------------------
-# App setup
-# -------------------------------
-
-schema_cache = {}
-
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    global schema_cache
-
-    await open_pool()
-
-    schema_cache = await get_schema()
-
-    print("Schema loaded:", schema_cache)
-
-    yield
-
-    await close_pool()
-
-
-app = FastAPI(
-    title="Enterprise Data Agent",
-    description="AI agent that converts natural language into SQL queries",
-    version="1.0",
-    lifespan=lifespan,
-)
-
-app.include_router(api_router)
-app.add_middleware(RequestContextMiddleware)
-
-
-
-"""from fastapi import FastAPI
+from fastapi import APIRouter
 from pydantic import BaseModel
-from contextlib import asynccontextmanager
+from observability.telemetry import telemetry
+from observability.constants import PipelineStages
 from services.intent_continuation_service import classify_intent_continuation
 from agents.sql_agent import run_sql_agent
-from services.schema_service import get_schema
 from services.interpretation_service import parse_user_response
 from services.continuation_interpreter_service import interpret_continuation
 from services.session_service import (
@@ -55,54 +14,21 @@ from services.session_service import (
     set_current_query,
     set_context
 )
-from db.connection import open_pool, close_pool
-from app.api.router import api_router
-# -------------------------------
-# App setup
-# -------------------------------
 
-schema_cache = {}
+router = APIRouter()
 
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-
-    global schema_cache
-
-    await open_pool()
-
-    schema_cache = await get_schema()
-
-    print("Schema loaded:", schema_cache)
-
-    yield
-
-    await close_pool()
+class QueryRequest(BaseModel):
+    message: str
+    session_id: str
 
 
-app = FastAPI(
-    title="Enterprise Data Agent",
-    description="AI agent that converts natural language into SQL queries",
-    version="1.0",
-    lifespan=lifespan
-)
-app.include_router(api_router)
-
-
-
-# -------------------------------
-# Routes
-# -------------------------------
-
-
-
-
-@app.post("/query")
+@router.post("/query")
 async def query_agent(request: QueryRequest):
 
     trace_log = {}
 
-    print("QUERY ENDPOINT HIT")
+    print("===== QUERY.PY ROUTE EXECUTED =====")
 
     session_id = request.session_id
     user_input = request.message
@@ -134,10 +60,13 @@ async def query_agent(request: QueryRequest):
     # Intent Classification
     # -------------------------------
 
-    intent_result = classify_intent_continuation(
-        previous_query=current_query,
-        current_input=user_input
-    )
+    with telemetry.pipeline_stage(
+    PipelineStages.INTENT_CLASSIFICATION
+        ):
+            intent_result = classify_intent_continuation(
+                previous_query=current_query,
+                current_input=user_input
+            )
 
     print("INTENT TYPE:", intent_result)
 
@@ -163,10 +92,13 @@ async def query_agent(request: QueryRequest):
 
     else:
 
-        continuation_result = interpret_continuation(
-            previous_query=current_query,
-            continuation_input=user_input
-        )
+        with telemetry.pipeline_stage(
+                PipelineStages.CONTINUATION_DETECTION
+            ):
+                continuation_result = interpret_continuation(
+                    previous_query=current_query,
+                    continuation_input=user_input
+                )
 
         print("CONTINUATION RESULT:", continuation_result)
 
@@ -246,8 +178,7 @@ async def query_agent(request: QueryRequest):
     result = await run_sql_agent(
         refined_query,
         context=context
-
-            )
+    )
 
     result["trace_log"] = trace_log
     result["context"] = context
@@ -255,4 +186,4 @@ async def query_agent(request: QueryRequest):
 
     print("FINAL CONTEXT:", context)
 
-    return result """
+    return result

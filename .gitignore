@@ -75,3 +75,29 @@ project_tree.txt
 # Jupyter
 # =========================
 .ipynb_checkpoints/
+# =========================
+# Test Artifacts
+# =========================
+
+.pytest_cache/
+test-results-*.txt
+# =========================
+# Local Investigation Artifacts
+# =========================
+
+agent_functions.txt
+api_inventory.txt
+db_functions.txt
+embedding_search.txt
+exception_usage.txt
+finalize_request_usage.txt
+logger_usage.txt
+print_statements.txt
+project_tree.txt
+service_functions.txt
+sql_agent_awaits.txt
+sql_agent_imports.txt
+sql_execution_search.txt
+start_request_usage.txt
+structure.txt
+timing_usage.txt

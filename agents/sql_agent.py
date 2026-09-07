@@ -17,12 +17,14 @@ from services.query_type_service import classify_query_type
 from services.sql_reviewer import review_sql
 from services.state import QueryState
 from services.embedding_service import get_relevant_columns
-from observability.logger import start_request, finalize_request
+#from observability.logger import start_request, finalize_request
 from services.explanation_service import explain_result
 from services.intent_guardrail import check_user_intent, IntentViolation
 from services.interpretation_service import detect_ambiguities,map_entity_to_table,extract_intent,expand_concepts,map_concepts_to_columns
 from utils.profiler import StageProfiler
 profiler = StageProfiler()
+from observability.telemetry import telemetry, TelemetryStageContext
+from observability.constants import PipelineStages
 
 def compute_confidence(results):
     distances = [d for _, d in results]
@@ -186,18 +188,20 @@ def detect_missing(state, user_question):
 
     return missing
 orchestration_trace = {}
-TEST_SKIP_EXECUTION_PLANNER = True
+TEST_SKIP_EXECUTION_PLANNER = False
 async def run_sql_agent(user_question: str, context=None):
     overall_start = time.time()
     start = time.time()
     orchestration_trace = {}
-    log_data = start_request(user_question)
-    log_data["timings"] = {}
-    full_schema = await get_schema()
-    relationship_text = await build_relationship_text()
+    timings = {}
+    with telemetry.pipeline_stage(
+    PipelineStages.SCHEMA_RETRIEVAL
+    ):
+        full_schema = await get_schema()
+        relationship_text = await build_relationship_text()
     elapsed = round(time.time() - start, 3)
     print(   "SCHEMA LOAD TIME:",   elapsed)
-    log_data["timings"]["schema_load"] = elapsed
+    timings["schema_load"] = elapsed
     start = time.time()
 
     expanded_terms_task = asyncio.to_thread(
@@ -215,22 +219,27 @@ async def run_sql_agent(user_question: str, context=None):
         classify_query_type,
         user_question
     )
+    with telemetry.pipeline_stage(
+    PipelineStages.QUERY_EXPANSION
+    ):
+        expanded_terms = await expanded_terms_task
 
-    expanded_terms = await expanded_terms_task
+        elapsed1 = round(time.time() - start, 3)
 
-    elapsed1 = round(time.time() - start, 3)
+        print("QUERY EXPANSION TIME:", elapsed1)
 
-    print("QUERY EXPANSION TIME:", elapsed1)
+        timings["query_expansion_time"] = elapsed1
 
-    log_data["timings"]["query_expansion_time"] = elapsed1
+        print("Expanded terms:", expanded_terms)
 
-    print("Expanded terms:", expanded_terms)
-
-    search_query = user_question + " " + " ".join(expanded_terms)
+        search_query = user_question + " " + " ".join(expanded_terms)
 
     start = time.time()
+    with telemetry.pipeline_stage(
+    PipelineStages.EMBEDDING_RETRIEVAL
+    ):
+        stored_columns = await get_relevant_columns(search_query, top_k=15)
 
-    stored_columns = await get_relevant_columns(search_query, top_k=15)
     elapsed2 = round(time.time() - start, 3)
     metadata_context = "\n\n".join([
     f"{table}.{column}\n{description}"
@@ -241,46 +250,55 @@ async def run_sql_agent(user_question: str, context=None):
     print(metadata_context)
     print(
     "EMBEDDING RETRIEVAL TIME:", elapsed2)
-    log_data["timings"]["embedding_retrieval_time"] = elapsed2
+    timings["embedding_retrieval_time"] = elapsed2
     print("\nRETRIEVED COLUMN METADATA:")
     for row in stored_columns:
         print(row)
-    
+
     query_type_result = await query_type_task
     print("QUERY TYPE:", query_type_result)
     schema_with_types = await get_schema_with_types()
     start = time.time()
     intent = await intent_task
-    concept_mappings = map_concepts_to_columns(intent, stored_columns,schema_with_types)
+    with telemetry.pipeline_stage(
+    PipelineStages.CONCEPT_MAPPING
+    ):
+        concept_mappings = map_concepts_to_columns(intent, stored_columns,schema_with_types)
     elapsed5 = round(time.time() - start, 3)
     print(
     "CONCEPT MAPPING TIME:", elapsed5)
-    log_data["timings"]["concept_mapping_time"] = elapsed5
+    timings["concept_mapping_time"] = elapsed5
     start = time.time()
-    entity_table = await map_entity_to_table(intent.get("entity"), full_schema)
+    with telemetry.pipeline_stage(
+    PipelineStages.ENTITY_MAPPING
+    ):
+        entity_table = await map_entity_to_table(intent.get("entity"), full_schema)
     elapsed6 = round(time.time() - start, 3)
     print(
     "ENTITY MAPPING TIME:", elapsed6 )
-    log_data["timings"]["entity_mapping_time"] = elapsed6
+    timings["entity_mapping_time"] = elapsed6
     relevant_tables = list(set([col[0] for col in stored_columns]))
     start = time.time()
     graph = await build_graph()
     elapsed7 = round(time.time() - start, 3)
     print(
     "GRAPH BUILD TIME:", elapsed7)
-    log_data["timings"]["graph_build_time"] = elapsed7
+    timings["graph_build_time"] = elapsed7
     start = time.time()
-    expanded_tables = set(relevant_tables)
+    with telemetry.pipeline_stage(
+    PipelineStages.GRAPH_EXPANSION
+    ):
+        expanded_tables = set(relevant_tables)
+        for table in relevant_tables:
+
+            connected_tables = graph.get(table, [])
+
+            for connected in connected_tables:
+                expanded_tables.add(connected)
     elapsed8 = round(time.time() - start, 3)
-    for table in relevant_tables:
-
-        connected_tables = graph.get(table, [])
-
-        for connected in connected_tables:
-            expanded_tables.add(connected)
     print(
     "GRAPH EXPANSION TIME:", elapsed8)
-    log_data["timings"]["graph_expansion_time"] = elapsed8
+    timings["graph_expansion_time"] = elapsed8
     relevant_tables = list(expanded_tables)
     orchestration_trace["expanded_tables"] = relevant_tables
     print("EXPANDED TABLES:", relevant_tables)
@@ -292,7 +310,7 @@ async def run_sql_agent(user_question: str, context=None):
     state.entity = entity_table
     print(
     "STATE BUILD TIME:", elapsed9)
-    log_data["timings"]["state_build_time"] = elapsed9
+    timings["state_build_time"] = elapsed9
     # --------------------------------
     # Inject conversational context
     # into structured analytical state
@@ -364,7 +382,7 @@ async def run_sql_agent(user_question: str, context=None):
         if entity_table not in relevant_tables:
             relevant_tables.append(entity_table)
     # extract tables from column results
-    
+
     # compute confidence using column distances
     confidence = compute_confidence([(c[0], c[3]) for c in stored_columns])
 
@@ -383,7 +401,7 @@ async def run_sql_agent(user_question: str, context=None):
     elapsed10 = round(time.time() - start, 3)
     print(
     "MISSING DETECTION TIME:", elapsed10)
-    log_data["timings"]["missing_detection_time"] = elapsed10
+    timings["missing_detection_time"] = elapsed10
 
     print("MISSING:", missing)
 
@@ -410,18 +428,20 @@ async def run_sql_agent(user_question: str, context=None):
     if not missing:
 
         from services.business_intent_service import resolve_business_intent
-        
-        business_intent = await resolve_business_intent(
-            user_question=user_question,
-            state=state,
-            schema=schema,
-            metadata_context=metadata_context)
+        with telemetry.pipeline_stage(
+    PipelineStages.BUSINESS_INTENT
+    ):
+            business_intent = await resolve_business_intent(
+                user_question=user_question,
+                state=state,
+                schema=schema,
+                metadata_context=metadata_context)
         print("\n========== BUSINESS INTENT RETURN ==========")
         print(business_intent)
         print("Keys:", business_intent.keys())
         print("Elapsed:", business_intent.get("elapsed"))
         print("==========================================\n")
-        log_data["timings"]["business_intent"] = business_intent["elapsed"]  
+        timings["business_intent"] = business_intent["elapsed"]
         orchestration_trace["business_intent"] = business_intent
         print("BUSINESS INTENT:", business_intent)
         ##
@@ -491,33 +511,38 @@ async def run_sql_agent(user_question: str, context=None):
              relationship_text=relationship_text
         )
          """
-
+        async def run_telemetry_stage(stage, operation):
+            with telemetry.pipeline_stage(stage):
+                return await operation
         analysis_plan, reasoning_trace, capability_result = await asyncio.gather(
-
-                generate_analysis_plan(
-                    user_question=user_question,
-                    state=state,
-                    schema=schema,
-                    relationship_text=relationship_text
-                ),
-
-                generate_reasoning_trace(
-                    user_question,
-                    state,
-                    schema,
-                    relationship_text
-                ),
-
-                validate_analytical_capability(
-                    user_question=user_question,
-                    state=state,
-                    schema=schema
-                )
+                run_telemetry_stage(
+                    PipelineStages.ANALYSIS_PLANNER,
+                    generate_analysis_plan(
+                        user_question=user_question,
+                        state=state,
+                        schema=schema,
+                        relationship_text=relationship_text)
+                    ),
+                run_telemetry_stage(
+                    PipelineStages.REASONING,
+                    generate_reasoning_trace(
+                        user_question,
+                        state,
+                        schema,
+                        relationship_text)
+                    ),
+                run_telemetry_stage(
+                    PipelineStages.CAPABILITY_VALIDATION,
+                    validate_analytical_capability(
+                        user_question=user_question,
+                        state=state,
+                        schema=schema)
+                    )
             )
 
         # ---------- Analysis Planner ----------
 
-        log_data["timings"]["analysis_planner"] = analysis_plan.pop("elapsed", 0)
+        timings["analysis_planner"] = analysis_plan.pop("elapsed", 0)
 
         orchestration_trace["analysis_plan"] = analysis_plan
 
@@ -530,12 +555,12 @@ async def run_sql_agent(user_question: str, context=None):
 
         # ---------- Reasoning ----------
 
-        log_data["timings"]["reasoning"] = reasoning_trace.pop("elapsed", 0)
+        timings["reasoning"] = reasoning_trace.pop("elapsed", 0)
 
         orchestration_trace["reasoning_trace"] = reasoning_trace
 
         print("REASONING TRACE:", reasoning_trace)
-            
+
 
         if TEST_SKIP_EXECUTION_PLANNER:
 
@@ -558,10 +583,10 @@ async def run_sql_agent(user_question: str, context=None):
                     relationship_text
                 )
             )
-            
+
 
         #execution_plan = generate_execution_plan(user_question,state,schema,reasoning_trace,relationship_text)
-        
+
 
     # --------------------------------
     # Validate analytical feasibility
@@ -569,7 +594,7 @@ async def run_sql_agent(user_question: str, context=None):
 
     # ... after analysis_plan and reasoning_trace are collected ...
 
-    log_data["timings"]["capability_validator"] = capability_result.pop("elapsed", 0)
+    timings["capability_validator"] = capability_result.pop("elapsed", 0)
 
     orchestration_trace["capability_result"] = capability_result
 
@@ -607,30 +632,54 @@ async def run_sql_agent(user_question: str, context=None):
             print("generate_sql_from_state =", generate_sql_from_state)
             print("iscoroutinefunction =", inspect.iscoroutinefunction(generate_sql_from_state))
             print("module =", generate_sql_from_state.__module__)
+
+
             if execution_plan_task is not None:
+
                 execution_plan = await execution_plan_task
+
+                timings["execution_planner"] = execution_plan.pop(
+                    "elapsed", 0
+                )
+
                 orchestration_trace["execution_plan"] = execution_plan
+
                 print("EXECUTION PLAN:", execution_plan)
-            sql_result = await generate_sql_from_state(
-                state,
-                schema,
-                reasoning_trace=reasoning_trace,
-                execution_plan=execution_plan,
-                retry_guidance=retry_guidance
-                
-            )
+
+
+            with telemetry.pipeline_stage(
+                    PipelineStages.SQL_GENERATION
+                ):
+                sql_result = await generate_sql_from_state(
+                    state,
+                    schema,
+                    reasoning_trace=reasoning_trace,
+                    execution_plan=execution_plan,
+                    retry_guidance=retry_guidance
+
+                )
 
             print(type(sql_result))
             print(sql_result)
-            log_data["timings"]["sql_generation"] = sql_result.pop("elapsed", 0)
+            timings["sql_generation"] = sql_result.pop("elapsed", 0)
             sql = sql_result["sql"]
 
             # 2️⃣ Validate SQL (syntax + forbidden ops)
             validate_query(sql)
 
             # 3️⃣ Review SQL logic
-            review = await review_sql(user_question, sql, schema, state,reasoning_trace)
-            log_data["timings"]["sql_review"] = review.pop("elapsed", 0)
+            with TelemetryStageContext(PipelineStages.SQL_REVIEW):
+
+                review = await review_sql(
+                    user_question,
+                    sql,
+                    schema,
+                    state,
+                    reasoning_trace
+                )
+
+            timings["sql_review"] = review.pop("elapsed", 0)
+
             print("Generated SQL:", sql)
             orchestration_trace["review_result"] = review
             print("Review result:", review)
@@ -643,15 +692,22 @@ async def run_sql_agent(user_question: str, context=None):
                 }
                 elapsed = round(time.time() - overall_start, 3)
 
-                log_data["timings"]["total_pipeline_time"] = elapsed
+                timings["total_pipeline_time"] = elapsed
 
                 print("TOTAL PIPELINE TIME:", elapsed)
-                finalize_request(
-                    log_data,
-                    sql,
-                    response,
-                    attempt
+
+
+                telemetry.request_failed(
+                    metadata={
+                        "reason": "invalid_query",
+                        "status": response.get("status"),
+                        "error": response.get("error"),
+                        "attempts": attempt + 1,
+                        "total_pipeline_time": elapsed,
+                    }
                 )
+
+
                 return response
             # 🔥 REVIEW FAILURE → DIMENSION-AWARE RETRY
             if not review["valid"]:
@@ -716,7 +772,7 @@ async def run_sql_agent(user_question: str, context=None):
 
             TREND DEFINITION:
             {state.trend_definition}
-           
+
             """
 
                 last_error = combined_review_feedback
@@ -727,13 +783,21 @@ async def run_sql_agent(user_question: str, context=None):
                 print("REGENERATING SQL...")
                 sql = None
                 continue
-            
+
             # 4️⃣ Execute ONLY valid SQL
             orchestration_trace["generated_sql"] = sql
+            execution_start = time.time()
             result = await run_query(sql)
+            execution_elapsed = round(
+                time.time() - execution_start,
+                3,
+            )
+
+            timings["sql_execution"] = execution_elapsed
 
             if result["status"] == "success":
-
+                rows_returned = len(result["data"])
+                timings["sql_rows_returned"] = rows_returned
                 try:
 
                     if not result["data"]:
@@ -754,13 +818,13 @@ async def run_sql_agent(user_question: str, context=None):
                         print("TYPE:", type(explain_result))
                         print("IS COROUTINE:", inspect.iscoroutinefunction(explain_result))
 
-                        log_data["timings"]["explanation"] = explanation_result.pop("elapsed", 0)
+                        timings["explanation"] = explanation_result.pop("elapsed", 0)
 
                         explanation = explanation_result["explanation"]
 
 
                 except Exception as explanation_error:
-                
+
                     print("Explanation generation failed:", explanation_error)
                     traceback.print_exc()
                     explanation = (
@@ -769,7 +833,7 @@ async def run_sql_agent(user_question: str, context=None):
                     )
                 orchestration_trace["explanation"] = explanation
                 print("Explanation:", explanation)
-                
+
                 response = {
                     "status": "success",
                     "sql": sql,
@@ -779,15 +843,22 @@ async def run_sql_agent(user_question: str, context=None):
                 }
                 elapsed = round(time.time() - overall_start, 3)
 
-                log_data["timings"]["total_pipeline_time"] = elapsed
+                timings["total_pipeline_time"] = elapsed
 
                 print("TOTAL PIPELINE TIME:", elapsed)
-                finalize_request(
-                            log_data,
-                            sql,
-                            response,
-                            attempt + 1
-                        )
+                telemetry.request_completed(
+                metadata={
+                    "status": response.get("status"),
+                    "attempts": attempt + 1,
+                    "total_pipeline_time": elapsed,
+                    "generated_sql": sql,
+                    "sql_execution": timings.get("sql_execution", 0),
+                    "sql_rows_returned": timings.get(
+                        "sql_rows_returned",
+                        0,
+                    ),
+                }
+            )
 
                 return response
 
@@ -808,15 +879,17 @@ async def run_sql_agent(user_question: str, context=None):
                 }
                 elapsed = round(time.time() - overall_start, 3)
 
-                log_data["timings"]["total_pipeline_time"] = elapsed
+                timings["total_pipeline_time"] = elapsed
                 print("TOTAL PIPELINE TIME:", elapsed)
-                finalize_request(
-                            log_data,
-                            sql,
-                            response,
-                            attempt + 1
-                        )
-
+                telemetry.request_failed(
+                        metadata={
+                            "reason": "forbidden_operation",
+                            "status": response.get("status"),
+                            "error": response.get("error"),
+                            "attempts": attempt + 1,
+                            "total_pipeline_time": elapsed,
+                        }
+                    )
                 return response
 
             last_error = str(e)
@@ -831,15 +904,18 @@ async def run_sql_agent(user_question: str, context=None):
         "orchestration_trace": orchestration_trace
     }
     elapsed11 = round(time.time() - overall_start, 3)
-    log_data["timings"]["total_pipeline_time"] = elapsed11
-    finalize_request(
-    log_data,
-    sql,
-    response,
-    attempt
-)
-    
-    
+    timings["total_pipeline_time"] = elapsed11
+    telemetry.request_failed(
+            metadata={
+                "reason": "pipeline_failed_after_retries",
+                "status": response.get("status"),
+                "error": response.get("error"),
+                "attempts": attempt,
+                "total_pipeline_time": elapsed11,
+            }
+        )
+
+
     print(
     "TOTAL PIPELINE TIME:", elapsed11)
     return response
