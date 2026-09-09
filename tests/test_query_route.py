@@ -28,39 +28,31 @@ async def test_query_route_new_query_orchestrates_dependencies():
         with patch(
             "app.api.routes.query.session_exists",
             new=AsyncMock(return_value=False),
-        ) as mock_session_exists, \
-            patch(
-                "app.api.routes.query.create_session",
-                new=AsyncMock(),
-            ) as mock_create_session, \
-            patch(
-                "app.api.routes.query.get_current_query",
-                new=AsyncMock(return_value=None),
-            ), \
-            patch(
-                "app.api.routes.query.get_context",
-                new=AsyncMock(return_value={}),
-            ), \
-            patch(
-                "app.api.routes.query.set_current_query",
-                new=AsyncMock(),
-            ) as mock_set_current_query, \
-            patch(
-                "app.api.routes.query.set_context",
-                new=AsyncMock(),
-            ) as mock_set_context, \
-            patch(
-                "app.api.routes.query.classify_intent_continuation",
-                return_value={"intent_type": "new_query"},
-            ), \
-            patch(
-                "app.api.routes.query.parse_user_response",
-                return_value={},
-            ), \
-            patch(
-                "app.api.routes.query.run_sql_agent",
-                new=AsyncMock(return_value=fake_result),
-            ) as mock_run_sql_agent:
+        ) as mock_session_exists, patch(
+            "app.api.routes.query.create_session",
+            new=AsyncMock(),
+        ) as mock_create_session, patch(
+            "app.api.routes.query.get_current_query",
+            new=AsyncMock(return_value=None),
+        ), patch(
+            "app.api.routes.query.get_context",
+            new=AsyncMock(return_value={}),
+        ), patch(
+            "app.api.routes.query.set_current_query",
+            new=AsyncMock(),
+        ) as mock_set_current_query, patch(
+            "app.api.routes.query.set_context",
+            new=AsyncMock(),
+        ) as mock_set_context, patch(
+            "app.api.routes.query.classify_intent_continuation",
+            return_value={"intent_type": "new_query"},
+        ), patch(
+            "app.api.routes.query.parse_user_response",
+            return_value={},
+        ), patch(
+            "app.api.routes.query.run_sql_agent",
+            new=AsyncMock(return_value=fake_result),
+        ) as mock_run_sql_agent:
 
             response = await query_agent(
                 QueryRequest(
@@ -103,6 +95,131 @@ async def test_query_route_new_query_orchestrates_dependencies():
         }
 
         assert response["trace_log"]["refined_query"] == user_input
+
+    finally:
+        clear_request_context()
+
+
+@pytest.mark.anyio
+async def test_query_route_continuation_updates_context_and_refines_query():
+    session_id = "test-session"
+    previous_query = "show sales by region"
+    user_input = "only for last month"
+
+    initial_context = {
+        "existing_key": "existing-value",
+    }
+
+    continuation_result = {
+        "refined_query": "show sales by region for last month",
+        "group_by": "region",
+        "time_granularity": "month",
+        "filter_condition": "last month",
+        "metric_refinement": "sales",
+    }
+
+    context = create_request_context(session_id=session_id)
+    set_request_context(context)
+
+    fake_result = {
+        "status": "success",
+        "sql": "SELECT 1",
+        "data": [(100,)],
+    }
+
+    try:
+        with patch(
+            "app.api.routes.query.session_exists",
+            new=AsyncMock(return_value=True),
+        ) as mock_session_exists, patch(
+            "app.api.routes.query.get_current_query",
+            new=AsyncMock(return_value=previous_query),
+        ), patch(
+            "app.api.routes.query.get_context",
+            new=AsyncMock(side_effect=[
+                initial_context.copy(),
+                {
+                    **initial_context,
+                    **{
+                        "group_by": "region",
+                        "time_granularity": "month",
+                        "filter_condition": "last month",
+                        "metric_refinement": "sales",
+                    },
+                },
+            ]),
+        ), patch(
+            "app.api.routes.query.set_current_query",
+            new=AsyncMock(),
+        ) as mock_set_current_query, patch(
+            "app.api.routes.query.set_context",
+            new=AsyncMock(),
+        ) as mock_set_context, patch(
+            "app.api.routes.query.classify_intent_continuation",
+            return_value={"intent_type": "continuation"},
+        ), patch(
+            "app.api.routes.query.interpret_continuation",
+            return_value=continuation_result,
+        ) as mock_interpret_continuation, patch(
+            "app.api.routes.query.parse_user_response",
+            return_value={},
+        ), patch(
+            "app.api.routes.query.run_sql_agent",
+            new=AsyncMock(return_value=fake_result),
+        ) as mock_run_sql_agent:
+
+            response = await query_agent(
+                QueryRequest(
+                    message=user_input,
+                    session_id=session_id,
+                )
+            )
+
+        mock_session_exists.assert_awaited_once_with(session_id)
+
+        mock_interpret_continuation.assert_called_once_with(
+            previous_query=previous_query,
+            continuation_input=user_input,
+        )
+
+        mock_set_current_query.assert_awaited_once_with(
+            session_id,
+            continuation_result["refined_query"],
+        )
+
+        assert mock_set_context.await_count == 2
+
+        mock_run_sql_agent.assert_awaited_once_with(
+            continuation_result["refined_query"],
+            context={
+                "existing_key": "existing-value",
+                "group_by": "region",
+                "time_granularity": "month",
+                "filter_condition": "last month",
+                "metric_refinement": "sales",
+            },
+        )
+
+        assert response["status"] == "success"
+        assert response["session_id"] == session_id
+
+        assert response["trace_log"]["intent_result"] == {
+            "intent_type": "continuation"
+        }
+
+        assert response["trace_log"]["continuation_result"] == continuation_result
+
+        assert response["trace_log"]["refined_query"] == (
+            "show sales by region for last month"
+        )
+
+        assert response["context"] == {
+            "existing_key": "existing-value",
+            "group_by": "region",
+            "time_granularity": "month",
+            "filter_condition": "last month",
+            "metric_refinement": "sales",
+        }
 
     finally:
         clear_request_context()

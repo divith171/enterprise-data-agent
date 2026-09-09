@@ -1,15 +1,24 @@
 import os
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, patch
+
 import pytest
+
 os.environ["OPENAI_API_KEY"] = "test-key"
 os.environ["ANTHROPIC_API_KEY"] = "test-key"
+
 from observability.context import (
     clear_request_context,
     create_request_context,
     set_request_context,
 )
-from services.llm_gateway import _anthropic_chat, _openai_chat
+from services.llm_gateway import (
+    LLMGatewayError,
+    MAX_RETRIES,
+    _anthropic_chat,
+    _execute_with_retry,
+    _openai_chat,
+)
 
 
 @pytest.mark.anyio
@@ -114,3 +123,71 @@ async def test_anthropic_chat_emits_llm_telemetry():
 
     finally:
         clear_request_context()
+
+
+@pytest.mark.anyio
+async def test_execute_with_retry_retries_then_succeeds():
+    from httpx import Request, Response
+    from openai import RateLimitError
+
+    attempts = 0
+
+    async def operation():
+        nonlocal attempts
+        attempts += 1
+
+        if attempts < 3:
+            request = Request("POST", "https://api.openai.com/v1/test")
+            response = Response(429, request=request)
+
+            raise RateLimitError(
+                "rate limited",
+                response=response,
+                body=None,
+            )
+
+        return "success"
+
+    with patch("services.llm_gateway.asyncio.sleep", new=AsyncMock()):
+        result = await _execute_with_retry(
+            operation=operation,
+            provider="OpenAI",
+            model="gpt-4.1",
+        )
+
+    assert result == "success"
+    assert attempts == 3
+
+
+@pytest.mark.anyio
+async def test_execute_with_retry_raises_after_max_retries():
+    from httpx import Request, Response
+    from openai import RateLimitError
+
+    attempts = 0
+
+    async def operation():
+        nonlocal attempts
+        attempts += 1
+
+        request = Request("POST", "https://api.openai.com/v1/test")
+        response = Response(429, request=request)
+
+        raise RateLimitError(
+            "rate limited",
+            response=response,
+            body=None,
+        )
+
+    with patch("services.llm_gateway.asyncio.sleep", new=AsyncMock()):
+        with pytest.raises(LLMGatewayError) as exc_info:
+            await _execute_with_retry(
+                operation=operation,
+                provider="OpenAI",
+                model="gpt-4.1",
+            )
+
+    assert attempts == MAX_RETRIES
+    assert exc_info.value.provider == "OpenAI"
+    assert exc_info.value.model == "gpt-4.1"
+    assert exc_info.value.message == "rate limited"
