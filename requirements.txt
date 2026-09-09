@@ -71,3 +71,4 @@ wsproto==1.3.2
 zope.event==6.2
 zope.interface==8.5
 pydantic
+pytest-asyncio==1.4.0
