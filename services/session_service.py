@@ -6,15 +6,28 @@ from services.redis_service import get_redis_client
 SESSION_TTL = 60 * 60  # 1 hour
 
 
-async def create_session(session_id, initial_data=None):
+async def create_session(
+    session_id,
+    user_id,
+    company_id,
+    data_source_id,
+    initial_data=None,
+):
     if initial_data is None:
         initial_data = {}
+
+    session_data = {
+        "user_id": str(user_id),
+        "company_id": str(company_id),
+        "data_source_id": str(data_source_id),
+        **initial_data,
+    }
 
     redis_client = get_redis_client()
 
     await redis_client.set(
         session_id,
-        json.dumps(initial_data),
+        json.dumps(session_data),
         ex=SESSION_TTL
     )
 
@@ -29,6 +42,17 @@ async def _get_session(session_id):
 
     return json.loads(data)
 
+
+async def session_belongs_to_user(
+    session_id,
+    user_id,
+) -> bool:
+    session = await _get_session(session_id)
+
+    if session is None:
+        return False
+
+    return session.get("user_id") == str(user_id)
 
 async def _update_session(session_id, data):
     redis_client = get_redis_client()

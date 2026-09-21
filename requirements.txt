@@ -72,3 +72,4 @@ zope.event==6.2
 zope.interface==8.5
 pydantic
 pytest-asyncio==1.4.0
+argon2-cffi==25.1.0
