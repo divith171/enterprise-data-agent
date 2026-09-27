@@ -1,3 +1,4 @@
+from observability.debug import debug_print
 import json
 import time
 from openai import OpenAI
@@ -119,8 +120,8 @@ Never change the analytical definition supplied upstream.
     prompt=prompt
     )
     elapsed = round(time.time() - start, 2)
-    print("REASONING TIME:", elapsed, "seconds")
-    print("REASONING TRACE RAW:", content)
+    debug_print("REASONING TIME:", elapsed, "seconds")
+    debug_print("REASONING TRACE RAW:", content)
 
     try:
 
@@ -138,7 +139,7 @@ Never change the analytical definition supplied upstream.
 
     except Exception as e:
 
-        print("REASONING TRACE PARSE ERROR:", e)
+        debug_print("REASONING TRACE PARSE ERROR:", e)
 
         result =  {
             "reasoning_steps": [],

@@ -1,3 +1,4 @@
+from observability.debug import debug_print
 import json
 from openai import OpenAI
 import os
@@ -93,7 +94,7 @@ OUTPUT:
 
     content = response.choices[0].message.content.strip()
 
-    print("CONTINUATION RAW:", content)
+    debug_print("CONTINUATION RAW:", content)
 
     try:
 
@@ -107,7 +108,7 @@ OUTPUT:
 
     except Exception as e:
 
-        print("CONTINUATION PARSE ERROR:", e)
+        debug_print("CONTINUATION PARSE ERROR:", e)
 
         return {
             "refined_query":

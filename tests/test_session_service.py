@@ -33,6 +33,9 @@ async def test_create_session_and_retrieve_data():
     ):
         await session_service.create_session(
             "session-1",
+            "user-1",
+            "company-1",
+            "data-source-1",
             {
                 "current_query": "show sales",
                 "context": {"region": "west"},
@@ -60,6 +63,9 @@ async def test_set_current_query_updates_existing_session():
     ):
         await session_service.create_session(
             "session-1",
+            "user-1",
+            "company-1",
+            "data-source-1",
             {
                 "current_query": "old query",
                 "context": {"region": "west"},
@@ -88,6 +94,9 @@ async def test_set_context_updates_existing_session():
     ):
         await session_service.create_session(
             "session-1",
+            "user-1",
+            "company-1",
+            "data-source-1",
             {
                 "current_query": "show sales",
                 "context": {},
@@ -119,6 +128,9 @@ async def test_delete_session_removes_session():
     ):
         await session_service.create_session(
             "session-1",
+            "user-1",
+            "company-1",
+            "data-source-1",
             {
                 "current_query": "show sales",
                 "context": {},

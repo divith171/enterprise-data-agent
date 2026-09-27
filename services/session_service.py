@@ -54,6 +54,23 @@ async def session_belongs_to_user(
 
     return session.get("user_id") == str(user_id)
 
+async def session_matches_scope(
+    session_id,
+    user_id,
+    company_id,
+    data_source_id,
+) -> bool:
+    session = await _get_session(session_id)
+
+    if session is None:
+        return False
+
+    return (
+        session.get("user_id") == str(user_id)
+        and session.get("company_id") == str(company_id)
+        and session.get("data_source_id") == str(data_source_id)
+    )
+
 async def _update_session(session_id, data):
     redis_client = get_redis_client()
 

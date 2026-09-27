@@ -3,6 +3,7 @@ from services.schema_service import get_schema,get_schema_with_types
 from tools.sql_tool import run_query
 from tools.query_validator import validate_query, QueryValidationError
 from openai import OpenAI
+from observability.debug import debug_print
 import os
 import traceback
 import time
@@ -19,6 +20,7 @@ from services.state import QueryState
 from services.embedding_service import get_relevant_columns
 #from observability.logger import start_request, finalize_request
 from services.explanation_service import explain_result
+from services.explanation_context_service import build_explanation_context
 from services.intent_guardrail import check_user_intent, IntentViolation
 from services.interpretation_service import detect_ambiguities,map_entity_to_table,extract_intent,expand_concepts,map_concepts_to_columns
 from utils.profiler import StageProfiler
@@ -200,7 +202,7 @@ async def run_sql_agent(user_question: str, context=None,data_source=None,):
         full_schema = await get_schema()
         relationship_text = await build_relationship_text()
     elapsed = round(time.time() - start, 3)
-    print(   "SCHEMA LOAD TIME:",   elapsed)
+    debug_print(   "SCHEMA LOAD TIME:",   elapsed)
     timings["schema_load"] = elapsed
     start = time.time()
 
@@ -226,11 +228,11 @@ async def run_sql_agent(user_question: str, context=None,data_source=None,):
 
         elapsed1 = round(time.time() - start, 3)
 
-        print("QUERY EXPANSION TIME:", elapsed1)
+        debug_print("QUERY EXPANSION TIME:", elapsed1)
 
         timings["query_expansion_time"] = elapsed1
 
-        print("Expanded terms:", expanded_terms)
+        debug_print("Expanded terms:", expanded_terms)
 
         search_query = user_question + " " + " ".join(expanded_terms)
 
@@ -246,17 +248,17 @@ async def run_sql_agent(user_question: str, context=None,data_source=None,):
     for table, column, description, score
     in stored_columns
     ])
-    print("\nMETADATA CONTEXT:")
-    print(metadata_context)
-    print(
+    debug_print("\nMETADATA CONTEXT:")
+    debug_print(metadata_context)
+    debug_print(
     "EMBEDDING RETRIEVAL TIME:", elapsed2)
     timings["embedding_retrieval_time"] = elapsed2
-    print("\nRETRIEVED COLUMN METADATA:")
+    debug_print("\nRETRIEVED COLUMN METADATA:")
     for row in stored_columns:
-        print(row)
+        debug_print(row)
 
     query_type_result = await query_type_task
-    print("QUERY TYPE:", query_type_result)
+    debug_print("QUERY TYPE:", query_type_result)
     schema_with_types = await get_schema_with_types()
     start = time.time()
     intent = await intent_task
@@ -265,7 +267,7 @@ async def run_sql_agent(user_question: str, context=None,data_source=None,):
     ):
         concept_mappings = map_concepts_to_columns(intent, stored_columns,schema_with_types)
     elapsed5 = round(time.time() - start, 3)
-    print(
+    debug_print(
     "CONCEPT MAPPING TIME:", elapsed5)
     timings["concept_mapping_time"] = elapsed5
     start = time.time()
@@ -274,14 +276,14 @@ async def run_sql_agent(user_question: str, context=None,data_source=None,):
     ):
         entity_table = await map_entity_to_table(intent.get("entity"), full_schema)
     elapsed6 = round(time.time() - start, 3)
-    print(
+    debug_print(
     "ENTITY MAPPING TIME:", elapsed6 )
     timings["entity_mapping_time"] = elapsed6
     relevant_tables = list(set([col[0] for col in stored_columns]))
     start = time.time()
     graph = await build_graph()
     elapsed7 = round(time.time() - start, 3)
-    print(
+    debug_print(
     "GRAPH BUILD TIME:", elapsed7)
     timings["graph_build_time"] = elapsed7
     start = time.time()
@@ -296,19 +298,19 @@ async def run_sql_agent(user_question: str, context=None,data_source=None,):
             for connected in connected_tables:
                 expanded_tables.add(connected)
     elapsed8 = round(time.time() - start, 3)
-    print(
+    debug_print(
     "GRAPH EXPANSION TIME:", elapsed8)
     timings["graph_expansion_time"] = elapsed8
     relevant_tables = list(expanded_tables)
     orchestration_trace["expanded_tables"] = relevant_tables
-    print("EXPANDED TABLES:", relevant_tables)
+    debug_print("EXPANDED TABLES:", relevant_tables)
     start = time.time()
     state = QueryState()
     elapsed9 = round(time.time() - start, 3)
     state.query_type = query_type_result.get("query_type")
     # entity
     state.entity = entity_table
-    print(
+    debug_print(
     "STATE BUILD TIME:", elapsed9)
     timings["state_build_time"] = elapsed9
     # --------------------------------
@@ -360,11 +362,11 @@ async def run_sql_agent(user_question: str, context=None,data_source=None,):
 
         state.entity = inferred_table
 
-        print("INFERRED ENTITY:", inferred_table)
+        debug_print("INFERRED ENTITY:", inferred_table)
 
     # metric (best mapped column)
     if concept_mappings:
-        print( "SETTING METRIC FROM:",concept_mappings)
+        debug_print( "SETTING METRIC FROM:",concept_mappings)
         state.metric = concept_mappings[0][1]
 
     # context → state
@@ -373,11 +375,11 @@ async def run_sql_agent(user_question: str, context=None,data_source=None,):
         state.comparison = context.get("operator")
         state.time = context.get("time_range")
     orchestration_trace["state"] = state.to_dict()
-    print("STATE:", state.to_dict())
+    debug_print("STATE:", state.to_dict())
 
     if entity_table:
-        print("Detected entity:", intent.get("entity"))
-        print("Mapped entity table:", entity_table)
+        debug_print("Detected entity:", intent.get("entity"))
+        debug_print("Mapped entity table:", entity_table)
     # ensure entity table is included in relevant tables
         if entity_table not in relevant_tables:
             relevant_tables.append(entity_table)
@@ -386,24 +388,24 @@ async def run_sql_agent(user_question: str, context=None,data_source=None,):
     # compute confidence using column distances
     confidence = compute_confidence([(c[0], c[3]) for c in stored_columns])
 
-    print("Top columns:", stored_columns)
-    print(
+    debug_print("Top columns:", stored_columns)
+    debug_print(
     "CONCEPT MAPPINGS:",
     concept_mappings
     )
-    print("Relevant tables:", relevant_tables)
-    print("Confidence:", confidence)
+    debug_print("Relevant tables:", relevant_tables)
+    debug_print("Confidence:", confidence)
 
     schema = {table: full_schema[table] for table in relevant_tables if table in full_schema}
-    print("Selected schema:", schema)
+    debug_print("Selected schema:", schema)
     start = time.time()
     missing = detect_missing(state, user_question)
     elapsed10 = round(time.time() - start, 3)
-    print(
+    debug_print(
     "MISSING DETECTION TIME:", elapsed10)
     timings["missing_detection_time"] = elapsed10
 
-    print("MISSING:", missing)
+    debug_print("MISSING:", missing)
 
     if missing:
         questions = []
@@ -436,14 +438,14 @@ async def run_sql_agent(user_question: str, context=None,data_source=None,):
                 state=state,
                 schema=schema,
                 metadata_context=metadata_context)
-        print("\n========== BUSINESS INTENT RETURN ==========")
-        print(business_intent)
-        print("Keys:", business_intent.keys())
-        print("Elapsed:", business_intent.get("elapsed"))
-        print("==========================================\n")
+        debug_print("\n========== BUSINESS INTENT RETURN ==========")
+        debug_print(business_intent)
+        debug_print("Keys:", business_intent.keys())
+        debug_print("Elapsed:", business_intent.get("elapsed"))
+        debug_print("==========================================\n")
         timings["business_intent"] = business_intent["elapsed"]
         orchestration_trace["business_intent"] = business_intent
-        print("BUSINESS INTENT:", business_intent)
+        debug_print("BUSINESS INTENT:", business_intent)
         ##
         # --------------------------------
         # TERMINAL CLARIFICATION ROUTING
@@ -546,7 +548,7 @@ async def run_sql_agent(user_question: str, context=None,data_source=None,):
 
         orchestration_trace["analysis_plan"] = analysis_plan
 
-        print("ANALYSIS PLAN:", analysis_plan)
+        debug_print("ANALYSIS PLAN:", analysis_plan)
 
         state.analysis_type = analysis_plan.get("analysis_type")
         state.time_granularity = analysis_plan.get("time_granularity")
@@ -559,7 +561,7 @@ async def run_sql_agent(user_question: str, context=None,data_source=None,):
 
         orchestration_trace["reasoning_trace"] = reasoning_trace
 
-        print("REASONING TRACE:", reasoning_trace)
+        debug_print("REASONING TRACE:", reasoning_trace)
 
 
         if TEST_SKIP_EXECUTION_PLANNER:
@@ -570,7 +572,7 @@ async def run_sql_agent(user_question: str, context=None,data_source=None,):
 
             execution_plan_task = None
 
-            print("EXECUTION PLANNER SKIPPED")
+            debug_print("EXECUTION PLANNER SKIPPED")
 
         else:
 
@@ -598,7 +600,7 @@ async def run_sql_agent(user_question: str, context=None,data_source=None,):
 
     orchestration_trace["capability_result"] = capability_result
 
-    print("CAPABILITY RESULT:", capability_result)
+    debug_print("CAPABILITY RESULT:", capability_result)
 
     if not capability_result.get("feasible", True):
 
@@ -629,9 +631,9 @@ async def run_sql_agent(user_question: str, context=None,data_source=None,):
         try:
 
             # 1️⃣ Generate SQL
-            print("generate_sql_from_state =", generate_sql_from_state)
-            print("iscoroutinefunction =", inspect.iscoroutinefunction(generate_sql_from_state))
-            print("module =", generate_sql_from_state.__module__)
+            debug_print("generate_sql_from_state =", generate_sql_from_state)
+            debug_print("iscoroutinefunction =", inspect.iscoroutinefunction(generate_sql_from_state))
+            debug_print("module =", generate_sql_from_state.__module__)
 
 
             if execution_plan_task is not None:
@@ -644,7 +646,7 @@ async def run_sql_agent(user_question: str, context=None,data_source=None,):
 
                 orchestration_trace["execution_plan"] = execution_plan
 
-                print("EXECUTION PLAN:", execution_plan)
+                debug_print("EXECUTION PLAN:", execution_plan)
 
 
             with telemetry.pipeline_stage(
@@ -659,8 +661,8 @@ async def run_sql_agent(user_question: str, context=None,data_source=None,):
 
                 )
 
-            print(type(sql_result))
-            print(sql_result)
+            debug_print(type(sql_result))
+            debug_print(sql_result)
             timings["sql_generation"] = sql_result.pop("elapsed", 0)
             sql = sql_result["sql"]
 
@@ -680,9 +682,9 @@ async def run_sql_agent(user_question: str, context=None,data_source=None,):
 
             timings["sql_review"] = review.pop("elapsed", 0)
 
-            print("Generated SQL:", sql)
+            debug_print("Generated SQL:", sql)
             orchestration_trace["review_result"] = review
-            print("Review result:", review)
+            debug_print("Review result:", review)
 
             if sql.strip() == "INVALID_QUERY":
                 response = {
@@ -694,7 +696,7 @@ async def run_sql_agent(user_question: str, context=None,data_source=None,):
 
                 timings["total_pipeline_time"] = elapsed
 
-                print("TOTAL PIPELINE TIME:", elapsed)
+                debug_print("TOTAL PIPELINE TIME:", elapsed)
 
 
                 telemetry.request_failed(
@@ -712,7 +714,7 @@ async def run_sql_agent(user_question: str, context=None,data_source=None,):
             # 🔥 REVIEW FAILURE → DIMENSION-AWARE RETRY
             if not review["valid"]:
 
-                print("Review failed. Retrying...")
+                debug_print("Review failed. Retrying...")
 
                 failed_reasons = []
 
@@ -778,9 +780,9 @@ async def run_sql_agent(user_question: str, context=None,data_source=None,):
                 last_error = combined_review_feedback
 
                 attempt += 1
-                print("RETRY GUIDANCE:")
-                print(retry_guidance)
-                print("REGENERATING SQL...")
+                debug_print("RETRY GUIDANCE:")
+                debug_print(retry_guidance)
+                debug_print("REGENERATING SQL...")
                 sql = None
                 continue
 
@@ -804,19 +806,22 @@ async def run_sql_agent(user_question: str, context=None,data_source=None,):
                         explanation = "No results found for the given query."
 
                     else:
-                        print("=" * 60)
-                        print("EXPLAIN FUNCTION:", explain_result)
-                        print("MODULE:", explain_result.__module__)
-                        print("COROUTINE:", inspect.iscoroutinefunction(explain_result))
-                        print("=" * 60)
+                        debug_print("=" * 60)
+                        debug_print("EXPLAIN FUNCTION:", explain_result)
+                        debug_print("MODULE:", explain_result.__module__)
+                        debug_print("COROUTINE:", inspect.iscoroutinefunction(explain_result))
+                        debug_print("=" * 60)
+                        protected_context = build_explanation_context(
+                            columns=result.get("columns", []),
+                            rows=result["data"],
+                        )
                         explanation_result =  await explain_result(
                             user_question,
-                            sql,
-                            result["data"]
+                            protected_context,
                         )
-                        print("EXPLAIN_RESULT:", explain_result)
-                        print("TYPE:", type(explain_result))
-                        print("IS COROUTINE:", inspect.iscoroutinefunction(explain_result))
+                        debug_print("EXPLAIN_RESULT:", explain_result)
+                        debug_print("TYPE:", type(explain_result))
+                        debug_print("IS COROUTINE:", inspect.iscoroutinefunction(explain_result))
 
                         timings["explanation"] = explanation_result.pop("elapsed", 0)
 
@@ -825,14 +830,14 @@ async def run_sql_agent(user_question: str, context=None,data_source=None,):
 
                 except Exception as explanation_error:
 
-                    print("Explanation generation failed:", explanation_error)
+                    debug_print("Explanation generation failed:", explanation_error)
                     traceback.print_exc()
                     explanation = (
                         "Query executed successfully, "
                         "but explanation generation failed."
                     )
                 orchestration_trace["explanation"] = explanation
-                print("Explanation:", explanation)
+                debug_print("Explanation:", explanation)
 
                 response = {
                     "status": "success",
@@ -845,7 +850,7 @@ async def run_sql_agent(user_question: str, context=None,data_source=None,):
 
                 timings["total_pipeline_time"] = elapsed
 
-                print("TOTAL PIPELINE TIME:", elapsed)
+                debug_print("TOTAL PIPELINE TIME:", elapsed)
                 telemetry.request_completed(
                 metadata={
                     "status": response.get("status"),
@@ -863,10 +868,10 @@ async def run_sql_agent(user_question: str, context=None,data_source=None,):
                 return response
 
             else:
-                    print("=" * 80)
-                    print("DATABASE ERROR:")
-                    print(result["error"])
-                    print("=" * 80)
+                    debug_print("=" * 80)
+                    debug_print("DATABASE ERROR:")
+                    debug_print(result["error"])
+                    debug_print("=" * 80)
                     last_error = result["error"]
 
         except QueryValidationError as e:
@@ -880,7 +885,7 @@ async def run_sql_agent(user_question: str, context=None,data_source=None,):
                 elapsed = round(time.time() - overall_start, 3)
 
                 timings["total_pipeline_time"] = elapsed
-                print("TOTAL PIPELINE TIME:", elapsed)
+                debug_print("TOTAL PIPELINE TIME:", elapsed)
                 telemetry.request_failed(
                         metadata={
                             "reason": "forbidden_operation",
@@ -916,6 +921,6 @@ async def run_sql_agent(user_question: str, context=None,data_source=None,):
         )
 
 
-    print(
+    debug_print(
     "TOTAL PIPELINE TIME:", elapsed11)
     return response

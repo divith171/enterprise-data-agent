@@ -1,3 +1,4 @@
+from observability.debug import debug_print
 from openai import OpenAI
 import json
 from services.llm_gateway import generate_response
@@ -147,11 +148,11 @@ RULES:
 - Keep hints advisory
 """
     start = time.time()
-    print("\nBUSINESS INTENT METADATA:")
-    print(metadata_context)
-    print("resolve_business_intent file:", __file__)
-    print("generate_response object:", generate_response)
-    print("is coroutine:", inspect.iscoroutinefunction(generate_response))
+    debug_print("\nBUSINESS INTENT METADATA:")
+    debug_print(metadata_context)
+    debug_print("resolve_business_intent file:", __file__)
+    debug_print("generate_response object:", generate_response)
+    debug_print("is coroutine:", inspect.iscoroutinefunction(generate_response))
     content = await generate_response(
 
     layer="business_intent",
@@ -159,15 +160,15 @@ RULES:
     prompt=prompt,
 
     )
-    print(type(content))
-    print(content)
+    debug_print(type(content))
+    debug_print(content)
     elapsed = round(time.time() - start, 2)
-    print(
+    debug_print(
     "BUSINESS INTENT TIME:",
    elapsed,
     "seconds"
     )
-    print("BUSINESS INTENT RAW:", content)
+    debug_print("BUSINESS INTENT RAW:", content)
 
     try:
 
@@ -249,13 +250,13 @@ RULES:
                 )
         }
         result1["elapsed"] = elapsed
-        print("RETURNING RESULT1:", result1)
+        debug_print("RETURNING RESULT1:", result1)
         return result1
         
 
     except Exception as e:
 
-        print(
+        debug_print(
             "BUSINESS INTENT PARSE ERROR:",
             e
         )

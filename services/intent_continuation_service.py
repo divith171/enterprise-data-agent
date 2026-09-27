@@ -1,3 +1,4 @@
+from observability.debug import debug_print
 import json
 from openai import OpenAI
 import os
@@ -88,7 +89,7 @@ Return ONLY valid JSON:
 
     content = response.choices[0].message.content.strip()
 
-    print("INTENT CONTINUATION RAW:", content)
+    debug_print("INTENT CONTINUATION RAW:", content)
 
     try:
 
@@ -102,7 +103,7 @@ Return ONLY valid JSON:
 
     except Exception as e:
 
-        print("INTENT CONTINUATION PARSE ERROR:", e)
+        debug_print("INTENT CONTINUATION PARSE ERROR:", e)
 
         return {
             "intent_type": "new_query"

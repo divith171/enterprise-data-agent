@@ -1,3 +1,4 @@
+from observability.debug import debug_print
 import os
 from dotenv import load_dotenv
 from openai import OpenAI
@@ -40,7 +41,7 @@ Database Schema:
     )
     elapsed = round(time.time() - start, 2)
 
-    print(
+    debug_print(
     "SQL GENERATION TIME:",
     elapsed,
     "seconds"
@@ -264,7 +265,7 @@ OUTPUT:
 Return ONLY the SQL query.
 """
 
-    print(instruction)
+    debug_print(instruction)
 
     result = await generate_sql(instruction, schema)
 

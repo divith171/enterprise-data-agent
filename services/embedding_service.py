@@ -1,3 +1,4 @@
+from observability.debug import debug_print
 from openai import OpenAI
 import os
 from dotenv import load_dotenv
@@ -19,7 +20,7 @@ def get_embedding(text: str):
         input=text
     )
 
-    print(
+    debug_print(
         "EMBEDDING:",
         text,
         "| TIME:",
@@ -69,8 +70,8 @@ Examples:
 
             await conn.commit()
 
-    print("Column-level embeddings stored!")
-    print("DEBUG DESCRIPTION:", description)
+    debug_print("Column-level embeddings stored!")
+    debug_print("DEBUG DESCRIPTION:", description)
 
 
 async def store_table_embeddings():
@@ -100,11 +101,11 @@ async def store_table_embeddings():
                     )
                 )
 
-                print(f"Embedded table: {table}")
+                debug_print(f"Embedded table: {table}")
 
             await conn.commit()
 
-    print("Table embeddings stored!")
+    debug_print("Table embeddings stored!")
 
 
 async def get_relevant_columns(user_question: str, top_k=5):
@@ -116,17 +117,22 @@ async def get_relevant_columns(user_question: str, top_k=5):
         async with conn.cursor() as cursor:
 
             await cursor.execute(
-                f"""
+                """
                 SELECT
                     table_name,
                     column_name,
                     description,
-                    (embedding <-> '{embedding_str}'::vector) AS distance
+                    (embedding <-> %s::vector) AS distance
                 FROM schema_embeddings
                 WHERE column_name IS NOT NULL
-                ORDER BY embedding <-> '{embedding_str}'::vector
-                LIMIT {top_k};
-                """
+                ORDER BY embedding <-> %s::vector
+                LIMIT %s;
+                """,
+                    (
+            embedding_str,
+            embedding_str,
+            top_k,
+                )
             )
 
             results = await cursor.fetchall()

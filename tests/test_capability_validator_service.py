@@ -90,8 +90,11 @@ async def test_validate_analytical_capability_invalid_json_returns_fallback():
 
     mock_generate_response.assert_awaited_once()
 
-    assert result["feasible"] is True
-    assert result["reason"] == "Validator fallback"
+    assert result["feasible"] is False
+    assert (
+    result["reason"]
+    == "Capability validation failed; analysis was not executed."
+)
     assert result["missing_requirements"] == []
 
     assert "elapsed" in result

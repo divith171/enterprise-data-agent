@@ -1,7 +1,12 @@
 from dataclasses import dataclass
 
+from psycopg.conninfo import make_conninfo
 from psycopg_pool import AsyncConnectionPool
 
+from app.config import (
+    PRODUCTION_POSTGRES_SSL_MODES,
+    settings,
+)
 from app.security.secrets import (
     SecretResolutionError,
     resolve_database_credentials,
@@ -18,7 +23,9 @@ class DataSourceConnectionConfig:
     ssl_mode: str
 
 
-def build_connection_config(data_source) -> DataSourceConnectionConfig:
+def build_connection_config(
+    data_source,
+) -> DataSourceConnectionConfig:
     return DataSourceConnectionConfig(
         host=data_source[4],
         port=data_source[5],
@@ -35,21 +42,61 @@ class CustomerDatabaseConnectionError(Exception):
 
 async def create_customer_pool(
     data_source,
+    *,
+    username_override: str | None = None,
+    secret_ref_override: str | None = None,
 ) -> AsyncConnectionPool:
-    config = build_connection_config(data_source)
+    config = build_connection_config(
+        data_source
+    )
+
+    ssl_mode = (
+        config.ssl_mode
+        or ""
+    ).strip().lower()
+
+    # ---------------------------------
+    # Production TLS enforcement
+    # ---------------------------------
+
+    if (
+        settings.is_production
+        and ssl_mode
+        not in PRODUCTION_POSTGRES_SSL_MODES
+    ):
+        raise CustomerDatabaseConnectionError(
+            "Production customer database "
+            "connections must use PostgreSQL TLS."
+        )
+
+    username = (
+        username_override
+        or config.username
+    )
+
+    secret_ref = (
+        secret_ref_override
+        or config.secret_ref
+    )
 
     try:
-        credentials = resolve_database_credentials(config.secret_ref)
+        credentials = (
+            resolve_database_credentials(
+                secret_ref
+            )
+        )
     except SecretResolutionError as exc:
-        raise CustomerDatabaseConnectionError(str(exc)) from exc
+        raise CustomerDatabaseConnectionError(
+            str(exc)
+        ) from exc
 
-    conninfo = (
-        f"host={config.host} "
-        f"port={config.port} "
-        f"dbname={config.database_name} "
-        f"user={config.username} "
-        f"password={credentials['password']} "
-        f"sslmode={config.ssl_mode}"
+    conninfo = make_conninfo(
+        host=config.host,
+        port=config.port,
+        dbname=config.database_name,
+        user=username,
+        password=credentials["password"],
+        sslmode=ssl_mode,
     )
 
     pool = AsyncConnectionPool(

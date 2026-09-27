@@ -29,9 +29,11 @@ def build_mock_pool(rows):
 
 @pytest.fixture(autouse=True)
 def reset_relationship_cache():
-    graph_service.relationship_cache = None
+    graph_service.relationship_cache.clear()
+
     yield
-    graph_service.relationship_cache = None
+
+    graph_service.relationship_cache.clear()
 
 
 @pytest.mark.asyncio
@@ -43,15 +45,28 @@ async def test_get_relationships_loads_foreign_keys_from_database():
 
     pool, cursor = build_mock_pool(rows)
 
-    with patch(
-        "services.graph_service.get_pool",
-        return_value=pool,
+    with (
+        patch(
+            "services.graph_service.get_current_data_source_id",
+            return_value="data-source-a",
+        ),
+        patch(
+            "services.graph_service.get_pool",
+            return_value=pool,
+        ),
     ):
         result = await graph_service.get_relationships()
 
     assert result == rows
+
     cursor.execute.assert_awaited_once()
-    assert graph_service.relationship_cache == rows
+
+    assert (
+        graph_service.relationship_cache[
+            "data-source-a"
+        ]["relationships"]
+        == rows
+    )
 
 
 @pytest.mark.asyncio
@@ -60,15 +75,167 @@ async def test_get_relationships_uses_cache():
         ("orders", "customer_id", "customers", "customer_id"),
     ]
 
-    graph_service.relationship_cache = cached_rows
+    graph_service.relationship_cache[
+        "data-source-a"
+    ] = {
+        "relationships": cached_rows,
+        "loaded_at": graph_service.time.monotonic(),
+    }
 
-    with patch(
-        "services.graph_service.get_pool"
-    ) as mock_get_pool:
+    with (
+        patch(
+            "services.graph_service.get_current_data_source_id",
+            return_value="data-source-a",
+        ),
+        patch(
+            "services.graph_service.get_pool"
+        ) as mock_get_pool,
+    ):
         result = await graph_service.get_relationships()
 
     assert result == cached_rows
+
     mock_get_pool.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_relationship_cache_is_isolated_by_data_source():
+    rows_a = [
+        (
+            "customers",
+            "customer_id",
+            "orders",
+            "customer_id",
+        ),
+    ]
+
+    rows_b = [
+        (
+            "accounts",
+            "account_id",
+            "transactions",
+            "account_id",
+        ),
+    ]
+
+    pool_a, cursor_a = build_mock_pool(rows_a)
+    pool_b, cursor_b = build_mock_pool(rows_b)
+
+    with (
+        patch(
+            "services.graph_service.get_current_data_source_id",
+            side_effect=[
+                "data-source-a",
+                "data-source-b",
+                "data-source-a",
+            ],
+        ),
+        patch(
+            "services.graph_service.get_pool",
+            side_effect=[
+                pool_a,
+                pool_b,
+            ],
+        ) as mock_get_pool,
+    ):
+        result_a_first = (
+            await graph_service.get_relationships()
+        )
+
+        result_b = (
+            await graph_service.get_relationships()
+        )
+
+        result_a_second = (
+            await graph_service.get_relationships()
+        )
+
+    assert result_a_first == rows_a
+    assert result_b == rows_b
+    assert result_a_second == rows_a
+
+    assert (
+        graph_service.relationship_cache[
+            "data-source-a"
+        ]["relationships"]
+        == rows_a
+    )
+
+    assert (
+        graph_service.relationship_cache[
+            "data-source-b"
+        ]["relationships"]
+        == rows_b
+    )
+
+    assert mock_get_pool.call_count == 2
+
+    cursor_a.execute.assert_awaited_once()
+    cursor_b.execute.assert_awaited_once()
+
+
+@pytest.mark.asyncio
+async def test_expired_relationship_cache_reloads_from_database():
+    old_rows = [
+        (
+            "old_orders",
+            "customer_id",
+            "old_customers",
+            "customer_id",
+        ),
+    ]
+
+    fresh_rows = [
+        (
+            "orders",
+            "customer_id",
+            "customers",
+            "customer_id",
+        ),
+    ]
+
+    graph_service.relationship_cache[
+        "data-source-a"
+    ] = {
+        "relationships": old_rows,
+        "loaded_at": 100.0,
+    }
+
+    pool, cursor = build_mock_pool(fresh_rows)
+
+    with (
+        patch(
+            "services.graph_service.get_current_data_source_id",
+            return_value="data-source-a",
+        ),
+        patch(
+            "services.graph_service.time.monotonic",
+            return_value=500.0,
+        ),
+        patch(
+            "services.graph_service.get_pool",
+            return_value=pool,
+        ),
+    ):
+        result = await graph_service.get_relationships()
+
+    assert result == fresh_rows
+
+    cursor.execute.assert_awaited_once()
+
+    assert (
+        graph_service.relationship_cache[
+            "data-source-a"
+        ]["relationships"]
+        == fresh_rows
+    )
+
+    assert (
+        graph_service.relationship_cache[
+            "data-source-a"
+        ]["loaded_at"]
+        == 500.0
+    )
 
 
 @pytest.mark.asyncio
@@ -162,4 +329,28 @@ async def test_build_relationship_text_formats_relationships():
     assert result == (
         "orders.customer_id = customers.customer_id\n"
         "orders.product_id = products.product_id"
+    )
+
+def test_invalidate_relationship_cache_removes_only_requested_data_source():
+    graph_service.relationship_cache["data-source-a"] = {
+        "relationships": ["a"],
+        "loaded_at": 100.0,
+    }
+
+    graph_service.relationship_cache["data-source-b"] = {
+        "relationships": ["b"],
+        "loaded_at": 100.0,
+    }
+
+    graph_service.invalidate_relationship_cache(
+        "data-source-a"
+    )
+
+    assert "data-source-a" not in graph_service.relationship_cache
+
+    assert (
+        graph_service.relationship_cache[
+            "data-source-b"
+        ]["relationships"]
+        == ["b"]
     )

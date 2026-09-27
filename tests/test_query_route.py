@@ -1,4 +1,4 @@
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
@@ -8,6 +8,7 @@ from observability.context import (
     create_request_context,
     set_request_context,
 )
+from services.rate_limit_service import RateLimitDecision
 
 
 @pytest.mark.anyio
@@ -15,8 +16,17 @@ async def test_query_route_new_query_orchestrates_dependencies():
     session_id = "test-session"
     user_input = "show sales over last month"
 
-    context = create_request_context(session_id=session_id)
-    set_request_context(context)
+    current_user = {
+        "id": "test-user",
+        "company_id": "test-company",
+        "email": "test@example.com",
+        "role": "analyst",
+    }
+
+    fake_data_source = (
+        "test-data-source",
+        "test-company",
+    )
 
     fake_result = {
         "status": "success",
@@ -24,8 +34,31 @@ async def test_query_route_new_query_orchestrates_dependencies():
         "data": [(100,)],
     }
 
+    allowed_rate_limit = RateLimitDecision(
+        allowed=True,
+        limit=30,
+        used=1,
+        remaining=29,
+        retry_after=60,
+    )
+
+    context = create_request_context(
+        session_id=session_id
+    )
+    set_request_context(context)
+
     try:
         with patch(
+            "app.api.routes.query.consume_rate_limit",
+            new=AsyncMock(
+                return_value=allowed_rate_limit
+            ),
+        ), patch(
+            "app.api.routes.query.get_authorized_data_source",
+            new=AsyncMock(
+                return_value=fake_data_source
+            ),
+        ), patch(
             "app.api.routes.query.session_exists",
             new=AsyncMock(return_value=False),
         ) as mock_session_exists, patch(
@@ -45,26 +78,43 @@ async def test_query_route_new_query_orchestrates_dependencies():
             new=AsyncMock(),
         ) as mock_set_context, patch(
             "app.api.routes.query.classify_intent_continuation",
-            return_value={"intent_type": "new_query"},
+            return_value={
+                "intent_type": "new_query"
+            },
         ), patch(
             "app.api.routes.query.parse_user_response",
             return_value={},
         ), patch(
+            "app.api.routes.query.open_customer_pool",
+            new=AsyncMock(),
+        ), patch(
+            "app.api.routes.query.clear_customer_pool",
+            new=MagicMock(),
+        ), patch(
             "app.api.routes.query.run_sql_agent",
-            new=AsyncMock(return_value=fake_result),
+            new=AsyncMock(
+                return_value=fake_result
+            ),
         ) as mock_run_sql_agent:
 
             response = await query_agent(
                 QueryRequest(
                     message=user_input,
                     session_id=session_id,
-                )
+                    data_source_id="test-data-source",
+                ),
+                current_user=current_user,
             )
 
-        mock_session_exists.assert_awaited_once_with(session_id)
+        mock_session_exists.assert_awaited_once_with(
+            session_id
+        )
 
         mock_create_session.assert_awaited_once_with(
             session_id,
+            "test-user",
+            "test-company",
+            "test-data-source",
             {
                 "current_query": user_input,
                 "context": {},
@@ -81,20 +131,31 @@ async def test_query_route_new_query_orchestrates_dependencies():
         mock_run_sql_agent.assert_awaited_once_with(
             user_input,
             context={},
+            data_source=fake_data_source,
         )
 
         assert response["status"] == "success"
         assert response["session_id"] == session_id
         assert response["context"] == {}
 
-        assert response["trace_log"]["session_id"] == session_id
-        assert response["trace_log"]["user_input"] == user_input
+        assert (
+            response["trace_log"]["session_id"]
+            == session_id
+        )
+
+        assert (
+            response["trace_log"]["user_input"]
+            == user_input
+        )
 
         assert response["trace_log"]["intent_result"] == {
             "intent_type": "new_query"
         }
 
-        assert response["trace_log"]["refined_query"] == user_input
+        assert (
+            response["trace_log"]["refined_query"]
+            == user_input
+        )
 
     finally:
         clear_request_context()
@@ -106,20 +167,31 @@ async def test_query_route_continuation_updates_context_and_refines_query():
     previous_query = "show sales by region"
     user_input = "only for last month"
 
+    current_user = {
+        "id": "test-user",
+        "company_id": "test-company",
+        "email": "test@example.com",
+        "role": "analyst",
+    }
+
+    fake_data_source = (
+        "test-data-source",
+        "test-company",
+    )
+
     initial_context = {
         "existing_key": "existing-value",
     }
 
     continuation_result = {
-        "refined_query": "show sales by region for last month",
+        "refined_query": (
+            "show sales by region for last month"
+        ),
         "group_by": "region",
         "time_granularity": "month",
         "filter_condition": "last month",
         "metric_refinement": "sales",
     }
-
-    context = create_request_context(session_id=session_id)
-    set_request_context(context)
 
     fake_result = {
         "status": "success",
@@ -127,27 +199,55 @@ async def test_query_route_continuation_updates_context_and_refines_query():
         "data": [(100,)],
     }
 
+    allowed_rate_limit = RateLimitDecision(
+        allowed=True,
+        limit=30,
+        used=1,
+        remaining=29,
+        retry_after=60,
+    )
+
+    context = create_request_context(
+        session_id=session_id
+    )
+    set_request_context(context)
+
     try:
         with patch(
+            "app.api.routes.query.consume_rate_limit",
+            new=AsyncMock(
+                return_value=allowed_rate_limit
+            ),
+        ), patch(
+            "app.api.routes.query.get_authorized_data_source",
+            new=AsyncMock(
+                return_value=fake_data_source
+            ),
+        ), patch(
             "app.api.routes.query.session_exists",
             new=AsyncMock(return_value=True),
         ) as mock_session_exists, patch(
+            "app.api.routes.query.session_matches_scope",
+            new=AsyncMock(return_value=True),
+        ), patch(
             "app.api.routes.query.get_current_query",
-            new=AsyncMock(return_value=previous_query),
+            new=AsyncMock(
+                return_value=previous_query
+            ),
         ), patch(
             "app.api.routes.query.get_context",
-            new=AsyncMock(side_effect=[
-                initial_context.copy(),
-                {
-                    **initial_context,
-                    **{
+            new=AsyncMock(
+                side_effect=[
+                    initial_context.copy(),
+                    {
+                        **initial_context,
                         "group_by": "region",
                         "time_granularity": "month",
                         "filter_condition": "last month",
                         "metric_refinement": "sales",
                     },
-                },
-            ]),
+                ]
+            ),
         ), patch(
             "app.api.routes.query.set_current_query",
             new=AsyncMock(),
@@ -156,7 +256,9 @@ async def test_query_route_continuation_updates_context_and_refines_query():
             new=AsyncMock(),
         ) as mock_set_context, patch(
             "app.api.routes.query.classify_intent_continuation",
-            return_value={"intent_type": "continuation"},
+            return_value={
+                "intent_type": "continuation"
+            },
         ), patch(
             "app.api.routes.query.interpret_continuation",
             return_value=continuation_result,
@@ -164,18 +266,30 @@ async def test_query_route_continuation_updates_context_and_refines_query():
             "app.api.routes.query.parse_user_response",
             return_value={},
         ), patch(
+            "app.api.routes.query.open_customer_pool",
+            new=AsyncMock(),
+        ), patch(
+            "app.api.routes.query.clear_customer_pool",
+            new=MagicMock(),
+        ), patch(
             "app.api.routes.query.run_sql_agent",
-            new=AsyncMock(return_value=fake_result),
+            new=AsyncMock(
+                return_value=fake_result
+            ),
         ) as mock_run_sql_agent:
 
             response = await query_agent(
                 QueryRequest(
                     message=user_input,
                     session_id=session_id,
-                )
+                    data_source_id="test-data-source",
+                ),
+                current_user=current_user,
             )
 
-        mock_session_exists.assert_awaited_once_with(session_id)
+        mock_session_exists.assert_awaited_once_with(
+            session_id
+        )
 
         mock_interpret_continuation.assert_called_once_with(
             previous_query=previous_query,
@@ -198,6 +312,7 @@ async def test_query_route_continuation_updates_context_and_refines_query():
                 "filter_condition": "last month",
                 "metric_refinement": "sales",
             },
+            data_source=fake_data_source,
         )
 
         assert response["status"] == "success"
@@ -207,7 +322,10 @@ async def test_query_route_continuation_updates_context_and_refines_query():
             "intent_type": "continuation"
         }
 
-        assert response["trace_log"]["continuation_result"] == continuation_result
+        assert (
+            response["trace_log"]["continuation_result"]
+            == continuation_result
+        )
 
         assert response["trace_log"]["refined_query"] == (
             "show sales by region for last month"

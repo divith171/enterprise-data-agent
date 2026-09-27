@@ -1,3 +1,4 @@
+from observability.debug import debug_print
 import json
 from openai import OpenAI
 from services.llm_gateway import generate_response
@@ -104,7 +105,7 @@ JSON FORMAT:
     "analysis_plan": "concise SQL-oriented analytical execution plan"
 }}
 """
-    print("ANALYTICAL PLANNER FILE LOADED")
+    debug_print("ANALYTICAL PLANNER FILE LOADED")
     start = time.time()
     content = await generate_response(
 
@@ -115,9 +116,9 @@ JSON FORMAT:
 
     elapsed = round(time.time() - start, 2)
 
-    print( "ANALYSIS PLAN TIME:", elapsed, "seconds")
+    debug_print( "ANALYSIS PLAN TIME:", elapsed, "seconds")
 
-    print("ANALYSIS PLAN RAW:", content)
+    debug_print("ANALYSIS PLAN RAW:", content)
 
     try:
 
@@ -135,7 +136,7 @@ JSON FORMAT:
 
     except Exception as e:
 
-        print("ANALYSIS PLAN PARSE ERROR:", e)
+        debug_print("ANALYSIS PLAN PARSE ERROR:", e)
 
         result = {
             

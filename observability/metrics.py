@@ -42,7 +42,24 @@ def load_logs():
 
     return logs
 
+def filter_logs_by_tenant(logs, tenant_id):
+    """
+    Return telemetry belonging only to the requested tenant.
 
+    Events without a tenant_id are deliberately excluded from
+    tenant-scoped metrics.
+    """
+
+    if tenant_id is None:
+        return logs
+
+    tenant_id = str(tenant_id)
+
+    return [
+        event
+        for event in logs
+        if event.get("tenant_id") == tenant_id
+    ]
 # =========================================================
 # PERCENTILE
 # =========================================================
@@ -1139,10 +1156,13 @@ def compute_llm_metrics(logs):
     }
 
 
-def compute_metrics():
+def compute_metrics(tenant_id=None):
 
     logs = load_logs()
-
+    logs = filter_logs_by_tenant(
+        logs,
+        tenant_id,
+    )
     return {
     "http": compute_http_request_metrics(logs),
 

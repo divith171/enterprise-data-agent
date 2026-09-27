@@ -1,3 +1,4 @@
+from observability.debug import debug_print
 import json
 from openai import OpenAI
 
@@ -44,7 +45,7 @@ Return ONLY valid JSON:
 
     content = response.choices[0].message.content.strip()
 
-    print("QUERY TYPE RAW:", content)
+    debug_print("QUERY TYPE RAW:", content)
 
     try:
         return json.loads(content)

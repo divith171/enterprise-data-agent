@@ -18,9 +18,11 @@ def test_get_redis_client_creates_singleton():
 
     assert first is fake_client
     assert second is fake_client
+
     mock_redis.assert_called_once_with(
         host="localhost",
         port=6379,
+        ssl=False,
         decode_responses=True,
     )
 

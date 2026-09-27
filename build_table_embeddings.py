@@ -23,7 +23,11 @@ async def main():
     if data_source is None:
         raise RuntimeError("Data source not found")
 
-    customer_pool = await open_customer_pool(data_source)
+    customer_pool = await open_customer_pool(
+    data_source,
+    username_override="eda_user",
+    secret_ref_override="EDA_TEST_DB_PASSWORD",
+)
 
     try:
         await store_table_embeddings()

@@ -138,16 +138,17 @@ class RequestContextMiddleware(BaseHTTPMiddleware):
                     "latency_seconds": latency,
                     "path": request.url.path,
                     "method": request.method,
-                    "error": str(exc),
+                    "error_code": "UNHANDLED_REQUEST_EXCEPTION",
                     "error_type": type(exc).__name__,
                 }
             )
 
-            logger.exception(
+            logger.error(
                 "Unhandled request exception",
                 extra={
                     "request_id": context.request_id,
                     "trace_id": context.trace_id,
+                    "error_type": type(exc).__name__,
                 },
             )
 

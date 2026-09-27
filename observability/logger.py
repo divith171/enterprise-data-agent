@@ -3,7 +3,9 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Optional
-
+from observability.logging_policy import (
+    sanitize_log_event,
+)
 from observability.context import (
     create_request_context,
     get_request_context,
@@ -19,11 +21,36 @@ LOG_FILE = BASE_DIR / "logs" / "agent_logs.jsonl"
 def log_event(event: Dict[str, Any]):
     """
     Write a structured telemetry event to the JSONL log.
+
+    Development keeps detailed diagnostics.
+
+    Production removes raw user content and raw SQL
+    before anything is persisted.
     """
 
-    LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
+    context = get_request_context()
 
-    with open(LOG_FILE, "a", encoding="utf-8") as f:
+    event = dict(event)
+
+    if context is not None:
+        if context.user_id is not None:
+            event["user_id"] = context.user_id
+
+        if context.tenant_id is not None:
+            event["tenant_id"] = context.tenant_id
+
+    event = sanitize_log_event(event)
+
+    LOG_FILE.parent.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+
+    with open(
+        LOG_FILE,
+        "a",
+        encoding="utf-8",
+    ) as f:
         f.write(
             json.dumps(
                 event,

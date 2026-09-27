@@ -1,4 +1,6 @@
+from observability.debug import debug_print
 from openai import OpenAI
+import ast
 import os
 import re
 import time
@@ -121,15 +123,15 @@ async def map_entity_to_table(entity, schema):
     """
     Map extracted entity (e.g., 'customers') to closest table using embeddings.
     """
-    print("\n========== ENTITY MAPPING START ==========")
+    debug_print("\n========== ENTITY MAPPING START ==========")
     if not entity:
         return None
 
-    print("ENTITY:", entity)
+    debug_print("ENTITY:", entity)
     start= time.time()
     entity_embedding = get_embedding(entity)
     table_embeddings = await get_table_embeddings()
-    print(
+    debug_print(
     "ENTITY EMBEDDING TIME:",
     round(time.time() - start, 3)
     )
@@ -138,25 +140,25 @@ async def map_entity_to_table(entity, schema):
 
     for table, table_embedding in table_embeddings:
 
-        print("CHECKING TABLE:", table)
+        debug_print("CHECKING TABLE:", table)
 
         dist = cosine_distance(
             entity_embedding,
             table_embedding
         )
 
-        print(
+        debug_print(
             "DISTANCE:",
             round(dist, 4)
-        )  
+        )
 
         if dist < best_score:
             best_score = dist
             best_table = table
-        
-    
-    print("BEST TABLE:", best_table)
-    print("========== ENTITY MAPPING END ==========\n")    
+
+
+    debug_print("BEST TABLE:", best_table)
+    debug_print("========== ENTITY MAPPING END ==========\n")
     return best_table
 
 def expand_concepts(user_question, schema):
@@ -201,16 +203,22 @@ Return ONLY list.
     text = response.choices[0].message.content.strip()
 
     try:
-        return eval(text)
-    except:
+        result = ast.literal_eval(text)
+
+        if not isinstance(result, list):
+            return []
+
+        return result
+
+    except (ValueError, SyntaxError):
         return []
-    
+
 def map_concepts_to_columns(intent, stored_columns, schema_with_types):
     """
     Map concepts to meaningful metric columns using schema types
     """
-    print("\nINTENT RECEIVED BY MAPPER:")
-    print(intent)
+    debug_print("\nINTENT RECEIVED BY MAPPER:")
+    debug_print(intent)
     mapped = []
     if not intent.get("metrics"):
         return []
@@ -228,7 +236,7 @@ def map_concepts_to_columns(intent, stored_columns, schema_with_types):
         # ✅ keep only true metric columns (numeric types)
         NUMERIC_TYPES = [ "integer","bigint","smallint","numeric","real","double precision"]
         if col_type in NUMERIC_TYPES and not col.endswith("_id") :
-            print(
+            debug_print(
                 "NUMERIC COLUMN FOUND:",
                 table,
                 col,
@@ -334,7 +342,7 @@ Return ONLY valid JSON in this format:
 
     text_response = response.choices[0].message.content.strip()
 
-    print("RAW LLM OUTPUT:", text_response)
+    debug_print("RAW LLM OUTPUT:", text_response)
 
     try:
         # remove markdown formatting if present
@@ -349,7 +357,7 @@ Return ONLY valid JSON in this format:
         }
 
     except Exception as e:
-        print("PARSE ERROR:", e)
+        debug_print("PARSE ERROR:", e)
 
         return {
             "threshold": None,

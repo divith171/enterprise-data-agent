@@ -189,10 +189,16 @@ async def test_get_relevant_columns_returns_database_results():
     assert result == rows
     cursor.execute.assert_awaited_once()
 
-    executed_sql = cursor.execute.await_args.args[0]
+    executed_sql, params = cursor.execute.await_args.args
 
-    assert "LIMIT 2" in executed_sql
+    assert "LIMIT %s" in executed_sql
     assert "ORDER BY embedding <->" in executed_sql
+
+    assert params == (
+        "[0.1,0.2,0.3]",
+        "[0.1,0.2,0.3]",
+        2,
+    )
 
 
 @pytest.mark.asyncio
@@ -216,3 +222,68 @@ async def test_get_table_embeddings_converts_string_embeddings():
     ]
 
     cursor.execute.assert_awaited_once()
+
+@pytest.mark.anyio
+async def test_get_relevant_columns_uses_sql_parameters(
+    monkeypatch,
+):
+    from unittest.mock import AsyncMock, MagicMock
+
+    from services import embedding_service
+
+    monkeypatch.setattr(
+        embedding_service,
+        "get_embedding",
+        lambda text: [0.1, 0.2, 0.3],
+    )
+
+    cursor = AsyncMock()
+    cursor.fetchall.return_value = []
+
+    cursor_context = MagicMock()
+    cursor_context.__aenter__ = AsyncMock(
+        return_value=cursor
+    )
+    cursor_context.__aexit__ = AsyncMock(
+        return_value=None
+    )
+
+    conn = MagicMock()
+    conn.cursor.return_value = cursor_context
+
+    connection_context = MagicMock()
+    connection_context.__aenter__ = AsyncMock(
+        return_value=conn
+    )
+    connection_context.__aexit__ = AsyncMock(
+        return_value=None
+    )
+
+    pool = MagicMock()
+    pool.connection.return_value = connection_context
+
+    monkeypatch.setattr(
+        embedding_service,
+        "get_pool",
+        lambda: pool,
+    )
+
+    await embedding_service.get_relevant_columns(
+        "show customer risk",
+        top_k=7,
+    )
+
+    cursor.execute.assert_awaited_once()
+
+    sql, params = cursor.execute.await_args.args
+
+    assert "%s::vector" in sql
+    assert "LIMIT %s" in sql
+
+    assert params == (
+        "[0.1,0.2,0.3]",
+        "[0.1,0.2,0.3]",
+        7,
+    )
+
+    assert "[0.1,0.2,0.3]" not in sql

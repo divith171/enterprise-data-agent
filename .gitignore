@@ -84,7 +84,12 @@ test-results-*.txt
 # =========================
 # Local Investigation Artifacts
 # =========================
+# =========================
+# Local Security / Backup Artifacts
+# =========================
 
+*.backup
+cookies.txt
 agent_functions.txt
 api_inventory.txt
 db_functions.txt
@@ -101,3 +106,15 @@ sql_execution_search.txt
 start_request_usage.txt
 structure.txt
 timing_usage.txt
+# =========================
+# Local Development Utilities
+# =========================
+
+add_company_b_datasource.py
+add_test_datasource.py
+create_table_embeddings.py
+inspect_eda_db.py
+inspect_embedding_dimension.py
+inspect_pgvector.py
+inspect_schema_embeddings.py
+test_auth_session.py

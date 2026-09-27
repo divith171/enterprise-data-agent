@@ -1,3 +1,4 @@
+from observability.debug import debug_print
 from openai import OpenAI
 import os
 import time
@@ -192,9 +193,9 @@ Return your answer in JSON format:
     prompt=prompt
 )
     elapsed = round(time.time() - start, 2)
-    print("SQL REVIEW TIME:",elapsed,"seconds")
+    debug_print("SQL REVIEW TIME:",elapsed,"seconds")
     content = content.strip()
-    print("REVIEW RAW:", content)
+    debug_print("REVIEW RAW:", content)
 
     import json
 
@@ -228,7 +229,7 @@ Return your answer in JSON format:
 
     except Exception as e:
 
-        print("REVIEW PARSE ERROR:", e)
+        debug_print("REVIEW PARSE ERROR:", e)
 
         result = {
 

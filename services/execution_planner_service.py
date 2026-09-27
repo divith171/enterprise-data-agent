@@ -1,3 +1,4 @@
+from observability.debug import debug_print
 import json
 import os
 from services.llm_gateway import generate_response
@@ -104,13 +105,13 @@ FORMAT:
             prompt=prompt
         )
 
-        print(
+        debug_print(
             "EXECUTION PLAN TIME:",
             round(time.time() - start, 2),
             "seconds"
         )
 
-        print("EXECUTION PLAN RAW:", content)
+        debug_print("EXECUTION PLAN RAW:", content)
 
         try:
             content = content.replace(
@@ -129,7 +130,7 @@ FORMAT:
             return execution_plan
 
         except Exception as e:
-            print("EXECUTION PLAN PARSE ERROR:", e)
+            debug_print("EXECUTION PLAN PARSE ERROR:", e)
 
             return {
             "execution_stages": [],

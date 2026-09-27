@@ -1,19 +1,73 @@
-from db.connection import get_pool
+from observability.debug import debug_print
+import time
+
+from db.connection import get_pool, get_current_data_source_id
 from services.schema_service import get_schema
 
-relationship_cache = None
+
+RELATIONSHIP_CACHE_TTL_SECONDS = 300
+
+# Cache relationships separately for each data source.
+#
+# Example:
+# {
+#     "data-source-a": {
+#         "relationships": [...],
+#         "loaded_at": 12345.67,
+#     },
+#     "data-source-b": {
+#         "relationships": [...],
+#         "loaded_at": 12350.12,
+#     },
+# }
+relationship_cache = {}
+
+
+def invalidate_relationship_cache(data_source_id=None):
+    if data_source_id is None:
+        relationship_cache.clear()
+        return
+
+    relationship_cache.pop(
+        str(data_source_id),
+        None,
+    )
 
 
 async def get_relationships():
-    global relationship_cache
+    data_source_id = get_current_data_source_id()
 
-    print("GET_RELATIONSHIPS CALLED")
+    debug_print("GET_RELATIONSHIPS CALLED")
 
-    if relationship_cache is not None:
-        print("USING CACHED RELATIONSHIPS")
-        return relationship_cache
+    # ---------------------------------
+    # Check this data source's cache
+    # ---------------------------------
+    if data_source_id is not None:
+        cache_key = str(data_source_id)
 
-    print("LOADING RELATIONSHIPS FROM DATABASE")
+        cache_entry = relationship_cache.get(
+            cache_key
+        )
+
+        if cache_entry is not None:
+            cache_age = (
+                time.monotonic()
+                - cache_entry["loaded_at"]
+            )
+
+            if cache_age < RELATIONSHIP_CACHE_TTL_SECONDS:
+                debug_print(
+                    "USING CACHED RELATIONSHIPS"
+                )
+                return cache_entry["relationships"]
+
+            # Cache expired
+            relationship_cache.pop(
+                cache_key,
+                None,
+            )
+
+    debug_print("LOADING RELATIONSHIPS FROM DATABASE")
 
     async with get_pool().connection() as conn:
         async with conn.cursor() as cursor:
@@ -33,9 +87,19 @@ async def get_relationships():
 
             rows = await cursor.fetchall()
 
-    relationship_cache = rows
+    # ---------------------------------
+    # Cache only when we know which
+    # customer data source this belongs to
+    # ---------------------------------
+    if data_source_id is not None:
+        relationship_cache[
+            str(data_source_id)
+        ] = {
+            "relationships": rows,
+            "loaded_at": time.monotonic(),
+        }
 
-    return relationship_cache
+    return rows
 
 
 async def build_graph():

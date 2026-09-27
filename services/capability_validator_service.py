@@ -1,3 +1,4 @@
+from observability.debug import debug_print
 import json
 import os
 from services.llm_gateway import generate_response
@@ -5,10 +6,6 @@ from dotenv import load_dotenv
 from openai import OpenAI
 import time
 load_dotenv()
-
-client = OpenAI(
-    api_key=os.getenv("OPENAI_API_KEY")
-)
 
 
 async def validate_analytical_capability(
@@ -170,14 +167,14 @@ Return ONLY valid JSON:
     )
     elapsed = round(time.time() - start, 2)
 
-    print(
+    debug_print(
     "CAPABILITY VALIDATOR TIME:",
     elapsed,
     "seconds"
     )
     content = content.strip()
 
-    print("CAPABILITY VALIDATOR RAW:", content)
+    debug_print("CAPABILITY VALIDATOR RAW:", content)
 
     try:
 
@@ -188,6 +185,11 @@ Return ONLY valid JSON:
         ).strip()
 
         result = json.loads(content)
+        if (
+            not isinstance(result, dict)
+            or not isinstance(result.get("feasible"), bool)
+        ):
+            raise ValueError("INVALID_CAPABILITY_VALIDATOR_RESPONSE")
 
         result["elapsed"] = elapsed
 
@@ -195,11 +197,11 @@ Return ONLY valid JSON:
 
     except Exception as e:
 
-        print("CAPABILITY VALIDATOR PARSE ERROR:", e)
+        debug_print("CAPABILITY VALIDATOR PARSE ERROR:", e)
 
         result ={
-            "feasible": True,
-            "reason": "Validator fallback",
+            "feasible": False,
+            "reason": "Capability validation failed; analysis was not executed.",
             "missing_requirements": []
         }
         result["elapsed"] = elapsed

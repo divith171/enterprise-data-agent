@@ -1,3 +1,4 @@
+from observability.debug import debug_print
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from observability.middleware import RequestContextMiddleware
@@ -20,7 +21,7 @@ async def lifespan(app: FastAPI):
 
     schema_cache = await get_schema()
 
-    print("Schema loaded:", schema_cache)
+    debug_print("Schema loaded:", schema_cache)
 
     yield
 

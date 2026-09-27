@@ -1,3 +1,4 @@
+from observability.debug import debug_print
 import os
 import time
 import asyncio
@@ -80,14 +81,14 @@ async def _execute_with_retry(
             AnthropicConnectionError,
         ) as e:
 
-            print(
+            debug_print(
                 f"[{provider}] "
                 f"Attempt {attempt}/{MAX_RETRIES} failed "
                 f"({type(e).__name__})"
             )
 
             if attempt == MAX_RETRIES:
-                print(f"[{provider}] Maximum retries reached.")
+                debug_print(f"[{provider}] Maximum retries reached.")
 
                 raise LLMGatewayError(
                     provider=provider,
@@ -95,7 +96,7 @@ async def _execute_with_retry(
                     message=str(e)
                 ) from e
 
-            print(
+            debug_print(
                 f"[{provider}] Retrying in {backoff:.1f} seconds..."
             )
 
@@ -256,9 +257,9 @@ async def generate_response(
 
     if model.startswith("claude-opus-4-8"):
 
-        print(f"MODEL USED: {model}")
-        print(f"LAYER: {layer}")
-        print(f"PROMPT CHARS: {len(prompt)}")
+        debug_print(f"MODEL USED: {model}")
+        debug_print(f"LAYER: {layer}")
+        debug_print(f"PROMPT CHARS: {len(prompt)}")
 
         start_llm = time.time()
 
@@ -268,7 +269,7 @@ async def generate_response(
             layer=layer
         )
 
-        print(
+        debug_print(
             f"LLM CALL TIME ({layer}):",
             round(time.time() - start_llm, 2),
             "seconds"
@@ -282,9 +283,9 @@ async def generate_response(
 
     else:
 
-        print(f"MODEL USED: {model}")
-        print(f"LAYER: {layer}")
-        print(f"PROMPT CHARS: {len(prompt)}")
+        debug_print(f"MODEL USED: {model}")
+        debug_print(f"LAYER: {layer}")
+        debug_print(f"PROMPT CHARS: {len(prompt)}")
 
         start_llm = time.time()
 
@@ -307,7 +308,7 @@ async def generate_response(
             layer=layer
         )
 
-        print(
+        debug_print(
             f"LLM CALL TIME ({layer}):",
             round(time.time() - start_llm, 2),
             "seconds"
