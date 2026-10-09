@@ -48,11 +48,23 @@ export const Hero = () => {
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
+    v.muted = true;
     if (reduce) {
       v.pause();
       return;
     }
-    v.play().catch(() => {});
+    const tryPlay = () => {
+      v.play().catch(() => {});
+    };
+    tryPlay();
+    v.addEventListener("canplay", tryPlay);
+    const events = ["pointerdown", "touchstart", "scroll", "keydown"];
+    const onInteract = () => tryPlay();
+    events.forEach((e) => window.addEventListener(e, onInteract, { passive: true }));
+    return () => {
+      v.removeEventListener("canplay", tryPlay);
+      events.forEach((e) => window.removeEventListener(e, onInteract));
+    };
   }, [reduce]);
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -85,9 +97,10 @@ export const Hero = () => {
             className="h-full w-full object-cover object-[72%_50%] md:object-[60%_30%]"
             autoPlay
             muted
+            defaultMuted
             loop
             playsInline
-            preload="metadata"
+            preload="auto"
             poster="/media/hero-poster.webp"
             tabIndex={-1}
           >
