@@ -91,6 +91,7 @@ export const Hero = () => {
             poster="/media/hero-poster.webp"
             tabIndex={-1}
           >
+            <source src="/media/datakat-hero.webm" type="video/webm" />
             <source src="/media/datakat-hero.mp4" type="video/mp4" />
           </video>
         </motion.div>
