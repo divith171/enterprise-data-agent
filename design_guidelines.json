@@ -1,0 +1,111 @@
+{
+  "theme": "Surface to Deep Ocean - Premium cinematic AI analytics product. 85% premium tech, 15% DataKat personality.",
+  "colors": {
+    "background_progression": ["transparent", "#0A1428", "#080D18", "#05070D"],
+    "text_primary": "#F7F8FC",
+    "text_secondary": "#A9B0BE",
+    "accent_primary": "#00D9FF",
+    "accent_secondary": "#2979FF",
+    "forbidden_colors": ["magenta", "purple", "neon", "rainbow"],
+    "surface_styles": {
+      "nav_scrolled": "bg-[#05070D]/90 backdrop-blur-md border-b border-white/5",
+      "mobile_menu": "bg-[#05070D]"
+    }
+  },
+  "typography": {
+    "primary_font": "Geist",
+    "logo_font": "Dancing Script",
+    "hero_headline": "text-4xl lg:text-7xl font-medium tracking-tight text-white",
+    "eyebrow": "text-xs tracking-[0.2em] uppercase",
+    "body": "text-base text-[#A9B0BE] max-w-[550px]"
+  },
+  "motion": {
+    "scroll_library": "lenis",
+    "animation_library": "framer-motion",
+    "reveal_settings": {
+      "initial": { "opacity": 0, "y": 24 },
+      "animate": { "opacity": 1, "y": 0 },
+      "transition": { "duration": 0.8, "ease": [0.16, 1, 0.3, 1] }
+    },
+    "hero_stagger": {
+      "eyebrow": 0.15,
+      "heading": 0.3,
+      "paragraph": 0.55,
+      "ctas": 0.7
+    },
+    "rules": [
+      "No scroll-jacking",
+      "No mouse-following blobs",
+      "Respect prefers-reduced-motion",
+      "Surface->Depth transition must be progressive (controlled scroll range with fading overlay)"
+    ]
+  },
+  "sections": [
+    {
+      "id": "nav",
+      "design": "Transparent at top, transitions to translucent navy on scroll. Left: Script Wordmark. Right: Product, How It Works, Security, Sign In, Get Started. Mobile uses Lucide Menu/X."
+    },
+    {
+      "id": "hero",
+      "design": "100vh full-bleed media. Image preserved on right. Text constrained to 35-40% width on left. Localized translucent blue/navy gradient behind left-side text. Eyebrow: 'ANALYST INTELLIGENCE, ON DEMAND.'. Heading: 'Your AI\\nData Analyst.'. Support: 'Ask your data a business question in plain English. DataKat finds the relevant data, analyzes it, and explains the answer clearly.'. CTAs: 'See DataKat in Action →', 'How it works'."
+    },
+    {
+      "id": "product",
+      "design": "Deep marine blue background (#0A1428). Heading: 'Ask the question. Get the answer.' Support: 'No dashboards to build. No SQL to write. Ask DataKat the same way you'd ask an analyst.'. Interface: NOT a chat bubble, but a refined product-style analytical UI showing the specific table data provided in the prompt."
+    },
+    {
+      "id": "how-it-works",
+      "design": "Background descends darker. 'Connect. Ask. Analyze. Understand.' 4 stages presented editorially (NOT identical glowing cards). Spatial, elegant typography."
+    },
+    {
+      "id": "business-questions",
+      "design": "Heading: 'Ask the questions that usually take another dashboard.'. 6 questions displayed in a slow editorial marquee."
+    },
+    {
+      "id": "technical",
+      "design": "Background #080D18. Heading: 'More than text-to-SQL.'. 8-step technical sequence with restrained animated connecting line. No AI brains or code rain."
+    },
+    {
+      "id": "security",
+      "design": "Heading: 'Built for controlled analytical access.'. 6 concepts presented calmly. No padlock cliches."
+    },
+    {
+      "id": "differentiation",
+      "design": "Background #05070D. Sequential reveal: 'Not another dashboard.', 'Not another SQL editor.', 'Not another chatbot.', 'An analyst you can talk to.' Large editorial typography."
+    },
+    {
+      "id": "final-cta",
+      "design": "Deepest point #05070D. 'Your data already knows the answer.' / 'What do you want to know?'. CTAs: Get Started, Sign in."
+    }
+  ],
+  "components": {
+    "marquee": "Use react-fast-marquee with slow speed, no gradients. Editorial typography.",
+    "buttons": "Restrained, premium. Primary: bg-[#00D9FF] text-black hover:bg-white. Secondary: text-white hover:text-[#00D9FF]."
+  },
+  "image_urls": {
+    "hero_background": "https://images.unsplash.com/photo-1668110648714-1070e851f855?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1OTV8MHwxfHNlYXJjaHw0fHx1bmRlcndhdGVyJTIwb2NlYW4lMjBzdXJmYWNlJTIwc3VubGlnaHR8ZW58MHx8fHwxNzkxNTcwMjY4fDA&ixlib=rb-4.1.0&q=85",
+    "description": "Sunlight filtering through deep blue ocean water, acting as the 'Surface' of the ocean."
+  },
+  "testing": {
+    "data_testid_required": true,
+    "instructions": "All interactive elements (buttons, links, form inputs, navigation items) MUST include a kebab-case role-based data-testid attribute."
+  },
+  "instructions_to_main_agent": [
+    "Strictly follow the color progression from hero image to #0A1428 to #080D18 to #05070D on scrolling.",
+    "Ensure the hero background has a subtle localized gradient overlay on the left side to make the white text readable, but keep the right side completely clear to see the ocean/activity.",
+    "Use standard Lucide React icons. Use Framer Motion for scroll reveals with the exact stagger and timing provided.",
+    "The DataKat logo should use the 'Dancing Script' or 'Caveat' font inline if an image is not available, as it must be a script wordmark.",
+    "Do NOT invent any metrics, pricing, or testimonials.",
+    "DO NOT use standard Shadcn card styles for 'How it Works' or 'Differentiation'—use editorial, cardless layouts.",
+    "Implement the 'More than text-to-SQL' section using an SVG connecting line that animates using Framer Motion (pathLength).",
+    "Setup Lenis smooth scrolling globally."
+  ],
+  "UNIVERSAL GUIDELINES FOR MAIN AGENT": [
+    "Do not converge toward generic AI outputs (no glowing brains, no 'AI slop').",
+    "Create depth through layered design elements and z-index hierarchy, NOT aggressive gradients.",
+    "NEVER use emojis as icons.",
+    "Do not apply global 'transition: all' styles.",
+    "Do not center align app containers by default.",
+    "Provide micro-interactions (hover, active) for all clickable elements."
+  ]
+}
