@@ -23,8 +23,8 @@ Build a premium cinematic public landing page for "DataKat" — an AI analytics 
 Section order: Hero → depth transition → Product demo (#product) → How it works (#how-it-works) → Business questions marquee → More than text-to-SQL pipeline → Security (#security) → Differentiation → Final CTA → minimal footer. Exact demo question/answer/table data from the brief. No pricing, testimonials, logos, FAQ, blog, or fake claims.
 
 ## Implemented (2026-07-09)
-- Full-bleed cinematic hero: supplied artwork full-viewport, cat/action preserved right, copy left (35–40%), localized readability gradient only, masked line-by-line headline reveal, staggered fade-rise entrance (0.18/0.32/0.44/0.6/0.75s), subtle parallax + slow drift
-- NOTE: the "hero video" upload was received as a PNG image, so the hero plays the exact artwork with a subtle cinematic slow-zoom instead of video playback
+- Full-bleed cinematic hero: the FINAL user-supplied hero video (`public/media/datakat-hero.mp4`, 1280x720 H.264, 15.6s seamless loop) full-viewport with autoPlay/muted/loop/playsInline, poster extracted from the video's own first frame (`public/media/hero-poster.webp`); cat/action preserved right, copy left (35–40%), localized readability gradients only (left on desktop, bottom on mobile, faint top scrim for navbar), masked line-by-line headline reveal, staggered fade-rise entrance (0.18/0.32/0.44/0.6/0.75s), subtle parallax on scroll
+- Media history: first upload was a PNG still (kept unused at `src/assets/hero-ocean.webp`); the mp4 replaced it on 2026-07-09 per user correction. Note: the pod's headless test Chromium lacks the proprietary H.264 codec, so in-pod screenshots show the poster frame; the video serves correctly (HTTP 206 range) and plays in real browsers
 - Sticky surface→deep-ocean scroll transition (220vh range: sunlight veil + deep-navy layer, text fades before media, media parallax/scale, ends seamlessly into #0A1428)
 - Product demo console: question → DataKat answer → exact results table (West $1.24M +21.6% / South $0.98M +7.7% / North $0.81M +2.5% / East $0.76M -7.3%), no charts/exports
 - Editorial 4-stage How It Works (Connect/Ask/Analyze/Understand)

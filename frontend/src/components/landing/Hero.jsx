@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import {
   motion,
   useReducedMotion,
@@ -6,7 +6,6 @@ import {
   useTransform,
 } from "framer-motion";
 import { ArrowRight } from "lucide-react";
-import heroMedia from "../../assets/hero-ocean.webp";
 import { scrollToHash } from "../../lib/scroll";
 import { EASE } from "./Reveal";
 
@@ -43,7 +42,18 @@ const FadeUp = ({ children, delay, className = "", testid }) => {
 
 export const Hero = () => {
   const ref = useRef(null);
+  const videoRef = useRef(null);
   const reduce = useReducedMotion();
+
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    if (reduce) {
+      v.pause();
+      return;
+    }
+    v.play().catch(() => {});
+  }, [reduce]);
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start start", "end start"],
@@ -70,19 +80,31 @@ export const Hero = () => {
           className="absolute inset-0"
           aria-hidden="true"
         >
-          <img
-            src={heroMedia}
-            alt=""
-            fetchPriority="high"
-            decoding="async"
-            className="animate-hero-drift h-full w-full object-cover object-[70%_28%] sm:object-[66%_35%] md:object-[62%_50%]"
-          />
+          <video
+            ref={videoRef}
+            className="h-full w-full object-cover object-[72%_50%] md:object-[60%_30%]"
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            poster="/media/hero-poster.webp"
+            tabIndex={-1}
+          >
+            <source src="/media/datakat-hero.mp4" type="video/mp4" />
+          </video>
         </motion.div>
 
         {/* Localized readability gradient — left on desktop, bottom on mobile */}
         <div
           aria-hidden="true"
           className="absolute inset-0 bg-[linear-gradient(to_top,rgba(8,18,38,0.92)_0%,rgba(8,18,38,0.38)_38%,rgba(8,18,38,0)_62%)] md:bg-[linear-gradient(100deg,rgba(8,18,38,0.85)_0%,rgba(8,18,38,0.42)_34%,rgba(8,18,38,0)_60%)]"
+        />
+
+        {/* Faint top scrim so the navbar stays readable over the sunlit surface */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-x-0 top-0 h-32 bg-[linear-gradient(to_bottom,rgba(8,18,38,0.38),rgba(8,18,38,0))]"
         />
 
         {/* Surface → depth transition layers */}
