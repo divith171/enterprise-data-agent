@@ -125,6 +125,28 @@ html.lenis body {
     }
 }
 
+/* Accessible skip link: off-screen by default, revealed only on keyboard focus */
+.skip-link {
+    position: absolute;
+    left: 24px;
+    top: 16px;
+    z-index: 100;
+    transform: translateY(-300%);
+    opacity: 0;
+    pointer-events: none;
+    transition:
+        opacity 0.2s ease,
+        transform 0.2s ease,
+        top 0.2s ease;
+}
+
+.skip-link:focus-visible {
+    top: 76px;
+    transform: none;
+    opacity: 1;
+    pointer-events: auto;
+}
+
 @layer base {
     [data-debug-wrapper="true"] {
         display: contents !important;

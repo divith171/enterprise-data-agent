@@ -50,7 +50,7 @@ export default function Landing() {
         href="#product"
         data-testid="skip-link"
         onClick={scrollToHash("#product")}
-        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-brand focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-abyss"
+        className="skip-link rounded-full bg-brand px-4 py-2 text-sm font-medium text-abyss"
       >
         Skip to content
       </a>

@@ -34,7 +34,7 @@ Section order: Hero → depth transition → Product demo (#product) → How it 
 - Differentiation typography sequence → "An analyst you can talk to."
 - Final CTA (Get Started → /signup, Sign in → /login) + minimal footer (wordmark, 3 anchor links, © 2026 DataKat)
 - Navbar: approved wordmark only (no tagline/cat icon/sparkle), transparent → translucent navy on scroll, mobile Menu/X fullscreen #05070D menu
-- Accessibility: semantic HTML, focus-visible cyan rings, skip link, decorative-media alt handling, prefers-reduced-motion respected
+- Accessibility: semantic HTML, focus-visible cyan rings, skip link (off-screen by default via dedicated `.skip-link` CSS, revealed only on `:focus-visible` keyboard focus below the navbar so it never covers the logo; verified 2026-07-09: hidden for mouse/touch, appears on Tab, hides on blur), decorative-media alt handling, prefers-reduced-motion respected
 - Verified: all sections screenshotted at 1366/768/375, mobile menu, /login route, production `yarn build` passes
 
 ## Backlog / Next Tasks
