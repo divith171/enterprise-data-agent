@@ -51,19 +51,29 @@ export const Hero = () => {
     v.muted = true;
     if (reduce) {
       v.pause();
-      return;
+      return undefined;
     }
     const tryPlay = () => {
+      if (!v.paused) return;
       v.play().catch(() => {});
     };
     tryPlay();
+    const retries = [250, 750, 1500, 3000].map((ms) => setTimeout(tryPlay, ms));
     v.addEventListener("canplay", tryPlay);
-    const events = ["pointerdown", "touchstart", "scroll", "keydown"];
-    const onInteract = () => tryPlay();
-    events.forEach((e) => window.addEventListener(e, onInteract, { passive: true }));
+    const onPageShow = () => tryPlay();
+    const onVisibility = () => {
+      if (!document.hidden) tryPlay();
+    };
+    window.addEventListener("pageshow", onPageShow);
+    document.addEventListener("visibilitychange", onVisibility);
+    const gestures = ["pointerdown", "touchstart", "scroll", "keydown"];
+    gestures.forEach((e) => window.addEventListener(e, tryPlay, { passive: true }));
     return () => {
+      retries.forEach(clearTimeout);
       v.removeEventListener("canplay", tryPlay);
-      events.forEach((e) => window.removeEventListener(e, onInteract));
+      window.removeEventListener("pageshow", onPageShow);
+      document.removeEventListener("visibilitychange", onVisibility);
+      gestures.forEach((e) => window.removeEventListener(e, tryPlay));
     };
   }, [reduce]);
   const { scrollYProgress } = useScroll({
