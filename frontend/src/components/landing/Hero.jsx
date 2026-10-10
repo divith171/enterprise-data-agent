@@ -47,12 +47,8 @@ export const Hero = () => {
 
   useEffect(() => {
     const v = videoRef.current;
-    if (!v) return;
+    if (!v) return undefined;
     v.muted = true;
-    if (reduce) {
-      v.pause();
-      return undefined;
-    }
     const tryPlay = () => {
       if (!v.paused) return;
       v.play().catch(() => {});
@@ -60,6 +56,7 @@ export const Hero = () => {
     tryPlay();
     const retries = [250, 750, 1500, 3000].map((ms) => setTimeout(tryPlay, ms));
     v.addEventListener("canplay", tryPlay);
+    v.addEventListener("pause", tryPlay);
     const onPageShow = () => tryPlay();
     const onVisibility = () => {
       if (!document.hidden) tryPlay();
@@ -71,11 +68,12 @@ export const Hero = () => {
     return () => {
       retries.forEach(clearTimeout);
       v.removeEventListener("canplay", tryPlay);
+      v.removeEventListener("pause", tryPlay);
       window.removeEventListener("pageshow", onPageShow);
       document.removeEventListener("visibilitychange", onVisibility);
       gestures.forEach((e) => window.removeEventListener(e, tryPlay));
     };
-  }, [reduce]);
+  }, []);
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start start", "end start"],
