@@ -64,6 +64,7 @@ const OutputTable = ({ fixture, hotTags }) => {
   const { cols, rows } = COLUMNS[fixture.id](fixture);
   const hot = (c) => c.tags.some((t) => hotTags.includes(t));
   return (
+    <div className="ph-table-scroll" tabIndex={0} data-testid="trace-output-scroll">
     <table className="ph-table ph-table--compact" data-testid="trace-output-table">
       <thead><tr>{cols.map((c) => <th key={c.h} scope="col" className={hot(c) ? "is-hi" : ""}>{c.h}</th>)}</tr></thead>
       <tbody>
@@ -74,6 +75,7 @@ const OutputTable = ({ fixture, hotTags }) => {
         ))}
       </tbody>
     </table>
+    </div>
   );
 };
 
@@ -141,7 +143,7 @@ const Inspector = ({ phase, fixture, calcId, setCalcId, highlightId, setHighligh
         </ol>
         <p className="ph-label">Sample output</p>
         <OutputTable fixture={fixture} hotTags={hotTags} />
-        <ValidationCheckpoint compact />
+        <ValidationCheckpoint compact testid="trace-validation-checkpoint" />
         <SqlDisclosure fixture={fixture} testid="trace-sql-disclosure" />
         <p className="ph-caption">{SQL_LABEL}. Validation is a checkpoint, not a verified pass.</p>
       </>
@@ -189,8 +191,8 @@ export const AnalysisTrace = ({ fixture, activePhase, setActivePhase, highlightI
           <span className={`ph-arrow ph-arrow--h ph-arrow--l ${motion ? "ph-arrow--anim" : ""}`} style={{ top: 172 }} aria-hidden="true" />
           {node(PHASES[0], { gridColumn: 1, gridRow: 1 })}
           {node(PHASES[1], { gridColumn: 2, gridRow: 1 })}
-          {node(PHASES[3], { gridColumn: 1, gridRow: 2 })}
           {node(PHASES[2], { gridColumn: 2, gridRow: 2 })}
+          {node(PHASES[3], { gridColumn: 1, gridRow: 2 })}
         </div>
       ) : (
         <div className="ph-map ph-map--list" data-testid="trace-map-list">{PHASES.map((p) => node(p))}</div>

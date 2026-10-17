@@ -1,0 +1,1596 @@
+{
+  "matrix": {
+    "desktop_1440x900": {
+      "question-regional-growth": {
+        "question": "question-regional-growth",
+        "viewport_client_width": 1440,
+        "doc_scroll_width": 1440,
+        "body_width": 1440,
+        "body_scroll_width": 1440,
+        "inspector_width": 410,
+        "pre_width": 410,
+        "pre_client_width": 408,
+        "pre_scroll_width": 496,
+        "pre_overflow_x": "auto",
+        "sql_open": true,
+        "sample_open": true,
+        "containment_by_rect": true,
+        "page_no_horizontal_overflow": true,
+        "local_scroll": {
+          "before": 0,
+          "after": 40,
+          "moved": true
+        },
+        "page_scroll_x_after": 0,
+        "page_scroll_x_before": 0,
+        "token_probe": {
+          "pre_client_width": 408,
+          "pre_scroll_width": 8069,
+          "containment_by_rect": true,
+          "doc_scroll_width": 1440,
+          "doc_client_width": 1440,
+          "has_internal_overflow": true
+        }
+      },
+      "question-customer-decline": {
+        "question": "question-customer-decline",
+        "viewport_client_width": 1440,
+        "doc_scroll_width": 1440,
+        "body_width": 1440,
+        "body_scroll_width": 1440,
+        "inspector_width": 410,
+        "pre_width": 410,
+        "pre_client_width": 408,
+        "pre_scroll_width": 503,
+        "pre_overflow_x": "auto",
+        "sql_open": true,
+        "sample_open": true,
+        "containment_by_rect": true,
+        "page_no_horizontal_overflow": true,
+        "local_scroll": {
+          "before": 0,
+          "after": 40,
+          "moved": true
+        },
+        "page_scroll_x_after": 0,
+        "page_scroll_x_before": 0,
+        "token_probe": {
+          "pre_client_width": 408,
+          "pre_scroll_width": 8329,
+          "containment_by_rect": true,
+          "doc_scroll_width": 1440,
+          "doc_client_width": 1440,
+          "has_internal_overflow": true
+        }
+      },
+      "question-weekly-change": {
+        "question": "question-weekly-change",
+        "viewport_client_width": 1440,
+        "doc_scroll_width": 1440,
+        "body_width": 1440,
+        "body_scroll_width": 1440,
+        "inspector_width": 410,
+        "pre_width": 410,
+        "pre_client_width": 408,
+        "pre_scroll_width": 652,
+        "pre_overflow_x": "auto",
+        "sql_open": true,
+        "sample_open": true,
+        "containment_by_rect": true,
+        "page_no_horizontal_overflow": true,
+        "local_scroll": {
+          "before": 0,
+          "after": 40,
+          "moved": true
+        },
+        "page_scroll_x_after": 0,
+        "page_scroll_x_before": 0,
+        "token_probe": {
+          "pre_client_width": 408,
+          "pre_scroll_width": 8069,
+          "containment_by_rect": true,
+          "doc_scroll_width": 1440,
+          "doc_client_width": 1440,
+          "has_internal_overflow": true
+        }
+      },
+      "question-margin-loss": {
+        "question": "question-margin-loss",
+        "viewport_client_width": 1440,
+        "doc_scroll_width": 1440,
+        "body_width": 1440,
+        "body_scroll_width": 1440,
+        "inspector_width": 410,
+        "pre_width": 410,
+        "pre_client_width": 408,
+        "pre_scroll_width": 568,
+        "pre_overflow_x": "auto",
+        "sql_open": true,
+        "sample_open": true,
+        "containment_by_rect": true,
+        "page_no_horizontal_overflow": true,
+        "local_scroll": {
+          "before": 0,
+          "after": 40,
+          "moved": true
+        },
+        "page_scroll_x_after": 0,
+        "page_scroll_x_before": 0,
+        "token_probe": {
+          "pre_client_width": 408,
+          "pre_scroll_width": 8082,
+          "containment_by_rect": true,
+          "doc_scroll_width": 1440,
+          "doc_client_width": 1440,
+          "has_internal_overflow": true
+        }
+      }
+    },
+    "desktop_1366x768": {
+      "question-regional-growth": {
+        "question": "question-regional-growth",
+        "viewport_client_width": 1366,
+        "doc_scroll_width": 1366,
+        "body_width": 1366,
+        "body_scroll_width": 1366,
+        "inspector_width": 410,
+        "pre_width": 410,
+        "pre_client_width": 408,
+        "pre_scroll_width": 496,
+        "pre_overflow_x": "auto",
+        "sql_open": true,
+        "sample_open": true,
+        "containment_by_rect": true,
+        "page_no_horizontal_overflow": true,
+        "local_scroll": {
+          "before": 0,
+          "after": 40,
+          "moved": true
+        },
+        "page_scroll_x_after": 0,
+        "page_scroll_x_before": 0,
+        "token_probe": {
+          "pre_client_width": 408,
+          "pre_scroll_width": 8069,
+          "containment_by_rect": true,
+          "doc_scroll_width": 1366,
+          "doc_client_width": 1366,
+          "has_internal_overflow": true
+        }
+      },
+      "question-customer-decline": {
+        "question": "question-customer-decline",
+        "viewport_client_width": 1366,
+        "doc_scroll_width": 1366,
+        "body_width": 1366,
+        "body_scroll_width": 1366,
+        "inspector_width": 410,
+        "pre_width": 410,
+        "pre_client_width": 408,
+        "pre_scroll_width": 503,
+        "pre_overflow_x": "auto",
+        "sql_open": true,
+        "sample_open": true,
+        "containment_by_rect": true,
+        "page_no_horizontal_overflow": true,
+        "local_scroll": {
+          "before": 0,
+          "after": 40,
+          "moved": true
+        },
+        "page_scroll_x_after": 0,
+        "page_scroll_x_before": 0,
+        "token_probe": {
+          "pre_client_width": 408,
+          "pre_scroll_width": 8329,
+          "containment_by_rect": true,
+          "doc_scroll_width": 1366,
+          "doc_client_width": 1366,
+          "has_internal_overflow": true
+        }
+      },
+      "question-weekly-change": {
+        "question": "question-weekly-change",
+        "viewport_client_width": 1366,
+        "doc_scroll_width": 1366,
+        "body_width": 1366,
+        "body_scroll_width": 1366,
+        "inspector_width": 410,
+        "pre_width": 410,
+        "pre_client_width": 408,
+        "pre_scroll_width": 652,
+        "pre_overflow_x": "auto",
+        "sql_open": true,
+        "sample_open": true,
+        "containment_by_rect": true,
+        "page_no_horizontal_overflow": true,
+        "local_scroll": {
+          "before": 0,
+          "after": 40,
+          "moved": true
+        },
+        "page_scroll_x_after": 0,
+        "page_scroll_x_before": 0,
+        "token_probe": {
+          "pre_client_width": 408,
+          "pre_scroll_width": 8069,
+          "containment_by_rect": true,
+          "doc_scroll_width": 1366,
+          "doc_client_width": 1366,
+          "has_internal_overflow": true
+        }
+      },
+      "question-margin-loss": {
+        "question": "question-margin-loss",
+        "viewport_client_width": 1366,
+        "doc_scroll_width": 1366,
+        "body_width": 1366,
+        "body_scroll_width": 1366,
+        "inspector_width": 410,
+        "pre_width": 410,
+        "pre_client_width": 408,
+        "pre_scroll_width": 568,
+        "pre_overflow_x": "auto",
+        "sql_open": true,
+        "sample_open": true,
+        "containment_by_rect": true,
+        "page_no_horizontal_overflow": true,
+        "local_scroll": {
+          "before": 0,
+          "after": 40,
+          "moved": true
+        },
+        "page_scroll_x_after": 0,
+        "page_scroll_x_before": 0,
+        "token_probe": {
+          "pre_client_width": 408,
+          "pre_scroll_width": 8082,
+          "containment_by_rect": true,
+          "doc_scroll_width": 1366,
+          "doc_client_width": 1366,
+          "has_internal_overflow": true
+        }
+      }
+    },
+    "desktop_1024x768": {
+      "question-regional-growth": {
+        "question": "question-regional-growth",
+        "viewport_client_width": 1024,
+        "doc_scroll_width": 1024,
+        "body_width": 1024,
+        "body_scroll_width": 1024,
+        "inspector_width": 250,
+        "pre_width": 250,
+        "pre_client_width": 248,
+        "pre_scroll_width": 496,
+        "pre_overflow_x": "auto",
+        "sql_open": true,
+        "sample_open": true,
+        "containment_by_rect": true,
+        "page_no_horizontal_overflow": true,
+        "local_scroll": {
+          "before": 0,
+          "after": 40,
+          "moved": true
+        },
+        "page_scroll_x_after": 0,
+        "page_scroll_x_before": 0,
+        "token_probe": {
+          "pre_client_width": 248,
+          "pre_scroll_width": 8069,
+          "containment_by_rect": true,
+          "doc_scroll_width": 1024,
+          "doc_client_width": 1024,
+          "has_internal_overflow": true
+        }
+      },
+      "question-customer-decline": {
+        "question": "question-customer-decline",
+        "viewport_client_width": 1024,
+        "doc_scroll_width": 1024,
+        "body_width": 1024,
+        "body_scroll_width": 1024,
+        "inspector_width": 250,
+        "pre_width": 250,
+        "pre_client_width": 248,
+        "pre_scroll_width": 503,
+        "pre_overflow_x": "auto",
+        "sql_open": true,
+        "sample_open": true,
+        "containment_by_rect": true,
+        "page_no_horizontal_overflow": true,
+        "local_scroll": {
+          "before": 0,
+          "after": 40,
+          "moved": true
+        },
+        "page_scroll_x_after": 0,
+        "page_scroll_x_before": 0,
+        "token_probe": {
+          "pre_client_width": 248,
+          "pre_scroll_width": 8329,
+          "containment_by_rect": true,
+          "doc_scroll_width": 1024,
+          "doc_client_width": 1024,
+          "has_internal_overflow": true
+        }
+      },
+      "question-weekly-change": {
+        "question": "question-weekly-change",
+        "viewport_client_width": 1024,
+        "doc_scroll_width": 1024,
+        "body_width": 1024,
+        "body_scroll_width": 1024,
+        "inspector_width": 250,
+        "pre_width": 250,
+        "pre_client_width": 248,
+        "pre_scroll_width": 652,
+        "pre_overflow_x": "auto",
+        "sql_open": true,
+        "sample_open": true,
+        "containment_by_rect": true,
+        "page_no_horizontal_overflow": true,
+        "local_scroll": {
+          "before": 0,
+          "after": 40,
+          "moved": true
+        },
+        "page_scroll_x_after": 0,
+        "page_scroll_x_before": 0,
+        "token_probe": {
+          "pre_client_width": 248,
+          "pre_scroll_width": 8069,
+          "containment_by_rect": true,
+          "doc_scroll_width": 1024,
+          "doc_client_width": 1024,
+          "has_internal_overflow": true
+        }
+      },
+      "question-margin-loss": {
+        "question": "question-margin-loss",
+        "viewport_client_width": 1024,
+        "doc_scroll_width": 1024,
+        "body_width": 1024,
+        "body_scroll_width": 1024,
+        "inspector_width": 250,
+        "pre_width": 250,
+        "pre_client_width": 248,
+        "pre_scroll_width": 568,
+        "pre_overflow_x": "auto",
+        "sql_open": true,
+        "sample_open": true,
+        "containment_by_rect": true,
+        "page_no_horizontal_overflow": true,
+        "local_scroll": {
+          "before": 0,
+          "after": 40,
+          "moved": true
+        },
+        "page_scroll_x_after": 0,
+        "page_scroll_x_before": 0,
+        "token_probe": {
+          "pre_client_width": 248,
+          "pre_scroll_width": 8082,
+          "containment_by_rect": true,
+          "doc_scroll_width": 1024,
+          "doc_client_width": 1024,
+          "has_internal_overflow": true
+        }
+      }
+    },
+    "tablet_768x1024": {
+      "question-regional-growth": {
+        "question": "question-regional-growth",
+        "viewport_client_width": 768,
+        "doc_scroll_width": 768,
+        "body_width": 768,
+        "body_scroll_width": 768,
+        "inspector_width": 330,
+        "pre_width": 330,
+        "pre_client_width": 328,
+        "pre_scroll_width": 496,
+        "pre_overflow_x": "auto",
+        "sql_open": true,
+        "sample_open": true,
+        "containment_by_rect": true,
+        "page_no_horizontal_overflow": true,
+        "local_scroll": {
+          "before": 0,
+          "after": 40,
+          "moved": true
+        },
+        "page_scroll_x_after": 0,
+        "page_scroll_x_before": 0,
+        "token_probe": {
+          "pre_client_width": 328,
+          "pre_scroll_width": 8069,
+          "containment_by_rect": true,
+          "doc_scroll_width": 768,
+          "doc_client_width": 768,
+          "has_internal_overflow": true
+        }
+      },
+      "question-customer-decline": {
+        "question": "question-customer-decline",
+        "viewport_client_width": 768,
+        "doc_scroll_width": 768,
+        "body_width": 768,
+        "body_scroll_width": 768,
+        "inspector_width": 330,
+        "pre_width": 330,
+        "pre_client_width": 328,
+        "pre_scroll_width": 503,
+        "pre_overflow_x": "auto",
+        "sql_open": true,
+        "sample_open": true,
+        "containment_by_rect": true,
+        "page_no_horizontal_overflow": true,
+        "local_scroll": {
+          "before": 0,
+          "after": 40,
+          "moved": true
+        },
+        "page_scroll_x_after": 0,
+        "page_scroll_x_before": 0,
+        "token_probe": {
+          "pre_client_width": 328,
+          "pre_scroll_width": 8329,
+          "containment_by_rect": true,
+          "doc_scroll_width": 768,
+          "doc_client_width": 768,
+          "has_internal_overflow": true
+        }
+      },
+      "question-weekly-change": {
+        "question": "question-weekly-change",
+        "viewport_client_width": 768,
+        "doc_scroll_width": 768,
+        "body_width": 768,
+        "body_scroll_width": 768,
+        "inspector_width": 330,
+        "pre_width": 330,
+        "pre_client_width": 328,
+        "pre_scroll_width": 652,
+        "pre_overflow_x": "auto",
+        "sql_open": true,
+        "sample_open": true,
+        "containment_by_rect": true,
+        "page_no_horizontal_overflow": true,
+        "local_scroll": {
+          "before": 0,
+          "after": 40,
+          "moved": true
+        },
+        "page_scroll_x_after": 0,
+        "page_scroll_x_before": 0,
+        "token_probe": {
+          "pre_client_width": 328,
+          "pre_scroll_width": 8069,
+          "containment_by_rect": true,
+          "doc_scroll_width": 768,
+          "doc_client_width": 768,
+          "has_internal_overflow": true
+        }
+      },
+      "question-margin-loss": {
+        "question": "question-margin-loss",
+        "viewport_client_width": 768,
+        "doc_scroll_width": 768,
+        "body_width": 768,
+        "body_scroll_width": 768,
+        "inspector_width": 330,
+        "pre_width": 330,
+        "pre_client_width": 328,
+        "pre_scroll_width": 568,
+        "pre_overflow_x": "auto",
+        "sql_open": true,
+        "sample_open": true,
+        "containment_by_rect": true,
+        "page_no_horizontal_overflow": true,
+        "local_scroll": {
+          "before": 0,
+          "after": 40,
+          "moved": true
+        },
+        "page_scroll_x_after": 0,
+        "page_scroll_x_before": 0,
+        "token_probe": {
+          "pre_client_width": 328,
+          "pre_scroll_width": 8082,
+          "containment_by_rect": true,
+          "doc_scroll_width": 768,
+          "doc_client_width": 768,
+          "has_internal_overflow": true
+        }
+      }
+    },
+    "mobile_390x844": {
+      "question-regional-growth": {
+        "question": "question-regional-growth",
+        "viewport_client_width": 390,
+        "doc_scroll_width": 390,
+        "body_width": 390,
+        "body_scroll_width": 390,
+        "inspector_width": 316,
+        "pre_width": 316,
+        "pre_client_width": 314,
+        "pre_scroll_width": 496,
+        "pre_overflow_x": "auto",
+        "sql_open": true,
+        "sample_open": true,
+        "containment_by_rect": true,
+        "page_no_horizontal_overflow": true,
+        "local_scroll": {
+          "before": 0,
+          "after": 40,
+          "moved": true
+        },
+        "page_scroll_x_after": 0,
+        "page_scroll_x_before": 0,
+        "token_probe": {
+          "pre_client_width": 314,
+          "pre_scroll_width": 8069,
+          "containment_by_rect": true,
+          "doc_scroll_width": 390,
+          "doc_client_width": 390,
+          "has_internal_overflow": true
+        }
+      },
+      "question-customer-decline": {
+        "question": "question-customer-decline",
+        "viewport_client_width": 390,
+        "doc_scroll_width": 390,
+        "body_width": 390,
+        "body_scroll_width": 390,
+        "inspector_width": 316,
+        "pre_width": 316,
+        "pre_client_width": 314,
+        "pre_scroll_width": 503,
+        "pre_overflow_x": "auto",
+        "sql_open": true,
+        "sample_open": true,
+        "containment_by_rect": true,
+        "page_no_horizontal_overflow": true,
+        "local_scroll": {
+          "before": 0,
+          "after": 40,
+          "moved": true
+        },
+        "page_scroll_x_after": 0,
+        "page_scroll_x_before": 0,
+        "token_probe": {
+          "pre_client_width": 314,
+          "pre_scroll_width": 8329,
+          "containment_by_rect": true,
+          "doc_scroll_width": 390,
+          "doc_client_width": 390,
+          "has_internal_overflow": true
+        }
+      },
+      "question-weekly-change": {
+        "question": "question-weekly-change",
+        "viewport_client_width": 390,
+        "doc_scroll_width": 390,
+        "body_width": 390,
+        "body_scroll_width": 390,
+        "inspector_width": 316,
+        "pre_width": 316,
+        "pre_client_width": 314,
+        "pre_scroll_width": 652,
+        "pre_overflow_x": "auto",
+        "sql_open": true,
+        "sample_open": true,
+        "containment_by_rect": true,
+        "page_no_horizontal_overflow": true,
+        "local_scroll": {
+          "before": 0,
+          "after": 40,
+          "moved": true
+        },
+        "page_scroll_x_after": 0,
+        "page_scroll_x_before": 0,
+        "token_probe": {
+          "pre_client_width": 314,
+          "pre_scroll_width": 8069,
+          "containment_by_rect": true,
+          "doc_scroll_width": 390,
+          "doc_client_width": 390,
+          "has_internal_overflow": true
+        }
+      },
+      "question-margin-loss": {
+        "question": "question-margin-loss",
+        "viewport_client_width": 390,
+        "doc_scroll_width": 390,
+        "body_width": 390,
+        "body_scroll_width": 390,
+        "inspector_width": 316,
+        "pre_width": 316,
+        "pre_client_width": 314,
+        "pre_scroll_width": 568,
+        "pre_overflow_x": "auto",
+        "sql_open": true,
+        "sample_open": true,
+        "containment_by_rect": true,
+        "page_no_horizontal_overflow": true,
+        "local_scroll": {
+          "before": 0,
+          "after": 40,
+          "moved": true
+        },
+        "page_scroll_x_after": 0,
+        "page_scroll_x_before": 0,
+        "token_probe": {
+          "pre_client_width": 314,
+          "pre_scroll_width": 8082,
+          "containment_by_rect": true,
+          "doc_scroll_width": 390,
+          "doc_client_width": 390,
+          "has_internal_overflow": true
+        }
+      }
+    },
+    "mobile_360x800": {
+      "question-regional-growth": {
+        "question": "question-regional-growth",
+        "viewport_client_width": 360,
+        "doc_scroll_width": 360,
+        "body_width": 360,
+        "body_scroll_width": 360,
+        "inspector_width": 294,
+        "pre_width": 294,
+        "pre_client_width": 292,
+        "pre_scroll_width": 496,
+        "pre_overflow_x": "auto",
+        "sql_open": true,
+        "sample_open": true,
+        "containment_by_rect": true,
+        "page_no_horizontal_overflow": true,
+        "local_scroll": {
+          "before": 0,
+          "after": 40,
+          "moved": true
+        },
+        "page_scroll_x_after": 0,
+        "page_scroll_x_before": 0,
+        "token_probe": {
+          "pre_client_width": 292,
+          "pre_scroll_width": 8069,
+          "containment_by_rect": true,
+          "doc_scroll_width": 360,
+          "doc_client_width": 360,
+          "has_internal_overflow": true
+        }
+      },
+      "question-customer-decline": {
+        "question": "question-customer-decline",
+        "viewport_client_width": 360,
+        "doc_scroll_width": 360,
+        "body_width": 360,
+        "body_scroll_width": 360,
+        "inspector_width": 294,
+        "pre_width": 294,
+        "pre_client_width": 292,
+        "pre_scroll_width": 503,
+        "pre_overflow_x": "auto",
+        "sql_open": true,
+        "sample_open": true,
+        "containment_by_rect": true,
+        "page_no_horizontal_overflow": true,
+        "local_scroll": {
+          "before": 0,
+          "after": 40,
+          "moved": true
+        },
+        "page_scroll_x_after": 0,
+        "page_scroll_x_before": 0,
+        "token_probe": {
+          "pre_client_width": 292,
+          "pre_scroll_width": 8329,
+          "containment_by_rect": true,
+          "doc_scroll_width": 360,
+          "doc_client_width": 360,
+          "has_internal_overflow": true
+        }
+      },
+      "question-weekly-change": {
+        "question": "question-weekly-change",
+        "viewport_client_width": 360,
+        "doc_scroll_width": 360,
+        "body_width": 360,
+        "body_scroll_width": 360,
+        "inspector_width": 294,
+        "pre_width": 294,
+        "pre_client_width": 292,
+        "pre_scroll_width": 652,
+        "pre_overflow_x": "auto",
+        "sql_open": true,
+        "sample_open": true,
+        "containment_by_rect": true,
+        "page_no_horizontal_overflow": true,
+        "local_scroll": {
+          "before": 0,
+          "after": 40,
+          "moved": true
+        },
+        "page_scroll_x_after": 0,
+        "page_scroll_x_before": 0,
+        "token_probe": {
+          "pre_client_width": 292,
+          "pre_scroll_width": 8069,
+          "containment_by_rect": true,
+          "doc_scroll_width": 360,
+          "doc_client_width": 360,
+          "has_internal_overflow": true
+        }
+      },
+      "question-margin-loss": {
+        "question": "question-margin-loss",
+        "viewport_client_width": 360,
+        "doc_scroll_width": 360,
+        "body_width": 360,
+        "body_scroll_width": 360,
+        "inspector_width": 294,
+        "pre_width": 294,
+        "pre_client_width": 292,
+        "pre_scroll_width": 568,
+        "pre_overflow_x": "auto",
+        "sql_open": true,
+        "sample_open": true,
+        "containment_by_rect": true,
+        "page_no_horizontal_overflow": true,
+        "local_scroll": {
+          "before": 0,
+          "after": 40,
+          "moved": true
+        },
+        "page_scroll_x_after": 0,
+        "page_scroll_x_before": 0,
+        "token_probe": {
+          "pre_client_width": 292,
+          "pre_scroll_width": 8082,
+          "containment_by_rect": true,
+          "doc_scroll_width": 360,
+          "doc_client_width": 360,
+          "has_internal_overflow": true
+        }
+      }
+    }
+  },
+  "tab_orders": {
+    "desktop_1440x900": [
+      "trace-phase-interpret",
+      "trace-phase-ground",
+      "trace-phase-compute",
+      "trace-phase-explain"
+    ],
+    "desktop_1366x768": [
+      "trace-phase-interpret",
+      "trace-phase-ground",
+      "trace-phase-compute",
+      "trace-phase-explain"
+    ],
+    "desktop_1024x768": [
+      "trace-phase-interpret",
+      "trace-phase-ground",
+      "trace-phase-compute",
+      "trace-phase-explain"
+    ],
+    "tablet_768x1024": [
+      "trace-phase-interpret",
+      "trace-phase-ground",
+      "trace-phase-compute",
+      "trace-phase-explain"
+    ],
+    "mobile_390x844": [
+      "trace-phase-interpret",
+      "trace-phase-ground",
+      "trace-phase-compute",
+      "trace-phase-explain"
+    ],
+    "mobile_360x800": [
+      "trace-phase-interpret",
+      "trace-phase-ground",
+      "trace-phase-compute",
+      "trace-phase-explain"
+    ]
+  },
+  "chart_checks": {
+    "desktop_1440x900": {
+      "question-regional-growth": {
+        "present": true,
+        "root_width": 734,
+        "root_client_width": 734,
+        "root_scroll_width": 734,
+        "local_horizontal_scroll": false
+      },
+      "question-customer-decline": {
+        "present": true,
+        "root_width": 734,
+        "root_client_width": 734,
+        "root_scroll_width": 734,
+        "local_horizontal_scroll": false
+      },
+      "question-weekly-change": {
+        "present": true,
+        "root_width": 734,
+        "root_client_width": 734,
+        "root_scroll_width": 734,
+        "local_horizontal_scroll": false
+      },
+      "question-margin-loss": {
+        "present": true,
+        "root_width": 734,
+        "root_client_width": 734,
+        "root_scroll_width": 734,
+        "local_horizontal_scroll": false
+      }
+    },
+    "desktop_1366x768": {
+      "question-regional-growth": {
+        "present": true,
+        "root_width": 734,
+        "root_client_width": 734,
+        "root_scroll_width": 734,
+        "local_horizontal_scroll": false
+      },
+      "question-customer-decline": {
+        "present": true,
+        "root_width": 734,
+        "root_client_width": 734,
+        "root_scroll_width": 734,
+        "local_horizontal_scroll": false
+      },
+      "question-weekly-change": {
+        "present": true,
+        "root_width": 734,
+        "root_client_width": 734,
+        "root_scroll_width": 734,
+        "local_horizontal_scroll": false
+      },
+      "question-margin-loss": {
+        "present": true,
+        "root_width": 734,
+        "root_client_width": 734,
+        "root_scroll_width": 734,
+        "local_horizontal_scroll": false
+      }
+    },
+    "desktop_1024x768": {
+      "question-regional-growth": {
+        "present": true,
+        "root_width": 574,
+        "root_client_width": 574,
+        "root_scroll_width": 574,
+        "local_horizontal_scroll": false
+      },
+      "question-customer-decline": {
+        "present": true,
+        "root_width": 574,
+        "root_client_width": 574,
+        "root_scroll_width": 574,
+        "local_horizontal_scroll": false
+      },
+      "question-weekly-change": {
+        "present": true,
+        "root_width": 574,
+        "root_client_width": 574,
+        "root_scroll_width": 574,
+        "local_horizontal_scroll": false
+      },
+      "question-margin-loss": {
+        "present": true,
+        "root_width": 574,
+        "root_client_width": 574,
+        "root_scroll_width": 574,
+        "local_horizontal_scroll": false
+      }
+    },
+    "tablet_768x1024": {
+      "question-regional-growth": {
+        "present": true,
+        "root_width": 654,
+        "root_client_width": 654,
+        "root_scroll_width": 654,
+        "local_horizontal_scroll": false
+      },
+      "question-customer-decline": {
+        "present": true,
+        "root_width": 654,
+        "root_client_width": 654,
+        "root_scroll_width": 654,
+        "local_horizontal_scroll": false
+      },
+      "question-weekly-change": {
+        "present": true,
+        "root_width": 654,
+        "root_client_width": 654,
+        "root_scroll_width": 654,
+        "local_horizontal_scroll": false
+      },
+      "question-margin-loss": {
+        "present": true,
+        "root_width": 654,
+        "root_client_width": 654,
+        "root_scroll_width": 654,
+        "local_horizontal_scroll": false
+      }
+    },
+    "mobile_390x844": {
+      "question-regional-growth": {
+        "present": true,
+        "root_width": 316,
+        "root_client_width": 316,
+        "root_scroll_width": 316,
+        "local_horizontal_scroll": false
+      },
+      "question-customer-decline": {
+        "present": true,
+        "root_width": 446.46875,
+        "root_client_width": 446,
+        "root_scroll_width": 446,
+        "local_horizontal_scroll": false
+      },
+      "question-weekly-change": {
+        "present": true,
+        "root_width": 316,
+        "root_client_width": 316,
+        "root_scroll_width": 316,
+        "local_horizontal_scroll": false
+      },
+      "question-margin-loss": {
+        "present": true,
+        "root_width": 316,
+        "root_client_width": 316,
+        "root_scroll_width": 316,
+        "local_horizontal_scroll": false
+      }
+    },
+    "mobile_360x800": {
+      "question-regional-growth": {
+        "present": true,
+        "root_width": 294,
+        "root_client_width": 294,
+        "root_scroll_width": 294,
+        "local_horizontal_scroll": false
+      },
+      "question-customer-decline": {
+        "present": true,
+        "root_width": 446.46875,
+        "root_client_width": 446,
+        "root_scroll_width": 446,
+        "local_horizontal_scroll": false
+      },
+      "question-weekly-change": {
+        "present": true,
+        "root_width": 294,
+        "root_client_width": 294,
+        "root_scroll_width": 294,
+        "local_horizontal_scroll": false
+      },
+      "question-margin-loss": {
+        "present": true,
+        "root_width": 294,
+        "root_client_width": 294,
+        "root_scroll_width": 294,
+        "local_horizontal_scroll": false
+      }
+    }
+  },
+  "phase_checks": {
+    "desktop_1440x900": {
+      "question-regional-growth": {
+        "interpret": {
+          "width": 1440,
+          "document": 1440,
+          "no_overflow": true
+        },
+        "ground": {
+          "width": 1440,
+          "document": 1440,
+          "no_overflow": true
+        },
+        "compute": {
+          "width": 1440,
+          "document": 1440,
+          "no_overflow": true
+        },
+        "explain": {
+          "width": 1440,
+          "document": 1440,
+          "no_overflow": true
+        }
+      },
+      "question-customer-decline": {
+        "interpret": {
+          "width": 1440,
+          "document": 1440,
+          "no_overflow": true
+        },
+        "ground": {
+          "width": 1440,
+          "document": 1440,
+          "no_overflow": true
+        },
+        "compute": {
+          "width": 1440,
+          "document": 1440,
+          "no_overflow": true
+        },
+        "explain": {
+          "width": 1440,
+          "document": 1440,
+          "no_overflow": true
+        }
+      },
+      "question-weekly-change": {
+        "interpret": {
+          "width": 1440,
+          "document": 1440,
+          "no_overflow": true
+        },
+        "ground": {
+          "width": 1440,
+          "document": 1440,
+          "no_overflow": true
+        },
+        "compute": {
+          "width": 1440,
+          "document": 1440,
+          "no_overflow": true
+        },
+        "explain": {
+          "width": 1440,
+          "document": 1440,
+          "no_overflow": true
+        }
+      },
+      "question-margin-loss": {
+        "interpret": {
+          "width": 1440,
+          "document": 1440,
+          "no_overflow": true
+        },
+        "ground": {
+          "width": 1440,
+          "document": 1440,
+          "no_overflow": true
+        },
+        "compute": {
+          "width": 1440,
+          "document": 1440,
+          "no_overflow": true
+        },
+        "explain": {
+          "width": 1440,
+          "document": 1440,
+          "no_overflow": true
+        }
+      }
+    },
+    "desktop_1366x768": {
+      "question-regional-growth": {
+        "interpret": {
+          "width": 1366,
+          "document": 1366,
+          "no_overflow": true
+        },
+        "ground": {
+          "width": 1366,
+          "document": 1366,
+          "no_overflow": true
+        },
+        "compute": {
+          "width": 1366,
+          "document": 1366,
+          "no_overflow": true
+        },
+        "explain": {
+          "width": 1366,
+          "document": 1366,
+          "no_overflow": true
+        }
+      },
+      "question-customer-decline": {
+        "interpret": {
+          "width": 1366,
+          "document": 1366,
+          "no_overflow": true
+        },
+        "ground": {
+          "width": 1366,
+          "document": 1366,
+          "no_overflow": true
+        },
+        "compute": {
+          "width": 1366,
+          "document": 1366,
+          "no_overflow": true
+        },
+        "explain": {
+          "width": 1366,
+          "document": 1366,
+          "no_overflow": true
+        }
+      },
+      "question-weekly-change": {
+        "interpret": {
+          "width": 1366,
+          "document": 1366,
+          "no_overflow": true
+        },
+        "ground": {
+          "width": 1366,
+          "document": 1366,
+          "no_overflow": true
+        },
+        "compute": {
+          "width": 1366,
+          "document": 1366,
+          "no_overflow": true
+        },
+        "explain": {
+          "width": 1366,
+          "document": 1366,
+          "no_overflow": true
+        }
+      },
+      "question-margin-loss": {
+        "interpret": {
+          "width": 1366,
+          "document": 1366,
+          "no_overflow": true
+        },
+        "ground": {
+          "width": 1366,
+          "document": 1366,
+          "no_overflow": true
+        },
+        "compute": {
+          "width": 1366,
+          "document": 1366,
+          "no_overflow": true
+        },
+        "explain": {
+          "width": 1366,
+          "document": 1366,
+          "no_overflow": true
+        }
+      }
+    },
+    "desktop_1024x768": {
+      "question-regional-growth": {
+        "interpret": {
+          "width": 1024,
+          "document": 1024,
+          "no_overflow": true
+        },
+        "ground": {
+          "width": 1024,
+          "document": 1024,
+          "no_overflow": true
+        },
+        "compute": {
+          "width": 1024,
+          "document": 1024,
+          "no_overflow": true
+        },
+        "explain": {
+          "width": 1024,
+          "document": 1024,
+          "no_overflow": true
+        }
+      },
+      "question-customer-decline": {
+        "interpret": {
+          "width": 1024,
+          "document": 1024,
+          "no_overflow": true
+        },
+        "ground": {
+          "width": 1024,
+          "document": 1024,
+          "no_overflow": true
+        },
+        "compute": {
+          "width": 1024,
+          "document": 1024,
+          "no_overflow": true
+        },
+        "explain": {
+          "width": 1024,
+          "document": 1024,
+          "no_overflow": true
+        }
+      },
+      "question-weekly-change": {
+        "interpret": {
+          "width": 1024,
+          "document": 1024,
+          "no_overflow": true
+        },
+        "ground": {
+          "width": 1024,
+          "document": 1024,
+          "no_overflow": true
+        },
+        "compute": {
+          "width": 1024,
+          "document": 1024,
+          "no_overflow": true
+        },
+        "explain": {
+          "width": 1024,
+          "document": 1024,
+          "no_overflow": true
+        }
+      },
+      "question-margin-loss": {
+        "interpret": {
+          "width": 1024,
+          "document": 1024,
+          "no_overflow": true
+        },
+        "ground": {
+          "width": 1024,
+          "document": 1024,
+          "no_overflow": true
+        },
+        "compute": {
+          "width": 1024,
+          "document": 1024,
+          "no_overflow": true
+        },
+        "explain": {
+          "width": 1024,
+          "document": 1024,
+          "no_overflow": true
+        }
+      }
+    },
+    "tablet_768x1024": {
+      "question-regional-growth": {
+        "interpret": {
+          "width": 768,
+          "document": 768,
+          "no_overflow": true
+        },
+        "ground": {
+          "width": 768,
+          "document": 768,
+          "no_overflow": true
+        },
+        "compute": {
+          "width": 768,
+          "document": 768,
+          "no_overflow": true
+        },
+        "explain": {
+          "width": 768,
+          "document": 768,
+          "no_overflow": true
+        }
+      },
+      "question-customer-decline": {
+        "interpret": {
+          "width": 768,
+          "document": 768,
+          "no_overflow": true
+        },
+        "ground": {
+          "width": 768,
+          "document": 768,
+          "no_overflow": true
+        },
+        "compute": {
+          "width": 768,
+          "document": 768,
+          "no_overflow": true
+        },
+        "explain": {
+          "width": 768,
+          "document": 768,
+          "no_overflow": true
+        }
+      },
+      "question-weekly-change": {
+        "interpret": {
+          "width": 768,
+          "document": 768,
+          "no_overflow": true
+        },
+        "ground": {
+          "width": 768,
+          "document": 768,
+          "no_overflow": true
+        },
+        "compute": {
+          "width": 768,
+          "document": 768,
+          "no_overflow": true
+        },
+        "explain": {
+          "width": 768,
+          "document": 768,
+          "no_overflow": true
+        }
+      },
+      "question-margin-loss": {
+        "interpret": {
+          "width": 768,
+          "document": 768,
+          "no_overflow": true
+        },
+        "ground": {
+          "width": 768,
+          "document": 768,
+          "no_overflow": true
+        },
+        "compute": {
+          "width": 768,
+          "document": 768,
+          "no_overflow": true
+        },
+        "explain": {
+          "width": 768,
+          "document": 768,
+          "no_overflow": true
+        }
+      }
+    },
+    "mobile_390x844": {
+      "question-regional-growth": {
+        "interpret": {
+          "width": 390,
+          "document": 390,
+          "no_overflow": true
+        },
+        "ground": {
+          "width": 390,
+          "document": 390,
+          "no_overflow": true
+        },
+        "compute": {
+          "width": 390,
+          "document": 390,
+          "no_overflow": true
+        },
+        "explain": {
+          "width": 390,
+          "document": 390,
+          "no_overflow": true
+        }
+      },
+      "question-customer-decline": {
+        "interpret": {
+          "width": 390,
+          "document": 390,
+          "no_overflow": true
+        },
+        "ground": {
+          "width": 390,
+          "document": 390,
+          "no_overflow": true
+        },
+        "compute": {
+          "width": 390,
+          "document": 390,
+          "no_overflow": true
+        },
+        "explain": {
+          "width": 390,
+          "document": 390,
+          "no_overflow": true
+        }
+      },
+      "question-weekly-change": {
+        "interpret": {
+          "width": 390,
+          "document": 390,
+          "no_overflow": true
+        },
+        "ground": {
+          "width": 390,
+          "document": 390,
+          "no_overflow": true
+        },
+        "compute": {
+          "width": 390,
+          "document": 390,
+          "no_overflow": true
+        },
+        "explain": {
+          "width": 390,
+          "document": 390,
+          "no_overflow": true
+        }
+      },
+      "question-margin-loss": {
+        "interpret": {
+          "width": 390,
+          "document": 390,
+          "no_overflow": true
+        },
+        "ground": {
+          "width": 390,
+          "document": 390,
+          "no_overflow": true
+        },
+        "compute": {
+          "width": 390,
+          "document": 390,
+          "no_overflow": true
+        },
+        "explain": {
+          "width": 390,
+          "document": 390,
+          "no_overflow": true
+        }
+      }
+    },
+    "mobile_360x800": {
+      "question-regional-growth": {
+        "interpret": {
+          "width": 360,
+          "document": 360,
+          "no_overflow": true
+        },
+        "ground": {
+          "width": 360,
+          "document": 360,
+          "no_overflow": true
+        },
+        "compute": {
+          "width": 360,
+          "document": 360,
+          "no_overflow": true
+        },
+        "explain": {
+          "width": 360,
+          "document": 360,
+          "no_overflow": true
+        }
+      },
+      "question-customer-decline": {
+        "interpret": {
+          "width": 360,
+          "document": 360,
+          "no_overflow": true
+        },
+        "ground": {
+          "width": 360,
+          "document": 360,
+          "no_overflow": true
+        },
+        "compute": {
+          "width": 360,
+          "document": 360,
+          "no_overflow": true
+        },
+        "explain": {
+          "width": 360,
+          "document": 360,
+          "no_overflow": true
+        }
+      },
+      "question-weekly-change": {
+        "interpret": {
+          "width": 360,
+          "document": 360,
+          "no_overflow": true
+        },
+        "ground": {
+          "width": 360,
+          "document": 360,
+          "no_overflow": true
+        },
+        "compute": {
+          "width": 360,
+          "document": 360,
+          "no_overflow": true
+        },
+        "explain": {
+          "width": 360,
+          "document": 360,
+          "no_overflow": true
+        }
+      },
+      "question-margin-loss": {
+        "interpret": {
+          "width": 360,
+          "document": 360,
+          "no_overflow": true
+        },
+        "ground": {
+          "width": 360,
+          "document": 360,
+          "no_overflow": true
+        },
+        "compute": {
+          "width": 360,
+          "document": 360,
+          "no_overflow": true
+        },
+        "explain": {
+          "width": 360,
+          "document": 360,
+          "no_overflow": true
+        }
+      }
+    }
+  },
+  "responsive_checks": {
+    "desktop_1440x900": {
+      "document": 1440,
+      "viewport": 1440,
+      "no_overflow": true,
+      "small_controls": [],
+      "text_escapes": [],
+      "process_rows": 0,
+      "process_sticky": true,
+      "access_outcome": "Source ownership mismatch \u00b7 request denied",
+      "cta_get_started": "/signup",
+      "cta_sign_in": "/login"
+    },
+    "desktop_1366x768": {
+      "document": 1366,
+      "viewport": 1366,
+      "no_overflow": true,
+      "small_controls": [],
+      "text_escapes": [],
+      "process_rows": 4,
+      "process_sticky": false,
+      "access_outcome": "Source ownership mismatch \u00b7 request denied",
+      "cta_get_started": "/signup",
+      "cta_sign_in": "/login"
+    },
+    "desktop_1024x768": {
+      "document": 1024,
+      "viewport": 1024,
+      "no_overflow": true,
+      "small_controls": [],
+      "text_escapes": [],
+      "process_rows": 4,
+      "process_sticky": false,
+      "access_outcome": "Source ownership mismatch \u00b7 request denied",
+      "cta_get_started": "/signup",
+      "cta_sign_in": "/login"
+    },
+    "tablet_768x1024": {
+      "document": 768,
+      "viewport": 768,
+      "no_overflow": true,
+      "small_controls": [],
+      "text_escapes": [],
+      "process_rows": 4,
+      "process_sticky": false,
+      "access_outcome": "Source ownership mismatch \u00b7 request denied",
+      "cta_get_started": "/signup",
+      "cta_sign_in": "/login"
+    },
+    "mobile_390x844": {
+      "document": 390,
+      "viewport": 390,
+      "no_overflow": true,
+      "small_controls": [],
+      "text_escapes": [],
+      "process_rows": 4,
+      "process_sticky": false,
+      "access_outcome": "Source ownership mismatch \u00b7 request denied",
+      "cta_get_started": "/signup",
+      "cta_sign_in": "/login"
+    },
+    "mobile_360x800": {
+      "document": 360,
+      "viewport": 360,
+      "no_overflow": true,
+      "small_controls": [],
+      "text_escapes": [],
+      "process_rows": 4,
+      "process_sticky": false,
+      "access_outcome": "Source ownership mismatch \u00b7 request denied",
+      "cta_get_started": "/signup",
+      "cta_sign_in": "/login"
+    }
+  }
+}

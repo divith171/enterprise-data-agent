@@ -1,0 +1,13 @@
+{
+  "changed_source_files": [
+    "src/post-hero/ProductDemo.jsx",
+    "src/post-hero/DemoCanvas.jsx",
+    "src/post-hero/frameStates.jsx",
+    "src/post-hero/charts.jsx",
+    "src/post-hero/postHero.css",
+    "src/post-hero/AnalysisTrace.jsx"
+  ],
+  "unchanged_baseline_file_count": 83,
+  "all_other_source_and_public_files_unchanged": true,
+  "backlog_changed": false
+}

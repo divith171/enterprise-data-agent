@@ -112,9 +112,10 @@ export const ProductDemo = () => {
               variant="demo"
               testid="demo-frame"
               active={status === "playing"}
+              className={visual === 2 && animate ? "ph-demo--interpret" : ""}
               questionNode={
                 (visual === 1 || visual === 2) && animate ? (
-                  <span>Which <mark>region</mark> drove our <mark>growth</mark> <mark>last quarter</mark>?</span>
+                  <span>Which <mark className="dc-phrase dc-phrase--dimension" data-testid="demo-phrase-dimension">region</mark> drove our <mark className="dc-phrase dc-phrase--metric" data-testid="demo-phrase-metric">growth</mark> <mark className="dc-phrase dc-phrase--time" data-testid="demo-phrase-time">last quarter</mark>?</span>
                 ) : (
                   fixture.question
                 )

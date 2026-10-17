@@ -37,20 +37,20 @@ const AnswerLine = ({ fixture, emphasize }) => {
   );
 };
 
-export const ValidationCheckpoint = ({ compact }) => (
-  <div className="ph-check" data-testid="validation-checkpoint">
+export const ValidationCheckpoint = ({ compact, testid = "validation-checkpoint" }) => (
+  <div className="ph-check" data-testid={testid}>
     <p className="ph-label" style={{ marginBottom: 8 }}>Before execution</p>
     <p className="ph-value">Application-level SQL validation</p>
-    {!compact && <p className="ph-muted" style={{ marginTop: 8, fontSize: 14, lineHeight: "20px" }}><span className="ph-check__mark" aria-hidden="true">✓</span>Validation checkpoint</p>}
+    {!compact && <p className="ph-muted" style={{ marginTop: 8, fontSize: 14, lineHeight: "20px" }} data-testid={`${testid}-label`}><span className="ph-check__mark" aria-hidden="true" data-testid={`${testid}-icon`} />Validation checkpoint</p>}
   </div>
 );
 
 export const SqlDisclosure = ({ fixture, onToggle, testid = "sql-disclosure" }) => (
   <details className="ph-details" onToggle={onToggle} data-testid={testid}>
-    <summary>Query preview · illustrative</summary>
+    <summary data-testid={`${testid}-toggle`}>Query preview · illustrative</summary>
     <div className="ph-details__body">
       <p className="ph-caption" style={{ margin: "0 0 8px" }}>{SQL_LABEL} · {fixture.sqlCaption}</p>
-      <pre className="ph-sql ph-mono" tabIndex={0}>{fixture.sql}</pre>
+      <pre className="ph-sql ph-mono" tabIndex={0} data-testid={`${testid}-code`}>{fixture.sql}</pre>
     </div>
   </details>
 );

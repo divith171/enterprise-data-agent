@@ -1,0 +1,360 @@
+{
+  "summary": "Baseline-only prelaunch evidence captured (no app code edits). Matrix run completed across requested viewports and 4 workbench questions.",
+  "url": "https://datakat-analyst.preview.emergentagent.com",
+  "source_files_reviewed": [
+    "/app/frontend/src/post-hero/ProductDemo.jsx",
+    "/app/frontend/src/post-hero/DemoCanvas.jsx",
+    "/app/frontend/src/post-hero/AnalysisTrace.jsx",
+    "/app/frontend/src/post-hero/postHero.css",
+    "/app/frontend/src/post-hero/frameStates.jsx",
+    "/app/frontend/src/post-hero/AnalysisWorkbench.jsx",
+    "/app/frontend/src/post-hero/QuestionExplorer.jsx"
+  ],
+  "playback_probe": {
+    "state2_question_marks": {
+      "texts": [
+        "region",
+        "growth",
+        "last quarter"
+      ],
+      "mark_color": "rgb(243, 247, 251)",
+      "mark_underline_color": "rgb(25, 205, 231)",
+      "mark_underline_line": "underline",
+      "mark_underline_thickness": "2px"
+    },
+    "field_color_timing": {
+      "t0_after_state2": {
+        "dimension": "rgb(243, 247, 251)",
+        "metric": "rgb(243, 247, 251)",
+        "time": "rgb(243, 247, 251)"
+      },
+      "t_plus_400ms": {
+        "dimension": "rgb(25, 205, 231)",
+        "metric": "rgb(28, 206, 231)",
+        "time": "rgb(111, 222, 239)"
+      },
+      "t_plus_620ms": {
+        "dimension": "rgb(25, 205, 231)",
+        "metric": "rgb(25, 205, 231)",
+        "time": "rgb(25, 205, 231)"
+      },
+      "t_plus_840ms": {
+        "dimension": "rgb(25, 205, 231)",
+        "metric": "rgb(25, 205, 231)",
+        "time": "rgb(25, 205, 231)"
+      }
+    },
+    "state5_query_validation_capture": true
+  },
+  "keyboard_order": {
+    "desktop_1440x900": [
+      "trace-phase-interpret",
+      "trace-phase-ground",
+      "trace-phase-explain",
+      "trace-phase-compute"
+    ],
+    "mobile_390x844": [
+      "trace-phase-interpret",
+      "trace-phase-ground",
+      "trace-phase-compute",
+      "trace-phase-explain"
+    ]
+  },
+  "matrix": {
+    "desktop_1440x900": {
+      "question-regional-growth": {
+        "doc_scroll_width": 1440,
+        "doc_client_width": 1440,
+        "body_scroll_width": 1440,
+        "inspector_width": 410,
+        "pre_width": 498,
+        "pre_client_width": 496,
+        "pre_scroll_width": 496,
+        "pre_overflow_x": "auto",
+        "containment_fails": true
+      },
+      "question-customer-decline": {
+        "doc_scroll_width": 1440,
+        "doc_client_width": 1440,
+        "body_scroll_width": 1440,
+        "inspector_width": 410,
+        "pre_width": 504.5,
+        "pre_client_width": 503,
+        "pre_scroll_width": 503,
+        "pre_overflow_x": "auto",
+        "containment_fails": true
+      },
+      "question-weekly-change": {
+        "doc_scroll_width": 1499,
+        "doc_client_width": 1440,
+        "body_scroll_width": 1499,
+        "inspector_width": 410,
+        "pre_width": 654,
+        "pre_client_width": 652,
+        "pre_scroll_width": 652,
+        "pre_overflow_x": "auto",
+        "containment_fails": true
+      },
+      "question-margin-loss": {
+        "doc_scroll_width": 1440,
+        "doc_client_width": 1440,
+        "body_scroll_width": 1440,
+        "inspector_width": 410,
+        "pre_width": 569.5,
+        "pre_client_width": 568,
+        "pre_scroll_width": 568,
+        "pre_overflow_x": "auto",
+        "containment_fails": true
+      }
+    },
+    "desktop_1366x768": {
+      "question-regional-growth": {
+        "doc_scroll_width": 1366,
+        "doc_client_width": 1366,
+        "body_scroll_width": 1366,
+        "inspector_width": 410,
+        "pre_width": 498,
+        "pre_client_width": 496,
+        "pre_scroll_width": 496,
+        "pre_overflow_x": "auto",
+        "containment_fails": true
+      },
+      "question-customer-decline": {
+        "doc_scroll_width": 1366,
+        "doc_client_width": 1366,
+        "body_scroll_width": 1366,
+        "inspector_width": 410,
+        "pre_width": 504.5,
+        "pre_client_width": 503,
+        "pre_scroll_width": 503,
+        "pre_overflow_x": "auto",
+        "containment_fails": true
+      },
+      "question-weekly-change": {
+        "doc_scroll_width": 1462,
+        "doc_client_width": 1366,
+        "body_scroll_width": 1462,
+        "inspector_width": 410,
+        "pre_width": 654,
+        "pre_client_width": 652,
+        "pre_scroll_width": 652,
+        "pre_overflow_x": "auto",
+        "containment_fails": true
+      },
+      "question-margin-loss": {
+        "doc_scroll_width": 1378,
+        "doc_client_width": 1366,
+        "body_scroll_width": 1378,
+        "inspector_width": 410,
+        "pre_width": 569.5,
+        "pre_client_width": 568,
+        "pre_scroll_width": 568,
+        "pre_overflow_x": "auto",
+        "containment_fails": true
+      }
+    },
+    "desktop_1024x768": {
+      "question-regional-growth": {
+        "doc_scroll_width": 1215,
+        "doc_client_width": 1024,
+        "body_scroll_width": 1215,
+        "inspector_width": 250,
+        "pre_width": 498,
+        "pre_client_width": 496,
+        "pre_scroll_width": 496,
+        "pre_overflow_x": "auto",
+        "containment_fails": true
+      },
+      "question-customer-decline": {
+        "doc_scroll_width": 1222,
+        "doc_client_width": 1024,
+        "body_scroll_width": 1222,
+        "inspector_width": 250,
+        "pre_width": 504.5,
+        "pre_client_width": 503,
+        "pre_scroll_width": 503,
+        "pre_overflow_x": "auto",
+        "containment_fails": true
+      },
+      "question-weekly-change": {
+        "doc_scroll_width": 1371,
+        "doc_client_width": 1024,
+        "body_scroll_width": 1371,
+        "inspector_width": 250,
+        "pre_width": 654,
+        "pre_client_width": 652,
+        "pre_scroll_width": 652,
+        "pre_overflow_x": "auto",
+        "containment_fails": true
+      },
+      "question-margin-loss": {
+        "doc_scroll_width": 1287,
+        "doc_client_width": 1024,
+        "body_scroll_width": 1287,
+        "inspector_width": 250,
+        "pre_width": 569.5,
+        "pre_client_width": 568,
+        "pre_scroll_width": 568,
+        "pre_overflow_x": "auto",
+        "containment_fails": true
+      }
+    },
+    "tablet_768x1024": {
+      "question-regional-growth": {
+        "doc_scroll_width": 879,
+        "doc_client_width": 768,
+        "body_scroll_width": 879,
+        "inspector_width": 330,
+        "pre_width": 498,
+        "pre_client_width": 496,
+        "pre_scroll_width": 496,
+        "pre_overflow_x": "auto",
+        "containment_fails": true
+      },
+      "question-customer-decline": {
+        "doc_scroll_width": 886,
+        "doc_client_width": 768,
+        "body_scroll_width": 886,
+        "inspector_width": 330,
+        "pre_width": 504.5,
+        "pre_client_width": 503,
+        "pre_scroll_width": 503,
+        "pre_overflow_x": "auto",
+        "containment_fails": true
+      },
+      "question-weekly-change": {
+        "doc_scroll_width": 1035,
+        "doc_client_width": 768,
+        "body_scroll_width": 1035,
+        "inspector_width": 330,
+        "pre_width": 654,
+        "pre_client_width": 652,
+        "pre_scroll_width": 652,
+        "pre_overflow_x": "auto",
+        "containment_fails": true
+      },
+      "question-margin-loss": {
+        "doc_scroll_width": 951,
+        "doc_client_width": 768,
+        "body_scroll_width": 951,
+        "inspector_width": 330,
+        "pre_width": 569.5,
+        "pre_client_width": 568,
+        "pre_scroll_width": 568,
+        "pre_overflow_x": "auto",
+        "containment_fails": true
+      }
+    },
+    "mobile_390x844": {
+      "question-regional-growth": {
+        "doc_scroll_width": 572,
+        "doc_client_width": 390,
+        "body_scroll_width": 572,
+        "inspector_width": 498,
+        "pre_width": 498,
+        "pre_client_width": 496,
+        "pre_scroll_width": 496,
+        "pre_overflow_x": "auto",
+        "containment_fails": false
+      },
+      "question-customer-decline": {
+        "doc_scroll_width": 579,
+        "doc_client_width": 390,
+        "body_scroll_width": 579,
+        "inspector_width": 504.5,
+        "pre_width": 504.5,
+        "pre_client_width": 503,
+        "pre_scroll_width": 503,
+        "pre_overflow_x": "auto",
+        "containment_fails": false
+      },
+      "question-weekly-change": {
+        "doc_scroll_width": 728,
+        "doc_client_width": 390,
+        "body_scroll_width": 728,
+        "inspector_width": 654,
+        "pre_width": 654,
+        "pre_client_width": 652,
+        "pre_scroll_width": 652,
+        "pre_overflow_x": "auto",
+        "containment_fails": false
+      },
+      "question-margin-loss": {
+        "doc_scroll_width": 644,
+        "doc_client_width": 390,
+        "body_scroll_width": 644,
+        "inspector_width": 569.5,
+        "pre_width": 569.5,
+        "pre_client_width": 568,
+        "pre_scroll_width": 568,
+        "pre_overflow_x": "auto",
+        "containment_fails": false
+      }
+    },
+    "mobile_360x800": {
+      "question-regional-growth": {
+        "doc_scroll_width": 564,
+        "doc_client_width": 360,
+        "body_scroll_width": 564,
+        "inspector_width": 498,
+        "pre_width": 498,
+        "pre_client_width": 496,
+        "pre_scroll_width": 496,
+        "pre_overflow_x": "auto",
+        "containment_fails": false
+      },
+      "question-customer-decline": {
+        "doc_scroll_width": 571,
+        "doc_client_width": 360,
+        "body_scroll_width": 571,
+        "inspector_width": 504.5,
+        "pre_width": 504.5,
+        "pre_client_width": 503,
+        "pre_scroll_width": 503,
+        "pre_overflow_x": "auto",
+        "containment_fails": false
+      },
+      "question-weekly-change": {
+        "doc_scroll_width": 720,
+        "doc_client_width": 360,
+        "body_scroll_width": 720,
+        "inspector_width": 654,
+        "pre_width": 654,
+        "pre_client_width": 652,
+        "pre_scroll_width": 652,
+        "pre_overflow_x": "auto",
+        "containment_fails": false
+      },
+      "question-margin-loss": {
+        "doc_scroll_width": 636,
+        "doc_client_width": 360,
+        "body_scroll_width": 636,
+        "inspector_width": 569.5,
+        "pre_width": 569.5,
+        "pre_client_width": 568,
+        "pre_scroll_width": 568,
+        "pre_overflow_x": "auto",
+        "containment_fails": false
+      }
+    }
+  },
+  "observed_failures": [
+    "SQL preview <pre> exceeds inspector width in desktop/tablet states (containment_fails=true for all 16 desktop/tablet combinations).",
+    "Desktop phase-map DOM order/focus order is Interpret → Ground → Explain → Compute (not requested Interpret → Ground → Compute → Explain).",
+    "Validation checkpoint currently uses checkmark glyph \u2713 with cyan circular ring (not neutral icon).",
+    "Mobile inspector expands to intrinsic SQL width (498-654px), causing horizontal page overflow (doc_scroll_width > client_width)."
+  ],
+  "console_findings": [
+    "React warning: unrecognized prop defaultMuted/defaultmuted on DOM element.",
+    "Lenis warning: container should use non-static position for scroll offset calculations."
+  ],
+  "evidence_paths": {
+    "screenshots": [
+      "/app/test_reports/prelaunch/artifacts_before/inspector-margin-1440.jpeg",
+      "/app/test_reports/prelaunch/artifacts_before/inspector-margin-390.jpeg",
+      "/app/test_reports/prelaunch/artifacts_before/state5-query-validation-1440.jpeg"
+    ],
+    "baseline_hashes": "/app/test_reports/prelaunch/baseline-hashes.json",
+    "baseline_source_dir": "/app/test_reports/prelaunch/before-source"
+  }
+}

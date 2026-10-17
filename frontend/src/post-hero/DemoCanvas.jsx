@@ -26,7 +26,7 @@ export const DemoCanvas = ({ state, fixture, animate, onDisclosure }) => {
           </div>
           <dl className={cls("fields")} aria-hidden={state < 2 || state > 3} data-testid="demo-fields">
             {fixture.interpretation.map((f, i) => (
-              <div key={f.id} className={`ph-field dc-field dc-field--${f.id}`} style={{ "--i": i }}>
+              <div key={f.id} className={`ph-field dc-field dc-field--${f.id}`} style={{ "--i": i }} data-testid={`demo-field-${f.id}`}>
                 <dt>{f.label}</dt><dd>{f.value}</dd>
               </div>
             ))}

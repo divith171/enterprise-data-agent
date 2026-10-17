@@ -1,0 +1,72 @@
+{
+  "summary": "Frontend-only baseline evidence captured for pre-launch corrections; no application files were edited.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "AnalysisTrace / SQL disclosure",
+        "issue": "SQL preview block exceeds inspector width on desktop/tablet (e.g., margin-loss pre=569.5px vs inspector=410px at 1440x900)",
+        "selector": "[data-testid='trace-inspector'] .ph-sql",
+        "priority": "HIGH"
+      },
+      {
+        "component": "ValidationCheckpoint",
+        "issue": "Checkpoint icon is emphasized cyan tick in circle instead of neutral icon",
+        "selector": ".ph-check__mark",
+        "priority": "MEDIUM"
+      }
+    ],
+    "integration_issues": [
+      {
+        "flow": "Phase navigation order",
+        "issue": "Desktop tab/focus order from Interpret is Ground -> Explain -> Compute; requested order is Ground -> Compute -> Explain",
+        "affected_selectors": [
+          "[data-testid='trace-phase-ground']",
+          "[data-testid='trace-phase-explain']",
+          "[data-testid='trace-phase-compute']"
+        ]
+      }
+    ],
+    "design_issues": [
+      {
+        "screen": "Workbench (mobile 390/360)",
+        "issues": [
+          "Inspector tracks SQL intrinsic width, causing horizontal page overflow (doc_scroll_width > client_width)."
+        ]
+      }
+    ]
+  },
+  "test_report_links": [
+    "/app/test_reports/prelaunch/before.json",
+    "/app/test_reports/prelaunch/before_matrix_playwright.py",
+    "/app/test_reports/prelaunch/baseline-hashes.json"
+  ],
+  "action_items": [
+    "Constrain SQL preview to inspector width (pre max-width/min-width behavior) while preserving scroll within pre.",
+    "Adjust desktop phase node DOM order to Interpret -> Ground -> Compute -> Explain.",
+    "Replace cyan validation tick treatment with neutral icon style.",
+    "Implement requested phrase/field emphasis sync updates in demo question phase as per brief."
+  ],
+  "critical_code_review_comments": [
+    "AnalysisTrace desktop map renders PHASES[3] before PHASES[2], creating incorrect keyboard order.",
+    "ValidationCheckpoint hardcodes checkmark glyph (✓) and cyan accent class, preventing neutral presentation.",
+    "React console warns about unrecognized DOM prop defaultMuted/defaultmuted; should be corrected upstream."
+  ],
+  "updated_files": [
+    "/app/test_reports/prelaunch/before.json",
+    "/app/test_reports/prelaunch/before_matrix_playwright.py",
+    "/app/test_reports/iteration_3.json"
+  ],
+  "success_rate": {
+    "backend": "N/A",
+    "frontend": "100% baseline capture"
+  },
+  "seed_data_creation": "",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Use /app/test_reports/prelaunch/before_matrix_playwright.py to rerun exact viewport matrix after fixes and compare against /app/test_reports/prelaunch/before.json.",
+  "rca of the issue": "Overflow is caused by fixed/intrinsic SQL pre width exceeding inspector width in desktop/tablet layouts; desktop phase order mismatch comes from deliberate render order in AnalysisTrace map node placement (Explain inserted before Compute)."
+}

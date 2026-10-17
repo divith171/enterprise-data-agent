@@ -1,0 +1,58 @@
+{
+  "summary": "Frontend-only prelaunch correction validation completed on preview URL. Verified six required viewports, four question fixtures, SQL disclosure containment/internal scrolling behavior, tab order, product demo playback checkpoints, reduced-motion behavior, process sticky/fallback logic, controlled-access scenarios, CTA links, and build/hash integrity. Most requested corrections pass; one mobile overflow issue remains.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {
+        "component": "AnalysisWorkbench customer-decline preview/sample area",
+        "issue": "Horizontal page overflow on mobile when customer-decline content is active with disclosures open (doc_scroll_width exceeds viewport).",
+        "selector": "[data-testid='question-customer-decline'] within [data-testid='chapter-workbench']",
+        "priority": "HIGH"
+      }
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "screen": "Workbench mobile (390x844, 360x800)",
+        "issues": [
+          "Customer-decline chart/table region expands to ~447px width, causing page-level horizontal overflow instead of only local scrolling."
+        ]
+      }
+    ]
+  },
+  "test_report_links": [
+    "/app/test_reports/prelaunch/after.json",
+    "/app/test_reports/prelaunch/before.json",
+    "/app/tests/prelaunch_matrix_playwright.py",
+    "/app/tests/prelaunch_additional_playwright.py"
+  ],
+  "action_items": [
+    "Constrain customer-decline chart/sample-data container on mobile to prevent page-level overflow; keep horizontal scroll local to intended scroller.",
+    "Re-run the provided matrix scripts after fix and confirm doc_scroll_width == client_width for all 24 viewport/question combinations."
+  ],
+  "critical_code_review_comments": [
+    "SQL disclosure containment fix is effective: pre width now tracks inspector width and uses internal scroll safely.",
+    "Tab sequence is now correct across all tested viewports: Interpret -> Ground -> Compute -> Explain.",
+    "Validation checkpoint icon is neutral ring+dot with no checkmark, matching requested language/visual treatment.",
+    "Process behavior matches requested breakpoints: sticky at 1440x900 and row fallback at 1366x768, 1024x768, 768x1024.",
+    "Known existing console warnings (defaultMuted prop and non-static scroll container) still appear; treated as out-of-scope per request context."
+  ],
+  "updated_files": [
+    "/app/tests/prelaunch_matrix_playwright.py",
+    "/app/tests/prelaunch_additional_playwright.py",
+    "/app/test_reports/prelaunch/after.json",
+    "/app/test_reports/iteration_4.json"
+  ],
+  "success_rate": {
+    "backend": "N/A",
+    "frontend": "~96%"
+  },
+  "seed_data_creation": "None",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Use /app/tests/prelaunch_matrix_playwright.py and /app/tests/prelaunch_additional_playwright.py against preview URL. Primary remaining failure is mobile overflow for customer-decline in workbench when disclosures are open. All other requested corrections validated as passing in this run.",
+  "rca of the issue": "RCA: overflow is no longer from SQL <pre>; it now originates in customer-decline content region on mobile (measured content width ~447px at 390/360 viewports). Repro: open Workbench -> select customer-decline -> open required disclosures -> observe doc_scroll_width (484/480) > client_width (390/360). Mitigation: enforce min-width:0 and local overflow-x:auto containment on the specific customer chart/sample wrapper so document root width remains capped to viewport while preserving local horizontal scroll."
+}

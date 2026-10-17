@@ -1,0 +1,35 @@
+{
+  "status": "pass",
+  "summary": "Final self-retest after all correction fixes. Supersedes the intermediate mobile-overflow finding in iteration_4.json; original test history retained there and in intermediate-matrix.json.",
+  "viewports": ["1440x900", "1366x768", "1024x768", "768x1024", "390x844", "360x800"],
+  "workbench": {
+    "sql_and_sample_disclosures_confirmed_open": "24/24",
+    "no_page_horizontal_overflow": "24/24",
+    "sql_contained_in_inspector": "24/24",
+    "internal_code_scroll_without_page_scroll": "24/24",
+    "long_unbroken_token_containment": "24/24",
+    "all_phase_no_overflow_checks": "96/96",
+    "actual_tab_order": "Interpret -> Ground -> Compute -> Explain at all six viewports"
+  },
+  "product_demo": {
+    "sql_open_and_contained": "6/6",
+    "sample_table_open_without_page_overflow": "6/6",
+    "neutral_checkpoint_visible": "6/6; muted ring and center dot, exact label Validation checkpoint, no tick",
+    "phrase_field_sync": "27/27 computed color comparisons matched across nine state-2 samples"
+  },
+  "responsive": {
+    "chart_label_geometry": "24/24; no overlapping or uncontained text fragments",
+    "visible_control_targets": "No controls below 44px in the six recorded viewport checks",
+    "control_text_wrapping": "No text escapes in the six recorded viewport checks",
+    "controlled_access": "Authorized and mismatch outcomes correct; later mismatch gates Not reached",
+    "cta": "Get Started=/signup; Sign in=/login; unchanged placeholders",
+    "normal_process": "Sticky at1440x900; four rows at all five other requested viewports",
+    "os_reduced_motion": "6/6; disabled Motion off, completed demo, four process rows, working SQL, zero post-hero CSS animations/transitions"
+  },
+  "build": "yarn build passed",
+  "preservation": "Six post-hero source files changed; all other 83 baseline frontend source/public files byte-identical. Backlog unchanged. No deployment.",
+  "remaining_horizontal_overflow": false,
+  "remaining_in_scope_issues": [],
+  "untested": ["Physical devices and native touch scrolling", "Safari and Firefox", "Exhaustive pixel-by-pixel review", "Frame-by-frame full 16-second demo at every viewport"],
+  "evidence": ["before.json", "final-matrix.json", "final-additional.json", "chart-labels.json", "preservation-check.json", "source-changes.diff", "artifacts_final/", "build-final.log"]
+}

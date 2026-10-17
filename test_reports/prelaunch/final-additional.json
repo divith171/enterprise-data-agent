@@ -1,0 +1,572 @@
+{
+  "product_demo": {
+    "timeline_samples": [
+      {
+        "t": 0.25,
+        "active": "demo-state-1",
+        "src_dim": "rgb(243, 247, 251)",
+        "tgt_dim": "rgb(243, 247, 251)",
+        "src_metric": "rgb(243, 247, 251)",
+        "tgt_metric": "rgb(243, 247, 251)",
+        "src_time": "rgb(243, 247, 251)",
+        "tgt_time": "rgb(243, 247, 251)"
+      },
+      {
+        "t": 0.5,
+        "active": "demo-state-1",
+        "src_dim": "rgb(243, 247, 251)",
+        "tgt_dim": "rgb(243, 247, 251)",
+        "src_metric": "rgb(243, 247, 251)",
+        "tgt_metric": "rgb(243, 247, 251)",
+        "src_time": "rgb(243, 247, 251)",
+        "tgt_time": "rgb(243, 247, 251)"
+      },
+      {
+        "t": 0.76,
+        "active": "demo-state-1",
+        "src_dim": "rgb(243, 247, 251)",
+        "tgt_dim": "rgb(243, 247, 251)",
+        "src_metric": "rgb(243, 247, 251)",
+        "tgt_metric": "rgb(243, 247, 251)",
+        "src_time": "rgb(243, 247, 251)",
+        "tgt_time": "rgb(243, 247, 251)"
+      },
+      {
+        "t": 1.01,
+        "active": "demo-state-1",
+        "src_dim": "rgb(243, 247, 251)",
+        "tgt_dim": "rgb(243, 247, 251)",
+        "src_metric": "rgb(243, 247, 251)",
+        "tgt_metric": "rgb(243, 247, 251)",
+        "src_time": "rgb(243, 247, 251)",
+        "tgt_time": "rgb(243, 247, 251)"
+      },
+      {
+        "t": 1.26,
+        "active": "demo-state-1",
+        "src_dim": "rgb(243, 247, 251)",
+        "tgt_dim": "rgb(243, 247, 251)",
+        "src_metric": "rgb(243, 247, 251)",
+        "tgt_metric": "rgb(243, 247, 251)",
+        "src_time": "rgb(243, 247, 251)",
+        "tgt_time": "rgb(243, 247, 251)"
+      },
+      {
+        "t": 1.51,
+        "active": "demo-state-1",
+        "src_dim": "rgb(243, 247, 251)",
+        "tgt_dim": "rgb(243, 247, 251)",
+        "src_metric": "rgb(243, 247, 251)",
+        "tgt_metric": "rgb(243, 247, 251)",
+        "src_time": "rgb(243, 247, 251)",
+        "tgt_time": "rgb(243, 247, 251)"
+      },
+      {
+        "t": 1.76,
+        "active": "demo-state-2",
+        "src_dim": "rgb(243, 247, 251)",
+        "tgt_dim": "rgb(243, 247, 251)",
+        "src_metric": "rgb(243, 247, 251)",
+        "tgt_metric": "rgb(243, 247, 251)",
+        "src_time": "rgb(243, 247, 251)",
+        "tgt_time": "rgb(243, 247, 251)"
+      },
+      {
+        "t": 2.02,
+        "active": "demo-state-2",
+        "src_dim": "rgb(172, 233, 245)",
+        "tgt_dim": "rgb(172, 233, 245)",
+        "src_metric": "rgb(243, 247, 251)",
+        "tgt_metric": "rgb(243, 247, 251)",
+        "src_time": "rgb(243, 247, 251)",
+        "tgt_time": "rgb(243, 247, 251)"
+      },
+      {
+        "t": 2.27,
+        "active": "demo-state-2",
+        "src_dim": "rgb(25, 205, 231)",
+        "tgt_dim": "rgb(25, 205, 231)",
+        "src_metric": "rgb(57, 211, 234)",
+        "tgt_metric": "rgb(57, 211, 234)",
+        "src_time": "rgb(243, 247, 251)",
+        "tgt_time": "rgb(243, 247, 251)"
+      },
+      {
+        "t": 2.52,
+        "active": "demo-state-2",
+        "src_dim": "rgb(25, 205, 231)",
+        "tgt_dim": "rgb(25, 205, 231)",
+        "src_metric": "rgb(25, 205, 231)",
+        "tgt_metric": "rgb(25, 205, 231)",
+        "src_time": "rgb(27, 205, 231)",
+        "tgt_time": "rgb(27, 205, 231)"
+      },
+      {
+        "t": 2.77,
+        "active": "demo-state-2",
+        "src_dim": "rgb(25, 205, 231)",
+        "tgt_dim": "rgb(25, 205, 231)",
+        "src_metric": "rgb(25, 205, 231)",
+        "tgt_metric": "rgb(25, 205, 231)",
+        "src_time": "rgb(25, 205, 231)",
+        "tgt_time": "rgb(25, 205, 231)"
+      },
+      {
+        "t": 3.03,
+        "active": "demo-state-2",
+        "src_dim": "rgb(25, 205, 231)",
+        "tgt_dim": "rgb(25, 205, 231)",
+        "src_metric": "rgb(25, 205, 231)",
+        "tgt_metric": "rgb(25, 205, 231)",
+        "src_time": "rgb(25, 205, 231)",
+        "tgt_time": "rgb(25, 205, 231)"
+      },
+      {
+        "t": 3.28,
+        "active": "demo-state-2",
+        "src_dim": "rgb(25, 205, 231)",
+        "tgt_dim": "rgb(25, 205, 231)",
+        "src_metric": "rgb(25, 205, 231)",
+        "tgt_metric": "rgb(25, 205, 231)",
+        "src_time": "rgb(25, 205, 231)",
+        "tgt_time": "rgb(25, 205, 231)"
+      },
+      {
+        "t": 3.53,
+        "active": "demo-state-2",
+        "src_dim": "rgb(25, 205, 231)",
+        "tgt_dim": "rgb(25, 205, 231)",
+        "src_metric": "rgb(25, 205, 231)",
+        "tgt_metric": "rgb(25, 205, 231)",
+        "src_time": "rgb(25, 205, 231)",
+        "tgt_time": "rgb(25, 205, 231)"
+      },
+      {
+        "t": 3.78,
+        "active": "demo-state-2",
+        "src_dim": "rgb(25, 205, 231)",
+        "tgt_dim": "rgb(25, 205, 231)",
+        "src_metric": "rgb(25, 205, 231)",
+        "tgt_metric": "rgb(25, 205, 231)",
+        "src_time": "rgb(25, 205, 231)",
+        "tgt_time": "rgb(25, 205, 231)"
+      },
+      {
+        "t": 4.04,
+        "active": "demo-state-3",
+        "src_dim": null,
+        "tgt_dim": "rgb(25, 205, 231)",
+        "src_metric": null,
+        "tgt_metric": "rgb(25, 205, 231)",
+        "src_time": null,
+        "tgt_time": "rgb(25, 205, 231)"
+      },
+      {
+        "t": 4.29,
+        "active": "demo-state-3",
+        "src_dim": null,
+        "tgt_dim": "rgb(25, 205, 231)",
+        "src_metric": null,
+        "tgt_metric": "rgb(25, 205, 231)",
+        "src_time": null,
+        "tgt_time": "rgb(25, 205, 231)"
+      },
+      {
+        "t": 4.54,
+        "active": "demo-state-3",
+        "src_dim": null,
+        "tgt_dim": "rgb(25, 205, 231)",
+        "src_metric": null,
+        "tgt_metric": "rgb(25, 205, 231)",
+        "src_time": null,
+        "tgt_time": "rgb(25, 205, 231)"
+      },
+      {
+        "t": 4.79,
+        "active": "demo-state-3",
+        "src_dim": null,
+        "tgt_dim": "rgb(25, 205, 231)",
+        "src_metric": null,
+        "tgt_metric": "rgb(25, 205, 231)",
+        "src_time": null,
+        "tgt_time": "rgb(25, 205, 231)"
+      },
+      {
+        "t": 5.05,
+        "active": "demo-state-3",
+        "src_dim": null,
+        "tgt_dim": "rgb(25, 205, 231)",
+        "src_metric": null,
+        "tgt_metric": "rgb(25, 205, 231)",
+        "src_time": null,
+        "tgt_time": "rgb(25, 205, 231)"
+      },
+      {
+        "t": 5.3,
+        "active": "demo-state-3",
+        "src_dim": null,
+        "tgt_dim": "rgb(25, 205, 231)",
+        "src_metric": null,
+        "tgt_metric": "rgb(25, 205, 231)",
+        "src_time": null,
+        "tgt_time": "rgb(25, 205, 231)"
+      },
+      {
+        "t": 5.55,
+        "active": "demo-state-3",
+        "src_dim": null,
+        "tgt_dim": "rgb(25, 205, 231)",
+        "src_metric": null,
+        "tgt_metric": "rgb(25, 205, 231)",
+        "src_time": null,
+        "tgt_time": "rgb(25, 205, 231)"
+      },
+      {
+        "t": 5.8,
+        "active": "demo-state-3",
+        "src_dim": null,
+        "tgt_dim": "rgb(25, 205, 231)",
+        "src_metric": null,
+        "tgt_metric": "rgb(25, 205, 231)",
+        "src_time": null,
+        "tgt_time": "rgb(25, 205, 231)"
+      },
+      {
+        "t": 6.06,
+        "active": "demo-state-3",
+        "src_dim": null,
+        "tgt_dim": "rgb(25, 205, 231)",
+        "src_metric": null,
+        "tgt_metric": "rgb(25, 205, 231)",
+        "src_time": null,
+        "tgt_time": "rgb(25, 205, 231)"
+      }
+    ],
+    "pause_text_after_sql_open": "Example paused while you read.",
+    "validation_checkpoint": {
+      "present": true,
+      "label": "Validation checkpoint",
+      "icon_color": "rgb(182, 198, 214)",
+      "icon_border_color": "rgb(182, 198, 214)",
+      "after_bg": "rgb(182, 198, 214)",
+      "has_checkmark": false
+    },
+    "sql_viewports": {
+      "1440x900": {
+        "viewport": 1440,
+        "document": 1440,
+        "no_overflow": true,
+        "code_width": 400.171875,
+        "column_width": 400.171875,
+        "code_contained": true,
+        "open": true,
+        "neutral_icon_visible": true
+      },
+      "1366x768": {
+        "viewport": 1366,
+        "document": 1366,
+        "no_overflow": true,
+        "code_width": 400.171875,
+        "column_width": 400.171875,
+        "code_contained": true,
+        "open": true,
+        "neutral_icon_visible": true
+      },
+      "1024x768": {
+        "viewport": 1024,
+        "document": 1024,
+        "no_overflow": true,
+        "code_width": 400.171875,
+        "column_width": 400.171875,
+        "code_contained": true,
+        "open": true,
+        "neutral_icon_visible": true
+      },
+      "768x1024": {
+        "viewport": 768,
+        "document": 768,
+        "no_overflow": true,
+        "code_width": 367.5,
+        "column_width": 367.5,
+        "code_contained": true,
+        "open": true,
+        "neutral_icon_visible": true
+      },
+      "390x844": {
+        "viewport": 390,
+        "document": 390,
+        "no_overflow": true,
+        "code_width": 316,
+        "column_width": 316,
+        "code_contained": true,
+        "open": true,
+        "neutral_icon_visible": true
+      },
+      "360x800": {
+        "viewport": 360,
+        "document": 360,
+        "no_overflow": true,
+        "code_width": 294,
+        "column_width": 294,
+        "code_contained": true,
+        "open": true,
+        "neutral_icon_visible": true
+      }
+    },
+    "sample_viewports": {
+      "1440x900": {
+        "viewport": 1440,
+        "document": 1440,
+        "no_overflow": true,
+        "open": true
+      },
+      "1366x768": {
+        "viewport": 1366,
+        "document": 1366,
+        "no_overflow": true,
+        "open": true
+      },
+      "1024x768": {
+        "viewport": 1024,
+        "document": 1024,
+        "no_overflow": true,
+        "open": true
+      },
+      "768x1024": {
+        "viewport": 768,
+        "document": 768,
+        "no_overflow": true,
+        "open": true
+      },
+      "390x844": {
+        "viewport": 390,
+        "document": 390,
+        "no_overflow": true,
+        "open": true
+      },
+      "360x800": {
+        "viewport": 360,
+        "document": 360,
+        "no_overflow": true,
+        "open": true
+      }
+    }
+  },
+  "controlled_access": {
+    "authorized": "Conceptual route completed \u00b7 Company A / Sales sample",
+    "mismatch": "Source ownership mismatch \u00b7 request denied",
+    "gates": {
+      "auth": {
+        "className": "ph-gate  is-reached",
+        "state": "Authenticated \u00b7 sample"
+      },
+      "rate": {
+        "className": "ph-gate  is-reached",
+        "state": "Within limit \u00b7 sample"
+      },
+      "ownership": {
+        "className": "ph-gate  is-stop",
+        "state": "Company A \u2192 Company B \u00b7 mismatch"
+      },
+      "routing": {
+        "className": "ph-gate  is-unreached",
+        "state": "Not reached"
+      },
+      "validation": {
+        "className": "ph-gate  is-unreached",
+        "state": "Not reached"
+      },
+      "source": {
+        "className": "ph-gate ph-gate--source is-unreached",
+        "state": "Not reached"
+      }
+    }
+  },
+  "process_layout": {
+    "1440x900": {
+      "sticky_present": true,
+      "rows_present": false
+    },
+    "1366x768": {
+      "sticky_present": false,
+      "rows_present": true
+    },
+    "1024x768": {
+      "sticky_present": false,
+      "rows_present": true
+    },
+    "768x1024": {
+      "sticky_present": false,
+      "rows_present": true
+    },
+    "390x844": {
+      "sticky_present": false,
+      "rows_present": true
+    },
+    "360x800": {
+      "sticky_present": false,
+      "rows_present": true
+    }
+  },
+  "reduced_motion": {
+    "desktop": {
+      "motion_toggle_disabled": true,
+      "has_view_steps": true,
+      "process_rows_present": true,
+      "active_animation_count": 0
+    },
+    "mobile": {
+      "has_view_steps": true,
+      "process_rows_present": true
+    },
+    "sql_still_works": true,
+    "mid_toggle": {
+      "toggle_text": "Page demonstrationsMotion off",
+      "status_text": "Example paused.",
+      "has_view_steps": true
+    },
+    "viewports": {
+      "1440x900": {
+        "viewport": 1440,
+        "document": 1440,
+        "no_overflow": true,
+        "toggle_disabled": true,
+        "view_steps": true,
+        "demo_state": "demo-state-6",
+        "process_rows": 4,
+        "sql_open": true,
+        "animations": 0,
+        "transitions": 0
+      },
+      "1366x768": {
+        "viewport": 1366,
+        "document": 1366,
+        "no_overflow": true,
+        "toggle_disabled": true,
+        "view_steps": true,
+        "demo_state": "demo-state-6",
+        "process_rows": 4,
+        "sql_open": true,
+        "animations": 0,
+        "transitions": 0
+      },
+      "1024x768": {
+        "viewport": 1024,
+        "document": 1024,
+        "no_overflow": true,
+        "toggle_disabled": true,
+        "view_steps": true,
+        "demo_state": "demo-state-6",
+        "process_rows": 4,
+        "sql_open": true,
+        "animations": 0,
+        "transitions": 0
+      },
+      "768x1024": {
+        "viewport": 768,
+        "document": 768,
+        "no_overflow": true,
+        "toggle_disabled": true,
+        "view_steps": true,
+        "demo_state": "demo-state-6",
+        "process_rows": 4,
+        "sql_open": true,
+        "animations": 0,
+        "transitions": 0
+      },
+      "390x844": {
+        "viewport": 390,
+        "document": 390,
+        "no_overflow": true,
+        "toggle_disabled": true,
+        "view_steps": true,
+        "demo_state": "demo-state-6",
+        "process_rows": 4,
+        "sql_open": true,
+        "animations": 0,
+        "transitions": 0
+      },
+      "360x800": {
+        "viewport": 360,
+        "document": 360,
+        "no_overflow": true,
+        "toggle_disabled": true,
+        "view_steps": true,
+        "demo_state": "demo-state-6",
+        "process_rows": 4,
+        "sql_open": true,
+        "animations": 0,
+        "transitions": 0
+      }
+    }
+  },
+  "controls": {
+    "cta_get_started": "/signup",
+    "cta_sign_in": "/login",
+    "sizes": [
+      {
+        "sel": "[data-testid=\"question-regional-growth\"]",
+        "present": true,
+        "width": 304,
+        "height": 78,
+        "meets_44px": true
+      },
+      {
+        "sel": "[data-testid=\"trace-phase-interpret\"]",
+        "present": true,
+        "width": 130,
+        "height": 88,
+        "meets_44px": true
+      },
+      {
+        "sel": "[data-testid=\"trace-phase-ground\"]",
+        "present": true,
+        "width": 130,
+        "height": 88,
+        "meets_44px": true
+      },
+      {
+        "sel": "[data-testid=\"trace-phase-compute\"]",
+        "present": true,
+        "width": 130,
+        "height": 88,
+        "meets_44px": true
+      },
+      {
+        "sel": "[data-testid=\"trace-phase-explain\"]",
+        "present": true,
+        "width": 130,
+        "height": 88,
+        "meets_44px": true
+      },
+      {
+        "sel": "[data-testid=\"scenario-authorized\"]",
+        "present": true,
+        "width": 149.828125,
+        "height": 44,
+        "meets_44px": true
+      },
+      {
+        "sel": "[data-testid=\"scenario-mismatch\"]",
+        "present": true,
+        "width": 215.109375,
+        "height": 44,
+        "meets_44px": true
+      },
+      {
+        "sel": "[data-testid=\"cta-get-started\"]",
+        "present": true,
+        "width": 119.546875,
+        "height": 44,
+        "meets_44px": true
+      },
+      {
+        "sel": "[data-testid=\"cta-sign-in\"]",
+        "present": true,
+        "width": 55.140625,
+        "height": 44,
+        "meets_44px": true
+      }
+    ]
+  }
+}

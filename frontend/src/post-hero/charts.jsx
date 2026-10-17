@@ -50,6 +50,7 @@ export const TrendTable = ({ fixture, animate = false, highlightId = null }) => 
   const [lo, hi] = fixture.chart.domain;
   const y = (v) => 20 - ((v / 1000 - lo) / (hi - lo)) * 18;
   return (
+    <div className="ph-table-scroll" tabIndex={0} data-testid="customer-trend-scroll">
     <table className="ph-table ph-trend" data-testid="chart-trend-table">
       <thead>
         <tr>
@@ -81,6 +82,7 @@ export const TrendTable = ({ fixture, animate = false, highlightId = null }) => 
         ))}
       </tbody>
     </table>
+    </div>
   );
 };
 

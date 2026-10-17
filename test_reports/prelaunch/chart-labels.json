@@ -1,0 +1,182 @@
+{
+  "1440x900": {
+    "regional-growth": {
+      "label_fragments": 14,
+      "overlaps": [],
+      "uncontained_labels": [],
+      "document": 1440,
+      "viewport": 1440
+    },
+    "customer-decline": {
+      "label_fragments": 20,
+      "overlaps": [],
+      "uncontained_labels": [],
+      "document": 1440,
+      "viewport": 1440
+    },
+    "weekly-change": {
+      "label_fragments": 11,
+      "overlaps": [],
+      "uncontained_labels": [],
+      "document": 1440,
+      "viewport": 1440
+    },
+    "margin-loss": {
+      "label_fragments": 12,
+      "overlaps": [],
+      "uncontained_labels": [],
+      "document": 1440,
+      "viewport": 1440
+    }
+  },
+  "1366x768": {
+    "regional-growth": {
+      "label_fragments": 14,
+      "overlaps": [],
+      "uncontained_labels": [],
+      "document": 1366,
+      "viewport": 1366
+    },
+    "customer-decline": {
+      "label_fragments": 20,
+      "overlaps": [],
+      "uncontained_labels": [],
+      "document": 1366,
+      "viewport": 1366
+    },
+    "weekly-change": {
+      "label_fragments": 11,
+      "overlaps": [],
+      "uncontained_labels": [],
+      "document": 1366,
+      "viewport": 1366
+    },
+    "margin-loss": {
+      "label_fragments": 12,
+      "overlaps": [],
+      "uncontained_labels": [],
+      "document": 1366,
+      "viewport": 1366
+    }
+  },
+  "1024x768": {
+    "regional-growth": {
+      "label_fragments": 14,
+      "overlaps": [],
+      "uncontained_labels": [],
+      "document": 1024,
+      "viewport": 1024
+    },
+    "customer-decline": {
+      "label_fragments": 20,
+      "overlaps": [],
+      "uncontained_labels": [],
+      "document": 1024,
+      "viewport": 1024
+    },
+    "weekly-change": {
+      "label_fragments": 11,
+      "overlaps": [],
+      "uncontained_labels": [],
+      "document": 1024,
+      "viewport": 1024
+    },
+    "margin-loss": {
+      "label_fragments": 12,
+      "overlaps": [],
+      "uncontained_labels": [],
+      "document": 1024,
+      "viewport": 1024
+    }
+  },
+  "768x1024": {
+    "regional-growth": {
+      "label_fragments": 14,
+      "overlaps": [],
+      "uncontained_labels": [],
+      "document": 768,
+      "viewport": 768
+    },
+    "customer-decline": {
+      "label_fragments": 20,
+      "overlaps": [],
+      "uncontained_labels": [],
+      "document": 768,
+      "viewport": 768
+    },
+    "weekly-change": {
+      "label_fragments": 11,
+      "overlaps": [],
+      "uncontained_labels": [],
+      "document": 768,
+      "viewport": 768
+    },
+    "margin-loss": {
+      "label_fragments": 12,
+      "overlaps": [],
+      "uncontained_labels": [],
+      "document": 768,
+      "viewport": 768
+    }
+  },
+  "390x844": {
+    "regional-growth": {
+      "label_fragments": 14,
+      "overlaps": [],
+      "uncontained_labels": [],
+      "document": 390,
+      "viewport": 390
+    },
+    "customer-decline": {
+      "label_fragments": 20,
+      "overlaps": [],
+      "uncontained_labels": [],
+      "document": 390,
+      "viewport": 390
+    },
+    "weekly-change": {
+      "label_fragments": 11,
+      "overlaps": [],
+      "uncontained_labels": [],
+      "document": 390,
+      "viewport": 390
+    },
+    "margin-loss": {
+      "label_fragments": 12,
+      "overlaps": [],
+      "uncontained_labels": [],
+      "document": 390,
+      "viewport": 390
+    }
+  },
+  "360x800": {
+    "regional-growth": {
+      "label_fragments": 14,
+      "overlaps": [],
+      "uncontained_labels": [],
+      "document": 360,
+      "viewport": 360
+    },
+    "customer-decline": {
+      "label_fragments": 20,
+      "overlaps": [],
+      "uncontained_labels": [],
+      "document": 360,
+      "viewport": 360
+    },
+    "weekly-change": {
+      "label_fragments": 11,
+      "overlaps": [],
+      "uncontained_labels": [],
+      "document": 360,
+      "viewport": 360
+    },
+    "margin-loss": {
+      "label_fragments": 12,
+      "overlaps": [],
+      "uncontained_labels": [],
+      "document": 360,
+      "viewport": 360
+    }
+  }
+}
