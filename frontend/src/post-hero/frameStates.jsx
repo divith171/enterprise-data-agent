@@ -1,5 +1,5 @@
 import { SCHEMA, SQL_LABEL, fmt } from "./demoFixtures";
-import { SignedBars, SampleDataTable } from "./charts";
+import { SignedBars } from "./charts";
 
 const Fields = ({ fixture, animate, hot = [] }) => (
   <dl className="ph-fields">
@@ -28,18 +28,6 @@ export const SchemaTable = ({ table = "revenue_records", selected, caption, anim
   </div>
 );
 
-export const ComparisonTable = ({ fixture, compact, withTotal = true }) => (
-  <table className={`ph-table ${compact ? "ph-table--compact" : ""}`} data-testid="comparison-table">
-    <thead><tr><th scope="col">Region</th><th scope="col">{fixture.periods.prior}</th><th scope="col">{fixture.periods.current}</th><th scope="col">Change</th></tr></thead>
-    <tbody>
-      {fixture.rows.map((r) => (
-        <tr key={r.id} className={r.id === fixture.chart.emphasisId ? "is-hot" : ""}><td>{r.label}</td><td>{fmt.k(r.q2)}</td><td>{fmt.k(r.q3)}</td><td>{fmt.signedK(r.change)}</td></tr>
-      ))}
-      {withTotal && <tr className="is-total"><td>Total</td><td>{fmt.k(fixture.total.q2)}</td><td>{fmt.k(fixture.total.q3)}</td><td>{fmt.signedK(fixture.total.change)}</td></tr>}
-    </tbody>
-  </table>
-);
-
 const AnswerLine = ({ fixture, emphasize }) => {
   const [lead, rest] = fixture.answer.split(" of the ");
   return (
@@ -66,82 +54,6 @@ export const SqlDisclosure = ({ fixture, onToggle, testid = "sql-disclosure" }) 
     </div>
   </details>
 );
-
-/* ---------------- six demo states ---------------- */
-export const DemoState = ({ state, fixture, animate, onDisclosure }) => {
-  switch (state) {
-    case 1:
-      return (
-        <div data-testid="demo-state-1">
-          <p className="ph-state-title">Start with a business question</p>
-          <p className="ph-state-copy">{fixture.assumption}</p>
-        </div>
-      );
-    case 2:
-      return (
-        <div data-testid="demo-state-2">
-          <p className="ph-state-title">Interpretation</p>
-          <Fields fixture={fixture} animate={animate} />
-        </div>
-      );
-    case 3:
-      return (
-        <div data-testid="demo-state-3">
-          <p className="ph-state-title">Relevant fields</p>
-          <div className="ph-two">
-            <dl className="ph-kv">
-              <div><dt>Metric</dt><dd>Net revenue</dd></div>
-              <div><dt>By</dt><dd>Region</dd></div>
-              <div><dt>Periods</dt><dd>{fixture.periods.current} vs {fixture.periods.prior}</dd></div>
-            </dl>
-            <SchemaTable selected={fixture.fields} caption="Fields needed for this comparison" animate={animate} />
-          </div>
-        </div>
-      );
-    case 4:
-      return (
-        <div data-testid="demo-state-4">
-          <p className="ph-state-title">Compare complete quarters</p>
-          <div className="ph-two">
-            <ComparisonTable fixture={fixture} compact />
-            <SignedBars fixture={fixture} animate={animate} compact />
-          </div>
-          <p className="ph-eq"><span>Regional change ÷ {fmt.k(fixture.total.change)} total change</span><span>{fixture.dateRanges.prior} · {fixture.dateRanges.current}</span></p>
-        </div>
-      );
-    case 5:
-      return (
-        <div data-testid="demo-state-5">
-          <p className="ph-state-title">Query preview · illustrative</p>
-          <div className="ph-two">
-            <div>
-              <ul className="ph-concepts">
-                {fixture.queryConcepts.map((c, i) => <li key={c} className={`ph-concept ${animate ? "ph-field-enter" : ""}`} style={{ "--i": i }}>{c}</li>)}
-              </ul>
-              <SqlDisclosure fixture={fixture} onToggle={onDisclosure} />
-            </div>
-            <ValidationCheckpoint />
-          </div>
-        </div>
-      );
-    default:
-      return (
-        <div data-testid="demo-state-6">
-          <p className="ph-state-title">Answer</p>
-          <AnswerLine fixture={fixture} emphasize={animate} />
-          <div style={{ marginTop: 20 }}><SignedBars fixture={fixture} animate={animate} /></div>
-          <p className="ph-caption" style={{ fontSize: 14, lineHeight: "20px", color: "#B6C6D6" }}>{fixture.supporting}</p>
-          <details className="ph-details" onToggle={onDisclosure} data-testid="view-sample-data">
-            <summary>View sample data</summary>
-            <div className="ph-details__body">
-              <SampleDataTable fixture={fixture} compact />
-              <p className="ph-caption">{fixture.definition}</p>
-            </div>
-          </details>
-        </div>
-      );
-  }
-};
 
 export const STEP_TITLES = ["Question", "Interpretation", "Relevant data", "Analysis / comparison", "Query + validation", "Answer"];
 

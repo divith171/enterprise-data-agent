@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { regionalFixture } from "./demoFixtures";
-import { DEMO_DURATION, DEMO_TIMELINE, MS } from "./motionTokens";
+import { DEMO_DURATION, DEMO_TIMELINE } from "./motionTokens";
 import { useMotionPolicy, MotionToggle } from "./motionPolicy";
-import { useStagedSwap, useVisiblePlayback } from "./useVisiblePlayback";
+import { useVisiblePlayback } from "./useVisiblePlayback";
 import { AnalysisFrame } from "./AnalysisFrame";
 import { ChapterHeading } from "./ChapterHeading";
-import { DemoState, STEP_TITLES } from "./frameStates";
+import { STEP_TITLES } from "./frameStates";
+import { DemoCanvas } from "./DemoCanvas";
 
 const STEP_COPY = [
   regionalFixture.assumption,
@@ -71,7 +72,6 @@ export const ProductDemo = () => {
     if (e.target.open) pause("Example paused while you read.");
   };
 
-  const { shown, leaving } = useStagedSwap(visual, MS.outgoing, effectiveMotion);
   const animate = effectiveMotion && status !== "idle";
 
   return (
@@ -113,7 +113,7 @@ export const ProductDemo = () => {
               testid="demo-frame"
               active={status === "playing"}
               questionNode={
-                shown === 1 && animate ? (
+                (visual === 1 || visual === 2) && animate ? (
                   <span>Which <mark>region</mark> drove our <mark>growth</mark> <mark>last quarter</mark>?</span>
                 ) : (
                   fixture.question
@@ -121,9 +121,7 @@ export const ProductDemo = () => {
               }
               footerRight={status === "playing" ? "Playing example" : status === "paused" ? "Paused" : null}
             >
-              <div key={shown} className={`${leaving ? "ph-state-leave" : animate ? "ph-state-enter" : ""}`}>
-                <DemoState state={shown} fixture={fixture} animate={animate && !leaving} onDisclosure={onDisclosure} />
-              </div>
+              <DemoCanvas state={visual} fixture={fixture} animate={animate} onDisclosure={onDisclosure} />
             </AnalysisFrame>
 
             <div className="ph-controls" data-testid="demo-controls">

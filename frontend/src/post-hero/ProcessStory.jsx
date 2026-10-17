@@ -8,6 +8,7 @@ import { useInView } from "./useVisiblePlayback";
 import { AnalysisFrame } from "./AnalysisFrame";
 import { ChapterHeading } from "./ChapterHeading";
 import { ProcessArtifact } from "./frameStates";
+import { ProcessCanvas } from "./ProcessCanvas";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -96,17 +97,10 @@ const StickyProcess = ({ layout, onFitFail }) => {
     const t = PROCESS.windows.map((w, i) =>
       motionRef.current ? easeGeometry(windowProgress(p, w)) : p >= PROCESS.dominantSwitch[i] ? 1 : 0
     );
-    const out = (x) => clamp01(1 - x * 2); // outgoing layer fades in the first half of a transition
-    const inn = (x) => clamp01(x * 2 - 1); // incoming layer fades in the second half
     const set = (k, v) => el.style.setProperty(k, v);
-    set("--o1", out(t[0]).toFixed(4));
-    set("--o2", (inn(t[0]) * out(t[1])).toFixed(4));
-    set("--o3", (inn(t[1]) * out(t[2])).toFixed(4));
-    set("--o4", inn(t[2]).toFixed(4));
-    set("--y1", `${(-12 * t[0]).toFixed(2)}px`);
-    set("--y2", `${(-12 * t[1]).toFixed(2)}px`);
-    set("--y3", `${(-12 * t[2]).toFixed(2)}px`);
-    set("--bar", inn(t[1]).toFixed(4));
+    t.forEach((v, i) => set(`--t${i + 1}`, v.toFixed(4)));
+    set("--bar", clamp01(t[1] * 2 - 0.6).toFixed(4)); // change bars extend once the headers are in place
+    set("--hl", clamp01(1 - Math.abs(t[1] - 0.45) / 0.35).toFixed(4)); // header highlight transfer peaks mid-transition
     const dominant = 1 + PROCESS.dominantSwitch.filter((s) => p >= s).length;
     if (dominant !== stageStateRef.current) {
       stageStateRef.current = dominant;
@@ -148,7 +142,7 @@ const StickyProcess = ({ layout, onFitFail }) => {
         <div className="ph-chapter-head ph-chapter-head--row" style={{ marginBottom: 0 }}>
           <div>
             <p className="ph-eyebrow" style={{ marginBottom: 8 }}>HOW IT WORKS</p>
-            <h2 id="process-heading" className="ph-h2" style={{ fontSize: 32, lineHeight: "36px" }}>Connect. Ask. Analyze. Understand.</h2>
+            <h2 id="process-heading" className="ph-h2">Connect. Ask. Analyze. Understand.</h2>
           </div>
           <div className="ph-controls" style={{ marginTop: 0 }}>
             <MotionToggle id="motion-toggle-process" />
@@ -158,20 +152,14 @@ const StickyProcess = ({ layout, onFitFail }) => {
 
         <div className="ph-process-grid">
           <StageCopy stage={stage} motion={effectiveMotion} side={side} />
-          <div style={{ gridColumn: 2, gridRow: 1 }} className={`ph-process-frame ${idle ? "ph-idle-on" : ""}`}>
+          <div style={{ gridColumn: 2, gridRow: 1 }} className="ph-process-frame">
             <AnalysisFrame
               variant="process"
               testid="process-frame"
               active
               questionNode={<span key={stage} className={effectiveMotion ? "ph-reveal-label is-in" : ""}>{stage === 1 ? "Company workspace / Sales sample" : regionalFixture.question}</span>}
             >
-              <div ref={layersRef} className="ph-layers" style={{ height: 230 }}>
-                {[1, 2, 3, 4].map((s) => (
-                  <div key={s} className={`ph-layer ph-layer--${s}`} aria-hidden={s !== stage}>
-                    <ProcessArtifact stage={s} fixture={regionalFixture} idle={idle && s === stage} />
-                  </div>
-                ))}
-              </div>
+              <ProcessCanvas ref={layersRef} fixture={regionalFixture} stage={stage} idle={idle} />
             </AnalysisFrame>
           </div>
         </div>
