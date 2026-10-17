@@ -123,7 +123,7 @@ export const ControlledAccess = ({ activeExampleId }) => {
               <button type="button" className="ph-scen" aria-pressed={scenario === "authorized"} onClick={() => choose("authorized")} data-testid="scenario-authorized">Authorized source</button>
               <button type="button" className="ph-scen" aria-pressed={scenario === "mismatch"} onClick={() => choose("mismatch")} data-testid="scenario-mismatch">Source ownership mismatch</button>
             </div>
-            <p className="ph-support" style={{ marginTop: 0 }}>The order shown is illustrative. Each check is a concept the request passes through before any source is read; it is not a certification.</p>
+            <p className="ph-support" style={{ marginTop: 0 }}>The order shown is illustrative. Each check is a concept the request passes through before any source is read; it is a diagram, not an audit result.</p>
             <ol className="ph-access__list" data-testid="access-steps-text">
               {GATES.map((g, i) => <li key={g.id}><strong>{g.name}</strong> — {scenario === "mismatch" ? (i + 1 > 3 ? "Not reached" : i + 1 === 3 ? g.bad : g.ok) : g.ok}</li>)}
             </ol>

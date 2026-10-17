@@ -1,45 +1,46 @@
 # DataKat — Public Marketing Landing Page
 
 ## Original Problem Statement (summary)
-Build a premium cinematic public landing page for "DataKat" — an AI analytics product positioned as "Your AI Data Analyst". Standalone frontend-only build in this workspace (no backend, no auth, no existing repo to preserve). Two locked supplied assets: the underwater hero artwork and the approved script DataKat wordmark (white script, cat integrated into the D, cyan eyes). Core visual concept: a surface-to-deep-ocean scroll journey — bright sunlit hero descending through marine blue → #0A1428 → #080D18 → #05070D as the visitor goes deeper into the product. 85% premium analytical tech company, 15% DataKat personality. Strict content accuracy: no invented metrics, testimonials, certifications, or capabilities.
+Premium cinematic public landing page for "DataKat" (Your AI Data Analyst). Standalone FRONTEND-ONLY workspace: no backend, no auth, `/login` and `/signup` are placeholder routes. Locked assets: 1080p hero video (MP4 + WebM transcode for preview Chromium) and the script wordmark. Surface-to-deep-ocean scroll journey. Strict content accuracy: no invented metrics, certifications, security guarantees or capabilities.
+
+On 2026-07 the post-hero area was rebuilt to the **DataKat Post-Hero Locked Specification v1.0 (12 Oct 2026)** executed via the **Emergent/Fable 5.1 Master Prompt**: exactly five chapters below the frozen hero, one immutable fixture module, GSAP for local timelines + ONE ScrollTrigger, no new Framer Motion/Canvas/WebGL/video below the hero.
 
 ## User Personas
-- Founder / product lead evaluating AI analytics tools (primary)
-- Data-curious business operator who wants answers without SQL/dashboards
-- Technical evaluator scanning the pipeline + security sections for credibility
+- Founder / product lead evaluating AI analytics tools
+- Business operator who wants answers without SQL/dashboards
+- Technical evaluator inspecting the analytical trace and access-path concepts
 
 ## Architecture
-- React 19 + CRA (craco) + Tailwind CSS, standalone frontend (no backend usage)
-- react-router-dom routes: `/` (landing), `/login`, `/signup` (honest placeholders), `*` → landing
-- framer-motion: entrance animations, scroll reveals, sticky surface→depth transition, pipeline line draw
-- lenis: smooth momentum scrolling (skipped under prefers-reduced-motion)
-- Assets (processed from user-supplied uploads, in `src/assets/`):
-  - `hero-ocean.webp` — the supplied underwater hero artwork (269 KB, converted losslessly-ish from the 2.3 MB PNG for performance; no recoloring)
-  - `datakat-wordmark.png` — the approved script wordmark, artifact-streak alpha cleaned and trimmed, transparency preserved
-  - `public/favicon.svg` — simple SVG cat mark (ears, cyan eyes, triangular nose) matching the brand's favicon identity
-- Typography: Geist (Google Fonts), antialiased
+- React 19 + CRA (craco) + Tailwind (hero/nav/footer) + scoped plain CSS for post-hero (`src/post-hero/postHero.css`)
+- react-router-dom: `/`, `/login`, `/signup` placeholders, `*` → landing
+- Hero (LOCKED, byte-identical — hashes in `/app/memory/baseline/hero-hashes-{before,after}.txt`): `components/landing/Hero.jsx`, `Navbar.jsx`, `Reveal.jsx`, `lib/scroll.js`, `public/media/*`, `assets/datakat-wordmark.png`. Framer Motion + Lenis remain only for the hero/page scroll.
+- Post-hero (`src/post-hero/`):
+  - `PostHeroExperience.jsx` — owns `activeExampleId` + `MotionPolicyProvider`; one `.ph-stack` parent owns the 64/40px inter-chapter gap
+  - `demoFixtures.js` — single fixture module (regional-growth, customer-decline, weekly-change, margin-loss); all deltas/growth/contribution/margins derived from rows; snapshot 7 Oct 2026
+  - `motionTokens.js` — curves, durations, demo storyboard, process scroll windows, access path timings
+  - `motionPolicy.jsx` — OS reduced-motion + user "Page demonstrations · Motion on/off" (OS wins); `useVisiblePlayback.js` — offscreen/hidden-tab suspension, reveal-once, staged swap
+  - `productTruthManifest.js` — routes, onboarding flag (false → "Start with DataKat."), conceptual security claims
+  - `AnalysisFrame.jsx` (demo 760 / process 520 / fluid workbench variants), `charts.jsx`, `frameStates.jsx` (six demo states + four process artifacts)
+  - Chapters: `ProductDemo.jsx` (#product, 16s GSAP timeline), `ProcessStory.jsx` (#how-it-works, sticky ≥1280×800 + rows fallback), `AnalysisWorkbench.jsx` + `QuestionExplorer.jsx` + `AnalysisTrace.jsx` (#workbench), `ControlledAccess.jsx` (#security), `ClosingComposition.jsx` (#closing: Differentiation + FinalCTA)
+- `public/index.html` carries a static `<noscript>` equivalent (regional answer/table, four process rows, conceptual access path, differentiation, CTA links)
+- Dependency added: `gsap@3.15`. Bundle: JS 132.6 → 192.2 kB gzip (+59.6 kB incl. GSAP core + ScrollTrigger), CSS 11.3 → 15.6 kB (+4.3 kB) — within ≤100 kB budget
 
-## Core Requirements (static)
-Section order: Hero → depth transition → Product demo (#product) → How it works (#how-it-works) → Business questions marquee → More than text-to-SQL pipeline → Security (#security) → Differentiation → Final CTA → minimal footer. Exact demo question/answer/table data from the brief. No pricing, testimonials, logos, FAQ, blog, or fake claims.
+## Implemented
+- 2026-07-09/10: hero video (1080p MP4 + WebM), hardened autoplay lifecycle, surface→depth exit, skip-link fix (see git history)
+- 2026-07 (this session): five locked post-hero chapters
+  1. Product proof — default completed answer; `Watch the example` 16s storyboard (states at 0/1.6/4.0/6.2/9.4/11.6s), Pause/Resume/Show answer/Replay, pauses offscreen/hidden-tab/on disclosure; reduced motion → `View example steps`
+  2. Process — sticky stage T=N+24, S=min(720, vh−N−48), wrapper 4S, travel 3S, windows .20–.28/.45–.53/.70–.78, dominant switch .24/.49/.74, rail targets .10/.365/.615/.89, `Skip process`, 4.8s idle emphasis on stages 1–3; tablet/mobile/reduced-motion/ineligible → four normal-flow rows
+  3. Workbench — 304px question list, `aria-pressed`, 120ms mask + 280/650ms reveals, trace Interpret→Ground→Compute→Explain (2×2 map desktop, numbered list mobile), illustrative SQL disclosures, validation checkpoint (never "Passed")
+  4. Controlled access — `Conceptual access path · sample request`, six gates with exact copy, Authorized (2.4s replay) / Source ownership mismatch (1.2s, stops at ownership, later gates `Not reached`), Pause/Resume/Show outcome
+  5. Closing — four differentiation lines (0/180/360/760ms), answer receipt from selected example, static question surface, `Start with DataKat.`, Get Started → /signup, Sign in → /login
+- Verified: testing agent iteration_1 (~98%, only finding was a "certification" word → rephrased), build passes, hero hashes identical, fixture arithmetic checked, 1440/1280/1366/1024/768/390/360, reduced motion, Motion off, resize mid-stage, 200%-zoom-equivalent
 
-## Implemented (2026-07-09)
-- Full-bleed cinematic hero: the FINAL user-supplied hero video, now the approved 1080p version (`public/media/datakat-hero.mp4`, 1920x1080 H.264, 24fps, 15.62s seamless loop) full-viewport with autoPlay/muted/loop/playsInline, poster regenerated from the new video's own first frame (`public/media/hero-poster.webp`); cat/action preserved right, copy left (35–40%), localized readability gradients only (left on desktop, bottom on mobile, faint top scrim for navbar), masked line-by-line headline reveal, staggered fade-rise entrance (0.18/0.32/0.44/0.6/0.75s), subtle parallax on scroll
-- Media history: first upload was a PNG still (kept unused at `src/assets/hero-ocean.webp`); replaced by a 720p mp4, then by the final 1080p mp4 on 2026-07-10. The pod's headless test Chromium lacks the proprietary H.264 codec, so a VP9/WebM fallback (`public/media/datakat-hero.webm`, transcoded from the exact uploaded 1080p MP4 — same 1920x1080, 24fps, 375 frames, 15.62s, no visual alteration) is the FIRST `<source>`, with the original H.264 MP4 second. Verified live in preview after the 1080p swap: browser picks the WebM, reports 1920x1080, readyState 4, currentTime advances, loop wraps (15.3s → 0.01s), motion visible; production browsers will use the MP4. Autoplay hardened on 2026-07-09: explicit `muted` IDL property + `defaultMuted`, `preload="auto"`, play() retried on `canplay` and on first user interaction (pointerdown/touchstart/scroll/keydown) — covers embedded-iframes or browsers that block the initial autoplay; verified a forced-pause resumes on first click. Further hardened 2026-07-10 after user reproduced a paused state in Chrome: playback is now re-requested on mount, on timed retries (250/750/1500/3000ms), on `pageshow` (Back/Forward bfcache), and on `visibilitychange` (tab return); muted is set before every play request; nothing in the code pauses the video on scroll. Full lifecycle verified on the live preview without any manual .play(): fresh load, refresh, scroll away/return, SPA navigate away/return, browser Back, and forced-pause recovery via visibilitychange and pageshow all resume playback automatically
-- Sticky surface→deep-ocean scroll transition (220vh range: sunlight veil + deep-navy layer, text fades before media, media parallax/scale, ends seamlessly into #0A1428)
-- Product demo console (redesigned 2026-07-10, hero untouched): left column = heading + larger supporting copy + animated 6-step analysis-status sequence (Understanding the question → Finding relevant data → Planning the analysis → Generating the query → Validating the query → Answer ready), one active cyan state at a time, completed steps show small checks, thin vertical cyan progress line fills, ~2.5s run then holds completed state (jumps straight to completed under prefers-reduced-motion); right panel keeps the exact question/answer/table data and reveals in stages (question first, DataKat explanation at Answer ready, result rows staggered in). Tighter vertical padding, left/right vertically balanced
-- Editorial 4-stage How It Works (Connect/Ask/Analyze/Understand)
-- Slow editorial business-questions marquee (6 approved questions, edge fade, pause on hover)
-- 8-step analytical pipeline with scroll-drawn connecting line (Understand → … → Explain the result)
-- Security section: exactly the 6 grounded concepts, no certifications claimed
-- Differentiation typography sequence → "An analyst you can talk to."
-- Final CTA (Get Started → /signup, Sign in → /login) + minimal footer (wordmark, 3 anchor links, © 2026 DataKat)
-- Navbar: approved wordmark only (no tagline/cat icon/sparkle), transparent → translucent navy on scroll, mobile Menu/X fullscreen #05070D menu
-- Accessibility: semantic HTML, focus-visible cyan rings, skip link (off-screen by default via dedicated `.skip-link` CSS, revealed only on `:focus-visible` keyboard focus below the navbar so it never covers the logo; verified 2026-07-09: hidden for mouse/touch, appears on Tab, hides on blur), decorative-media alt handling, prefers-reduced-motion respected
-- Verified: all sections screenshotted at 1366/768/375, mobile menu, /login route, production `yarn build` passes
+## Known limitations / product-truth notes
+- Security route order is conceptual; onboarding copy uses the locked fallback because no backend exists here
+- Two console messages pre-exist in the frozen hero (`defaultMuted` DOM prop, framer-motion useScroll container warning) — intentionally untouched
+- Client-only app: JS-disabled fallback is the `<noscript>` block, not a prerender
 
-## Backlog / Next Tasks
-- P0: Real authentication forms at /login and /signup once the user's backend is connected
-- P1: Social share (OG) image derived from the hero artwork
-- P1: Additional approved demo questions in the product console (copy must be user-approved)
-- P2: Depth-gauge scroll indicator (surface → abyss) as an on-brand accent
-- P2: Integration handoff README for the user's real repository
+## Backlog
+- P1: Integration handoff README for the real DataKat repository (file inventory + how to mount PostHeroExperience)
+- P1: Social share (OG) image from hero artwork
+- P2: Real `/login` and `/signup` once a backend exists (out of scope here)

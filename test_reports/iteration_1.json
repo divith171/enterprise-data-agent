@@ -1,0 +1,30 @@
+{
+  "summary": "Comprehensive frontend-only testing of DataKat landing page across 1440x900, 1280x800, 1366x768, 1024x768, 768x1024, 390x844, 360x800, and reduced-motion. All five post-hero chapters render in order, hero video plays and section is 220vh, nav anchors work, product demo advances through states with pause/resume/show-answer, workbench question switching updates answer/charts/access-context/answer-receipt and persists trace phase, controlled access scenarios (authorized/mismatch) behave correctly including mid-playback scenario change and gate-detail selection, closing CTAs route to /signup and /login, mobile responsive with no horizontal overflow and >=44px tap targets, keyboard Tab/Space activation works, sticky process has correct wrapper height (2880 = 4*720), stage switching at ~0.25/0.5/0.75 progress, reverse scrolling, rail nav focus retention, and skip-process link focusing #workbench-heading. Reduced-motion: hero video still plays, 'View example steps' replaces Watch button, motion toggles disabled with 'Motion off' label, process uses rows. One copy-level spec deviation: the string 'certification' appears in body text (spec forbade substring 'certif'). Third-party emergent-main.js emits a React dev warning about `defaultMuted` prop and a GSAP container warning; these originate from the Emergent badge script bundle, not from DataKat code.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "ControlledAccess copy", "issue": "Body text contains the substring 'certif' in the sentence 'it is not a certification.' Spec requires NO occurrence of 'certif' anywhere on the page.", "selector": "[data-testid=chapter-access]", "priority": "LOW"}
+    ],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [],
+  "action_items": [
+    "Rephrase the ControlledAccess disclaimer to remove the word 'certification' (e.g. 'it is not an audit result' or 'it is not a compliance claim') to comply with the forbidden-terms list.",
+    "(Informational, not DataKat code) The injected Emergent badge script `assets.emergent.sh/scripts/emergent-main.js` logs a React DEV warning about an unknown `defaultMuted` prop and a GSAP ScrollTrigger non-static-position warning. These do not originate from app source and can be ignored, but they add console noise."
+  ],
+  "critical_code_review_comments": [
+    "All interactive elements expose correct data-testid, aria-pressed, and aria-current attributes.",
+    "Timings and state transitions in the 16s GSAP demo match the spec; Pause truly freezes state; Show answer jumps to state 6.",
+    "Process sticky eligibility correctly gates at 1280x800+; wrapper height formula produces 2880px at 1440x900 as expected.",
+    "Reduced-motion correctly disables Watch, Motion toggles, and sticky scrubbing while preserving the hero video."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "n/a", "frontend": "~98%"},
+  "test_credentials": "None required",
+  "seed_data_creation": "None",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Hero is 220vh and MUST remain untouched. Lenis smooth-scroll means always wait ~600-900ms after scrollIntoView/scrollTo. Process sticky only mounts at viewport >=1280x800; at 1366x768 it falls back to rows. Console warnings from assets.emergent.sh/scripts/emergent-main.js are third-party; filter them out. The only functional/copy deviation found was the word 'certification' in ControlledAccess body copy.",
+  "rca of the issue": "Forbidden substring 'certif' is present because the ControlledAccess chapter uses the phrase 'it is not a certification' to disclaim compliance semantics. Reproduce: document.body.innerText.includes('certif') === true at /. Mitigation: edit /app/frontend/src/post-hero/ControlledAccess.jsx (or associated copy source) to replace 'certification' with a synonym such as 'compliance claim' or 'audit result'."
+}
