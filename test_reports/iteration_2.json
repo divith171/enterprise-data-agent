@@ -1,0 +1,32 @@
+{
+  "summary": "Frontend-only retest of the DataKat landing page focused on the two chapters that received the motion-continuity polish pass: PRODUCT DEMO (#product) and PROCESS STICKY (#how-it-works), plus a quick regression on Workbench, Controlled Access, CTAs, hero video, mobile overflow, console. Everything in the review-request matrix passes.\n\nPRODUCT DEMO @1440x900: default visible state is demo-state-6 with the expected answer sentence 'West contributed $220k of the $400k increase — 55% of total revenue growth.' and the demo-equation reading '+$220k ÷ +$400k total = 55% of growth'. After clicking demo-watch-button the canvas class progressed dc--s1→s2 (~1.7s), fields visible (opacity=1) at ~2.5s, s3 at ~4.9s with fields+schema still opacity 1, s4 at ~7.4s with comparison-table opacity 1 and bar transforms scaleX 0.55–0.89 (>0), s5 at ~10.1s with bars at scaleX=1, s6 at ~13.1s with equation+answer visible. Pause and Show answer buttons are present and clickable; the 'View sample data' details element has pointer-events:auto and is interactive in state 6.\n\nPROCESS STICKY @1440x900: process-canvas lives inside process-frame; wrapperTop=2885, wrapperHeight=2880 (S=720, T=101). Measured CSS vars on .pc at the required scroll checkpoints: p=0.10 →(t1=0,t2=0); p=0.235 →t1=0.338 (in 0.2–0.6); p=0.30 →(t1=1,t2=0, rail aria-current '02 Ask'); p=0.49 →(t2=0.49 in 0.3–0.7, hl=0.876 >0.5); p=0.60 →(t2=1,bar=1, '03 Analyze' current); p=0.745 →(t3=0.665 in 0.3–0.9); p=0.90 →(t3=1, '04 Understand' current, derivation '+$220k ÷ +$400k total = 55%' and answer sentence 'West...' both visible inside the frame, no element bottom overflows the frame). Reverse scroll back to p=0.30 restores t2=0 and current '02 Ask'. The stage heading 'Connect. Ask. Analyze. Understand.' is an H2 inside [data-testid=process-stage] and the stage has no vertical overflow (scrollHeight=720, clientHeight=720). Side-copy alternation verified: 01 LEFT, 02 RIGHT, 03 LEFT, 04 RIGHT.\n\nFALLBACKS: at 1024x768 and 390x844 process-rows is present with 4 children and process-sticky-wrapper is absent. With prefers-reduced-motion emulated at 1440x900 the rows fallback is used and the product demo exposes [data-testid=view-example-steps].\n\nREGRESSION: scenario-mismatch outcome still contains 'Source ownership mismatch' and 'request denied'. cta-get-started href='/signup', cta-sign-in href='/login'. Hero <video> is playing (paused=false, muted=true, src ends 'datakat-hero.webm'). No horizontal overflow at 390 or 360 widths. No new console errors beyond the pre-existing (ignored) 'defaultMuted' and framer-motion 'non-static position' warnings from the Emergent badge script.\n\nONE PRE-EXISTING COPY ISSUE still present from iteration_1: ControlledAccess body contains the substring 'certif' (word 'certification'). Not in the scope of this polish pass but still open.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "ControlledAccess copy", "issue": "Body still contains forbidden substring 'certif' (the word 'certification'). Carried over from iteration_1; untouched by this motion pass.", "selector": "[data-testid=chapter-access]", "priority": "LOW"}
+    ],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [],
+  "action_items": [
+    "(Carryover, LOW) Replace the word 'certification' in ControlledAccess with a synonym (e.g. 'compliance claim' / 'audit result') to satisfy the forbidden-terms list."
+  ],
+  "critical_code_review_comments": [
+    "GSAP timing for the six-state demo matches the spec within tolerance (<=0.5s drift) at every checkpoint sampled.",
+    "ProcessCanvas CSS vars --t1/--t2/--t3/--bar/--hl are driven monotonically with correct ease; p=0.49 produces --hl=0.876 which satisfies the header-highlight threshold.",
+    "process-stage scrollHeight equals clientHeight (720 == 720) — no vertical overflow in the sticky stage.",
+    "At p=0.90 the derivation and answer are both inside process-frame and no descendant bottom crosses the frame bottom, confirming the footer 'Illustrative demo · sample data' is not overlapped.",
+    "Side-copy alternation (01 left / 02 right / 03 left / 04 right) matches the spec.",
+    "Reverse scrolling correctly rewinds state (p=0.30 restores t2=0 and rail current '02 Ask').",
+    "The product-demo frame overflow probe flagged children of the closed <details data-testid=sample-data-regional> as extending past the frame, but those nodes are not painted while the <details> is collapsed (confirmed in screenshot). This is a probe false-positive, not an actual visual overflow."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "n/a", "frontend": "~99% (one carryover copy issue only)"},
+  "test_credentials": "None required",
+  "seed_data_creation": "None",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Lenis is on window.__lenis. Use scrollTo(y,{immediate:true}) and wait ~500ms. Process sticky wrapper height = 4*720 at 1440x900, so S=720 and T (navbar offset) = 101 per the spec. Rows fallback kicks in at <1280 width or when prefers-reduced-motion. When probing overflow inside demo-frame, exclude descendants of closed <details> (sample-data-regional) — their computed display is not 'none' but they are not actually painted.",
+  "rca of the issue": "No new RCA. Carryover: ControlledAccess chapter still ships the string 'certification' in its disclaimer, triggering the forbidden-substring rule."
+}
