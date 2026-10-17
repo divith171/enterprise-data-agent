@@ -3,13 +3,7 @@ import { useLocation } from "react-router-dom";
 import Lenis from "lenis";
 import { Navbar } from "../components/landing/Navbar";
 import { Hero } from "../components/landing/Hero";
-import { ProductDemo } from "../components/landing/ProductDemo";
-import { HowItWorks } from "../components/landing/HowItWorks";
-import { BusinessQuestions } from "../components/landing/BusinessQuestions";
-import { TechPipeline } from "../components/landing/TechPipeline";
-import { SecuritySection } from "../components/landing/SecuritySection";
-import { Differentiation } from "../components/landing/Differentiation";
-import { FinalCTA } from "../components/landing/FinalCTA";
+import { PostHeroExperience } from "../post-hero/PostHeroExperience";
 import { Footer } from "../components/landing/Footer";
 import { scrollToHash } from "../lib/scroll";
 
@@ -57,13 +51,7 @@ export default function Landing() {
       <Navbar />
       <main id="main-content">
         <Hero />
-        <ProductDemo />
-        <HowItWorks />
-        <BusinessQuestions />
-        <TechPipeline />
-        <SecuritySection />
-        <Differentiation />
-        <FinalCTA />
+        <PostHeroExperience />
       </main>
       <Footer />
     </div>
