@@ -66,9 +66,9 @@ ul.dk-plain-list { list-style: disc; }
 
 /* Shell */
 .dk-app { display: grid; grid-template-columns: 72px minmax(0, 1fr); min-height: 100vh; min-height: 100dvh; }
-.dk-main { display: flex; flex-direction: column; min-width: 0; }
+.dk-main { position: relative; display: flex; flex-direction: column; min-width: 0; }
 .dk-workspace { display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; outline: none; }
-.dk-conversation { flex: 1 1 auto; min-height: 0; }
+.dk-conversation { position: relative; flex: 1 1 auto; min-height: 0; }
 .dk-content { width: 100%; max-width: calc(1200px + 2 * var(--dk-gutter)); margin: 0 auto; padding: 0 var(--dk-gutter); }
 .dk-conversation-inner { display: flex; flex-direction: column; gap: 32px; padding-top: 32px; padding-bottom: 32px; }
 .dk-composer-row {
@@ -213,7 +213,7 @@ ul.dk-plain-list { list-style: disc; }
 /* Table */
 .dk-table-wrap { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
 .dk-table-scroll {
-  overflow: auto; max-height: 480px; border: 1px solid var(--dk-divider); border-radius: 8px; max-width: 100%;
+  position: relative; overflow: auto; max-height: 480px; border: 1px solid var(--dk-divider); border-radius: 8px; max-width: 100%;
 }
 @media (max-width: 767px) { .dk-table-scroll { max-height: min(420px, 55dvh); } }
 @media (max-height: 499px) { .dk-table-scroll { max-height: none; } }
@@ -224,7 +224,7 @@ ul.dk-plain-list { list-style: disc; }
 }
 .dk-table th { position: sticky; top: 0; z-index: 1; background: var(--dk-rail); font-weight: 600; color: var(--dk-text); }
 .dk-table tbody tr:last-child td { border-bottom: 0; }
-.dk-table .dk-num { text-align: right; font-variant-numeric: tabular-nums; }
+.dk-table .dk-num { text-align: right; font-variant-numeric: tabular-nums; overflow-wrap: normal; }
 .dk-th-label { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .dk-th-label + .dk-link-btn, .dk-cell-clip + .dk-link-btn { min-height: 32px; padding: 0; }
 .dk-cell-clip { display: block; }
@@ -237,7 +237,7 @@ ul.dk-plain-list { list-style: disc; }
 .dk-disclosure { align-self: flex-start; }
 .dk-disclosure svg { transition: transform 120ms; }
 .dk-chevron-open { transform: rotate(180deg); }
-.dk-sql-panel { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.dk-sql-panel { position: relative; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
 .dk-sql-panel[hidden] { display: none; }
 .dk-sql-code {
   font-family: var(--dk-mono); font-size: 13px; line-height: 20px; white-space: pre; overflow-x: auto; max-width: 100%;

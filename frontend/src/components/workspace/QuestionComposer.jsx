@@ -11,7 +11,14 @@ export const QuestionComposer = forwardRef(function QuestionComposer(
 ) {
   const desktopEnter = useMediaQuery("(hover: hover) and (pointer: fine)");
   const taRef = useRef(null);
-  useImperativeHandle(ref, () => ({ focus: () => taRef.current?.focus() }));
+  useImperativeHandle(ref, () => ({
+    focus: (toEnd) => {
+      const ta = taRef.current;
+      if (!ta) return;
+      ta.focus();
+      if (toEnd) ta.setSelectionRange(ta.value.length, ta.value.length);
+    },
+  }));
 
   useLayoutEffect(() => {
     const ta = taRef.current;

@@ -86,7 +86,7 @@ export function useWorkspace() {
   const applyFill = useCallback((text, kind) => {
     setDraft(text);
     setLastInserted(kind === "interpretation" ? text : null);
-    focusComposer();
+    requestAnimationFrame(() => composerRef.current?.focus(true));
   }, []);
 
   const fillDraft = useCallback(
@@ -117,7 +117,7 @@ export function useWorkspace() {
   const canSend = sourceReady && !pending && !rateLimited && draft.trim() !== "" && draft.length <= DRAFT_LIMIT;
 
   const submit = async () => {
-    if (inflightRef.current !== null || !canSend) return;
+    if (inflightRef.current !== null || !canSend || !source.source) return;
     const text = draftRef.current;
     const id = uid();
     const sourceId = source.source.id;

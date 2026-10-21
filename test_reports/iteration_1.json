@@ -1,0 +1,37 @@
+{
+  "summary": "Frontend-only E2E testing of the DataKat workspace in preview mode, run with Playwright against the public URL. Nearly every requested flow passed. Auth gate and redirects pass. Login errors pass: 401, 429 (button disabled for 30s, re-enabled afterwards), network, the 'Signing in…' label and the password toggle. Canonical success passes: Charlie 580, delinquency 0.10, <strong>3 customers</strong>, '3 rows returned', Export disabled with 'Not available yet', numbers right-aligned, SQL collapsed by default, aria-expanded toggling and 'SQL copied'. All 25 query scenarios show the expected cards and text, and malformed or mismatched responses show the safe card with no table. Interpretation fill passes: no auto-send, 'In draft' marker, silent replace while the draft is unedited, a replace confirm after editing, and Keep/Replace. Edit question and Review and retry fill the composer without sending. 429 shows a countdown. 403 revalidates access and 403-source-removed disables the composer. 401 restores the draft for the same email only. Long delay messages appear at 15s and 45s, the draft typed while pending is kept, and Send and New analysis are disabled while pending. The inactivity notice appears and Send still works. The New analysis dialog works. Composer passes: Shift+Enter newline, whitespace not sent, counter from 6400, over-limit message, text kept. Account menu passes: sign-out failure message and sign-out success. All data-source states pass, with no host/db/user/secret values in the DOM. Responsive checks pass for rail vs mobile header, the short viewport and the skip link, and no positive tabindex was found. The status region announces sends and results, and the question/answer never appears in the console. The main failure is the no-horizontal-overflow criterion when a wide table is shown.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "ResultTable (.dk-table-scroll)", "issue": "With the 20-column table rendered, document.documentElement.scrollWidth is larger than innerWidth at every viewport: 1934 vs 1920, 1694 vs 1440, 1657 vs 1366, 1634 vs 1024, 1630 vs 768, and 1546 vs 390, 360 and 320. body overflow-x:hidden hides this visually on desktop, but the spec check fails and iOS Safari may still allow sideways panning. Once, after scrollIntoView at 1920x1080, the whole document also scrolled vertically: the rail was cut off and a blank area appeared below it.", "selector": ".dk-table-scroll", "priority": "MEDIUM"},
+      {"component": "Interpretation fill / composer caret", "issue": "After an interpretation is placed in the draft and the composer is focused, the caret sits at position 0. Typing goes in front of the text: ' editedTop 10 customers…'. The caret should move to the end.", "selector": "[data-testid=composer-input]", "priority": "LOW"}
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Result table", "issues": ["Long numeric values wrap in the middle of the number, e.g. account_id '900719925474' / '0991' on two lines, because td has overflow-wrap:anywhere. Use white-space:nowrap or overflow-wrap:normal for .dk-num cells."]},
+      {"screen": "ConfirmDialog (replace-draft-dialog)", "issues": ["When there is no description, an sr-only Description repeats the title, so screen readers read 'Replace your draft with this interpretation?' twice. Pass aria-describedby={undefined} on AlertDialog.Content instead."]},
+      {"screen": "Workspace empty state / result card", "issues": ["The source indicator also appears in the empty state and on each result card, in addition to the header. The spec says 'single source indicator in header', so check whether the extra indicators are intended."]},
+      {"screen": "Mobile 320x640", "issues": ["The preview bar, mobile header and composer together use about 420px, leaving about 200px for the conversation. Usable, but cramped."]}
+    ]
+  },
+  "test_report_links": [],
+  "action_items": [
+    "Add `position: relative` to `.dk-table-scroll` in App.css. RCA: sr-only spans inside table cells and headers ('No value', ', notes, row 1', ' of column N', the binary label) are position:absolute and have no positioned ancestor inside the overflow:auto container, so they escape its clipping and extend the document's scrollable size. Injecting this rule brought scrollWidth back to 1920 at 1920. Re-check all viewports afterwards, and also check .dk-sql-panel and the pager.",
+    "Move the composer caret to the end after fillDraft/applyFill, e.g. setSelectionRange(len, len) after focus.",
+    "ConfirmDialog: drop the duplicate sr-only Description and use aria-describedby={undefined} when there is no description.",
+    "Stop numeric table cells from breaking inside a number."
+  ],
+  "critical_code_review_comments": [
+    "useWorkspace.js: the interval effect depends on [retryUntil, now], so it is torn down and recreated on every tick. It works, but a setTimeout or a stable interval would be simpler.",
+    "useWorkspace.submit reads source.source.id with no null guard. canSend covers this today, but it would throw if canSend logic ever changes.",
+    "Safe markdown and the hostile fixture behave correctly: no script/img/iframe/embed/a elements are created and React escapes everything."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A (frontend-only)", "frontend": "~95% (1 medium layout bug, several low-priority a11y/UX items)"},
+  "test_credentials": "Preview mode: any email/password (analyst@example.com / secret). /app/memory/test_credentials.md is present.",
+  "seed_data_creation": "None. All data comes from preview fixtures.",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Preview sign-in is in memory, so log in again after any page.goto. Select testids: preview-select-login/sources/query/wait/logout; press Escape to close the sheet. The account trigger is rail-account-button (desktop) or mobile-account-button (mobile); data-testid=account-menu is the dropdown content. On mobile, source-indicator-name matches the hidden desktop indicator first. Measure overflow with document.documentElement.scrollWidth after rendering success-20-columns with SQL open. All scenario texts were verified in iteration 1; retest mainly the overflow fix, the caret position and the dialog description.",
+  "rca of the issue": "Horizontal and vertical document overflow comes from absolutely positioned .sr-only elements inside a non-positioned overflow:auto table wrapper. They escape its clipping and extend the document's scrollable size. Reproduce: sign in, set Next question response = success-20-columns, send any question, then evaluate document.documentElement.scrollWidth (1934 at a 1920 viewport). Mitigation: .dk-table-scroll { position: relative; } (verified by style injection)."
+}

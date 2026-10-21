@@ -5,13 +5,9 @@ export function ConfirmDialog({ open, title, description, cancelLabel, confirmLa
     <AlertDialog.Root open={open} onOpenChange={(o) => !o && onCancel()}>
       <AlertDialog.Portal>
         <AlertDialog.Overlay className="dk-overlay" />
-        <AlertDialog.Content className="dk-dialog" data-testid={testId}>
+        <AlertDialog.Content className="dk-dialog" data-testid={testId} {...(description ? {} : { "aria-describedby": undefined })}>
           <AlertDialog.Title className="dk-dialog-title">{title}</AlertDialog.Title>
-          {description ? (
-            <AlertDialog.Description className="dk-dialog-desc">{description}</AlertDialog.Description>
-          ) : (
-            <AlertDialog.Description className="sr-only">{title}</AlertDialog.Description>
-          )}
+          {description && <AlertDialog.Description className="dk-dialog-desc">{description}</AlertDialog.Description>}
           <div className="dk-dialog-actions">
             <AlertDialog.Cancel className="dk-btn" data-testid={`${testId}-cancel`}>{cancelLabel}</AlertDialog.Cancel>
             <AlertDialog.Action className="dk-btn dk-btn-primary" onClick={onConfirm} data-testid={`${testId}-confirm`}>
