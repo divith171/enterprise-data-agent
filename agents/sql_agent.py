@@ -843,6 +843,9 @@ async def run_sql_agent(user_question: str, context=None,data_source=None,):
                     "status": "success",
                     "sql": sql,
                     "data": result["data"],
+                    "columns": result["columns"],
+                    "column_metadata": result["column_metadata"],
+                    "truncated": result["truncated"],
                     "attempts": attempt + 1,
                     "orchestration_trace": orchestration_trace
                 }

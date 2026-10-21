@@ -17,8 +17,9 @@ import services.business_intent_service as business_intent_service
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("scenario", ["nonempty", "empty", "explanation_failure"])
 async def test_sql_agent_routes_database_result_through_explanation_guard(
-    monkeypatch,
+    monkeypatch, scenario,
 ):
     # ---------------------------------------------------------
     # Arrange
@@ -32,7 +33,8 @@ async def test_sql_agent_routes_database_result_through_explanation_guard(
 
     database_rows = [
         (115000,),
-    ]
+    ] if scenario != "empty" else []
+    column_metadata = [{"index": 0, "name": "total_revenue", "type": "numeric"}]
 
     protected_context = {
         "safe_to_send": True,
@@ -306,6 +308,8 @@ async def test_sql_agent_routes_database_result_through_explanation_guard(
             "status": "success",
             "columns": database_columns,
             "data": database_rows,
+            "column_metadata": column_metadata,
+            "truncated": False,
         }
     )
 
@@ -346,6 +350,8 @@ async def test_sql_agent_routes_database_result_through_explanation_guard(
         "explain_result",
         explanation_mock,
     )
+    if scenario == "explanation_failure":
+        explanation_mock.side_effect = RuntimeError("private provider error")
 
     # ---------------------------------------------------------
     # Act
@@ -367,31 +373,24 @@ async def test_sql_agent_routes_database_result_through_explanation_guard(
     # Assert database result enters egress guard
     # ---------------------------------------------------------
 
-    context_builder_mock.assert_called_once_with(
-        columns=database_columns,
-        rows=database_rows,
-    )
+    if scenario == "empty":
+        context_builder_mock.assert_not_called()
+        explanation_mock.assert_not_awaited()
+    else:
+        context_builder_mock.assert_called_once_with(
+            columns=database_columns,
+            rows=database_rows,
+        )
 
     # ---------------------------------------------------------
     # Assert ONLY protected context reaches explanation
     # ---------------------------------------------------------
 
-    explanation_mock.assert_awaited_once_with(
-        user_question,
-        protected_context,
-    )
-
-    explanation_call = (
-        explanation_mock.await_args
-    )
-
-    assert database_rows not in (
-        explanation_call.args
-    )
-
-    assert generated_sql not in (
-        explanation_call.args
-    )
+    if scenario != "empty":
+        explanation_mock.assert_awaited_once_with(user_question, protected_context)
+        explanation_call = explanation_mock.await_args
+        assert database_rows not in explanation_call.args
+        assert generated_sql not in explanation_call.args
 
     # ---------------------------------------------------------
     # Full authorized result still remains available
@@ -400,3 +399,11 @@ async def test_sql_agent_routes_database_result_through_explanation_guard(
     assert result["status"] == "success"
 
     assert result["data"] == database_rows
+    assert result["columns"] == database_columns
+    assert result["column_metadata"] == column_metadata
+    assert result["truncated"] is False
+    assert result["sql"] == generated_sql
+    if scenario == "explanation_failure":
+        assert result["orchestration_trace"]["explanation"] == (
+            "Query executed successfully, but explanation generation failed."
+        )

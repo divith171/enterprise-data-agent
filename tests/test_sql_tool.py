@@ -2,7 +2,16 @@ from unittest.mock import AsyncMock, MagicMock, patch
 from types import SimpleNamespace
 import pytest
 
-from tools.sql_tool import QueryValidationError, run_query
+from tools.sql_tool import QueryValidationError, run_query, _column_type
+
+
+@pytest.mark.parametrize(("oid", "expected"), [
+    (16, "bool"), (23, "int4"), (25, "text"), (1700, "numeric"),
+    (1007, "int4[]"), (999999, "unknown"), (None, "unknown"),
+])
+def test_cursor_type_mapping_does_not_guess(oid, expected):
+    assert _column_type(SimpleNamespace(name="misleading_name", type_code=oid)) == expected
+    assert _column_type(SimpleNamespace(name="integer")) == "unknown"
 
 
 def make_pool(conn):
@@ -22,18 +31,16 @@ def make_pool(conn):
 
 
 @pytest.mark.anyio
-async def test_run_query_success():
+@pytest.mark.parametrize("rows", [[(1, "Alice"), (2, "Bob")], []])
+async def test_run_query_success(rows):
     cursor = AsyncMock()
 
     cursor.description = [
-        SimpleNamespace(name="id"),
-        SimpleNamespace(name="name"),
+        SimpleNamespace(name="id", type_code=23),
+        SimpleNamespace(name="name", type_code=25),
     ]
 
-    cursor.fetchall.return_value = [
-        (1, "Alice"),
-        (2, "Bob"),
-    ]
+    cursor.fetchall.return_value = rows
 
     conn = MagicMock()
 
@@ -64,14 +71,16 @@ async def test_run_query_success():
 
     assert result == {
         "status": "success",
+        "column_metadata": [
+            {"index": 0, "name": "id", "type": "int4"},
+            {"index": 1, "name": "name", "type": "text"},
+        ],
+        "truncated": False,
         "columns": [
             "id",
             "name",
         ],
-        "data": [
-            (1, "Alice"),
-            (2, "Bob"),
-        ],
+        "data": rows,
     }
 
     cursor.execute.assert_awaited_once_with(

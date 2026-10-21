@@ -26,12 +26,16 @@ async def test_query_route_new_query_orchestrates_dependencies():
     fake_data_source = (
         "test-data-source",
         "test-company",
+        "Test source",
     )
 
     fake_result = {
         "status": "success",
         "sql": "SELECT 1",
         "data": [(100,)],
+        "column_metadata": [{"index": 0, "name": "value", "type": "int4"}],
+        "truncated": False,
+        "orchestration_trace": {"explanation": "The value is 100."},
     }
 
     allowed_rate_limit = RateLimitDecision(
@@ -134,28 +138,12 @@ async def test_query_route_new_query_orchestrates_dependencies():
             data_source=fake_data_source,
         )
 
-        assert response["status"] == "success"
-        assert response["session_id"] == session_id
-        assert response["context"] == {}
-
-        assert (
-            response["trace_log"]["session_id"]
-            == session_id
-        )
-
-        assert (
-            response["trace_log"]["user_input"]
-            == user_input
-        )
-
-        assert response["trace_log"]["intent_result"] == {
-            "intent_type": "new_query"
-        }
-
-        assert (
-            response["trace_log"]["refined_query"]
-            == user_input
-        )
+        assert response.outcome == "success"
+        assert response.session_id == session_id
+        assert response.answer == "The value is 100."
+        assert response.result.rows == [[100]]
+        assert "context" not in response.model_dump()
+        assert "trace_log" not in response.model_dump()
 
     finally:
         clear_request_context()
@@ -177,6 +165,7 @@ async def test_query_route_continuation_updates_context_and_refines_query():
     fake_data_source = (
         "test-data-source",
         "test-company",
+        "Test source",
     )
 
     initial_context = {
@@ -197,6 +186,9 @@ async def test_query_route_continuation_updates_context_and_refines_query():
         "status": "success",
         "sql": "SELECT 1",
         "data": [(100,)],
+        "column_metadata": [{"index": 0, "name": "value", "type": "int4"}],
+        "truncated": False,
+        "orchestration_trace": {"explanation": "The value is 100."},
     }
 
     allowed_rate_limit = RateLimitDecision(
@@ -315,29 +307,11 @@ async def test_query_route_continuation_updates_context_and_refines_query():
             data_source=fake_data_source,
         )
 
-        assert response["status"] == "success"
-        assert response["session_id"] == session_id
-
-        assert response["trace_log"]["intent_result"] == {
-            "intent_type": "continuation"
-        }
-
-        assert (
-            response["trace_log"]["continuation_result"]
-            == continuation_result
-        )
-
-        assert response["trace_log"]["refined_query"] == (
-            "show sales by region for last month"
-        )
-
-        assert response["context"] == {
-            "existing_key": "existing-value",
-            "group_by": "region",
-            "time_granularity": "month",
-            "filter_condition": "last month",
-            "metric_refinement": "sales",
-        }
+        assert response.outcome == "success"
+        assert response.session_id == session_id
+        assert response.result.rows == [[100]]
+        assert "context" not in response.model_dump()
+        assert "trace_log" not in response.model_dump()
 
     finally:
         clear_request_context()

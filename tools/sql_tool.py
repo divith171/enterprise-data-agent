@@ -6,6 +6,16 @@ from tools.query_validator import (
 from observability.security_audit import log_security_event
 
 import traceback
+from psycopg import postgres
+
+
+def _column_type(column) -> str:
+    """Map built-in PostgreSQL OIDs, never guess from values or identifiers."""
+    oid = getattr(column, "type_code", None)
+    type_info = postgres.types.get(oid) if isinstance(oid, int) else None
+    if type_info is None:
+        return "unknown"
+    return type_info.name + ("[]" if oid == type_info.array_oid else "")
 
 
 async def run_query(query: str):
@@ -25,12 +35,20 @@ async def run_query(query: str):
                     for column in cursor.description
                 ]
 
+                column_metadata = [
+                    {"index": index, "name": column.name, "type": _column_type(column)}
+                    for index, column in enumerate(cursor.description)
+                ]
+
                 results = await cursor.fetchall()
 
         return {
             "status": "success",
             "columns": columns,
             "data": results,
+            "column_metadata": column_metadata,
+            # fetchall() returns the entire executed result; no server cap exists.
+            "truncated": False,
         }
 
     except QueryValidationError as e:

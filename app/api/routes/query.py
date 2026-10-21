@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
+from app.api.query_response import QueryResponse, build_query_response
 from observability.debug import debug_print
 from app.auth.dependencies import get_current_user
 from app.data_sources.service import get_authorized_data_source
@@ -35,7 +36,7 @@ class QueryRequest(BaseModel):
     data_source_id: str
 
 
-@router.post("/query")
+@router.post("/query", response_model=QueryResponse)
 async def query_agent(
     request: QueryRequest,
     current_user=Depends(get_current_user),
@@ -394,13 +395,11 @@ async def query_agent(
         clear_customer_pool()
         await customer_pool.close()
 
-    result["trace_log"] = trace_log
-    result["context"] = context
-    result["session_id"] = session_id
-
     debug_print(
         "FINAL CONTEXT:",
         context,
     )
 
-    return result
+    return build_query_response(
+        result, session_id=session_id, data_source=data_source
+    )
