@@ -4,6 +4,8 @@ const NUMERIC_TYPES = new Set([
 ]);
 
 export const isNumericType = (type) => NUMERIC_TYPES.has(String(type).toLowerCase());
+const NOWRAP_TYPES = new Set(["uuid", "date", "time", "timetz", "timestamp", "timestamptz"]);
+export const isNoWrapType = (type) => NOWRAP_TYPES.has(String(type).toLowerCase());
 export const isBinaryType = (type) => String(type).toLowerCase() === "bytea";
 
 // Values are rendered from their API representation; no Number/parseFloat conversion of strings.

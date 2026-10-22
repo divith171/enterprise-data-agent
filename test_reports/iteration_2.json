@@ -1,0 +1,34 @@
+{
+  "summary": "Frontend-only regression and redesign test of the DataKat /login and /app pages in preview mode. Seven Playwright runs against the public URL; no failing checks. REGRESSION: auth gate passes; login 401, 429 (button disabled) and network messages pass. Canonical success passes (Charlie 580, 0.10, <strong>3 customers</strong>, '3 rows returned', Export disabled with 'Not available yet'). All 21 query scenarios show the correct card and title. Clarification fill passes: no send, 'In draft' marker, caret now at the end, replace dialog with Keep/Replace. Edit question and Review and retry fill the composer without sending. 401 restores the draft for the same email only, with the restore notice. 403 and 403-source-removed pass (composer disabled, 'This data source is no longer available.'). 429 countdown passes. Long-wait messages appear at 15s/45s, the pending draft is kept, and New analysis is disabled while pending. Inactivity notice, New analysis confirm, Shift+Enter, whitespace block and the 8000 limit pass. Sign-out works on desktop and mobile; sign-out failure shows its message. Data-source states none/multiple/failure/long-name/single pass. No topology values in the DOM. SQL ABSENCE: none of the 9 success fixtures put SELECT, View/Hide/Copy SQL or 'SQL used for this result' in the DOM or the aria snapshot, and the Preview tools panel shows no SQL. queryContract still checks that sql is a string but drops it. REDESIGN: empty-state layout order is correct. The same composer element stays focused after send. Identity rows ('DataKat' + source) show on pending and on every completed response type. Composer idle box is 66px, multiline caps at 226px then scrolls, Send is 44x44 with aria-label 'Send' and disabled when empty or pending. 'Follow-up' and 'Clarification' labels are correct. Preview sheet is closed by default and opens from the desktop, mobile and login triggers. RESPONSIVE: at all 8 viewports scrollWidth equals innerWidth, both empty and with success-20-columns (the iteration-1 overflow bug is fixed). Rail shows at >=768 with the logo only in the header; mobile header below 768. At 1280x400 the page scrolls and the composer is reachable. A11Y: skip link works, 2px #6FE7FF focus ring on buttons and the composer box, status region says 'Question sent.' and 'Result ready. 3 rows returned.', and with reduced motion getAnimations() is 0 at login, app, pending and result, with the result at opacity 1.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "QuestionComposer at 320x640", "issue": "The placeholder 'Ask a question about your data…' wraps to 2 lines inside the fixed 48px textarea (scrollHeight 72), so the second line 'data…' shows cut in half under the first.", "selector": "[data-testid=composer-input]", "priority": "LOW"}
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Result table (success-20-columns)", "issues": ["Row 1 is 244px tall and rows 2-3 are 127px, with large blank space under 'Sample 1'. One long-value cell wraps heavily in a narrow column. Consider clamping long text cells (it already has View full value) or setting a min column width."]},
+      {"screen": "Composer after 403-source-removed", "issues": ["The composer is disabled, but the label still says 'Follow-up' with the hint 'Follow-ups use this analysis's context.', which is misleading when no source is available."]},
+      {"screen": "Clarification interpretations", "issues": ["The 2nd interpretation shows a hard line break ('...all time,' / 'excluding cancelled orders'), probably a newline in the fixture. Check this is intended."]},
+      {"screen": "Console (dev)", "issues": ["Radix warning 'AlertDialogContent requires a description...' is logged when the replace-draft dialog opens (aria-describedby is now undefined). Dev-only and harmless, but it can be silenced."]}
+    ]
+  },
+  "test_report_links": [],
+  "action_items": [
+    "LOW: keep the 320px composer placeholder on one line (shorter mobile placeholder, or white-space:nowrap + text-overflow:ellipsis on ::placeholder).",
+    "LOW: when the composer is disabled because the source is unavailable, hide or adjust the Follow-up label and hint.",
+    "LOW: limit row height in wide tables (clamp long text cells)."
+  ],
+  "critical_code_review_comments": [
+    "queryContract.parseSuccess still requires `sql` to be a string but never forwards it. That's fine for the contract, and SQL never reaches UI state.",
+    "Preview fixtures still contain SQL strings and topology fields. They are not rendered (verified), but they ship in the dev bundle only while IS_PREVIEW is set, so make sure the preview is excluded from production builds."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A (frontend-only)", "frontend": "100% of requested checks passed; 1 low-priority UI nit and 4 design notes"},
+  "test_credentials": "Preview mode: any email/password (analyst@example.com / secret). /app/memory/test_credentials.md exists (it still says 'Preview controls'; the button label is now 'Preview tools').",
+  "seed_data_creation": "None. All data comes from preview fixtures.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Preview tools triggers: preview-indicator-tools-button (desktop header and login), mobile-preview-indicator-tools-button (<768). Close the sheet with Escape. Turn ids come from data-testid 'turn-<id>'; identity rows are 'identity-<id>' and 'identity-<id>-source'. Wait for completion with !document.querySelector('[data-testid^=pending-response-]'). Use page.locator('body').aria_snapshot() (page.accessibility is not available). Every iteration-1 issue (overflow, caret, numeric nowrap, dialog description) is verified fixed.",
+  "rca of the issue": "320px placeholder clipping: .dk-textarea has white-space:pre-wrap and its height is capped to the compact composer, so a placeholder longer than the available ~190px wraps and the second line is clipped."
+}

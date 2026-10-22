@@ -265,7 +265,7 @@ ul.dk-plain-list { list-style: disc; }
 .dk-table { border-collapse: separate; border-spacing: 0; min-width: 100%; font-size: 14px; line-height: 21px; color: var(--dk-text); }
 .dk-table th, .dk-table td {
   min-width: 136px; max-width: 320px; padding: 11px 16px; height: 44px; text-align: left; vertical-align: top;
-  border-bottom: 1px solid #1a2940; overflow-wrap: anywhere; white-space: pre-wrap;
+  border-bottom: 1px solid #1a2940; overflow-wrap: break-word; white-space: pre-wrap;
 }
 .dk-table th { position: sticky; top: 0; z-index: 1; background: var(--dk-raised); font-weight: 600; color: var(--dk-text); border-bottom-color: var(--dk-border); }
 .dk-table tbody tr { transition: background-color 120ms var(--dk-ease); }
@@ -386,3 +386,7 @@ ul.dk-plain-list { list-style: disc; }
   .dk-preview-indicator { font-size: 11px; padding: 1px 8px; }
   .dk-mobile-row2 .dk-header-tools { margin-left: 0; gap: 4px; }
 }
+.dk-textarea::placeholder { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dk-table td.dk-long { min-width: 260px; }
+.dk-table td.dk-nowrap { white-space: nowrap; }
+.dk-table td.dk-num { white-space: nowrap; }

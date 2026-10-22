@@ -22,6 +22,14 @@ Build the authenticated customer-facing DataKat analytical workspace ("Your AI D
 - Login, auth gate, logout, all /query outcomes and HTTP states, table rendering rules, paging, SQL disclosure, Export reservation, clarification flow, new analysis, inactivity notice, responsive layout and accessibility.
 - Tested in testing-agent iteration 1 (~95%). Afterwards fixed: sr-only overflow, caret placed at end after fill, dialog description and numeric wrapping.
 
+## Redesign (2026-06, iteration 2)
+- Deep blue + black visual system with Geist (`@fontsource-variable/geist`). Styles live in `src/styles/datakat.css`, which replaces `App.css`.
+- Line-art cat motif (`CatMotif.jsx`): 96px on the welcome screen with a 500ms line reveal, 22px in the identity row, and an illumination cycle on pending responses that runs 2.8s at most 3 times.
+- SQL is removed from the customer UI. `SqlDisclosure` is deleted, and the parser drops the `sql` field before it reaches UI state.
+- The answer surface comes first, followed by a separate evidence section. The composer is compact (66px) with an icon Send button. The empty state is one centered composition and uses the same composer element.
+- Preview fixtures sit behind a discreet indicator and a "Preview tools" sheet. The yellow banner and the cropped logo mark are removed. The original white logo is used, since the surfaces are now dark.
+- Testing-agent iteration 2: all regression checks passed. Afterwards fixed: placeholder wrapping at 320px, the misleading follow-up hint when no source is available, and row height (uuid and date cells no longer wrap).
+
 ## Known integration items
 - The `/data-sources` response shape is assumed to be a top-level array, and `type` is assumed to be "postgresql"/"postgres".
 - No documented "analysis cannot continue" response exists, so none is implemented.

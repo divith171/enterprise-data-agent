@@ -82,7 +82,7 @@ export default function WorkspacePage() {
                 onChange={w.setDraft}
                 onSubmit={w.submit}
                 label={w.composerLabel}
-                hint={w.composerLabel === "Follow-up" ? "Follow-ups use this analysis's context." : null}
+                hint={w.composerLabel === "Follow-up" && source.status === "ready" ? "Follow-ups use this analysis's context." : null}
                 disabled={source.status !== "ready"}
                 canSend={w.canSend}
                 blockedMessage={blockedMessage(w)}

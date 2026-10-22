@@ -1,7 +1,7 @@
-import { cellText, clipValue, isBinaryType, isLongValue, isNumericType } from "@/lib/cellFormat";
+import { cellText, clipValue, isBinaryType, isLongValue, isNoWrapType, isNumericType } from "@/lib/cellFormat";
 
 export function TableCell({ value, column, rowNumber, onOpen }) {
-  const cls = isNumericType(column.type) ? "dk-num" : undefined;
+  const cls = isNumericType(column.type) ? "dk-num" : isNoWrapType(column.type) ? "dk-nowrap" : undefined;
   if (value === null) {
     return (
       <td className={cls}>
@@ -13,7 +13,7 @@ export function TableCell({ value, column, rowNumber, onOpen }) {
   const text = cellText(value);
   if (!isLongValue(text)) return <td className={cls}>{text}</td>;
   return (
-    <td className={cls}>
+    <td className={cls ? `${cls} dk-long` : "dk-long"}>
       <span className="dk-cell-clip">{clipValue(text)}</span>
       <button
         type="button"
