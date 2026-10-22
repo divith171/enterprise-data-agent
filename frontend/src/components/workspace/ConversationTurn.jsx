@@ -3,7 +3,7 @@ import { ClarificationCard } from "@/components/results/ClarificationCard";
 import { UnsupportedCard } from "@/components/results/UnsupportedCard";
 import { NoticeCard, NOTICES } from "@/components/results/NoticeCard";
 import { PendingResponse } from "@/components/results/PendingResponse";
-import { AssistantIdentity } from "@/components/workspace/CatMotif";
+import { AssistantIdentity } from "@/components/workspace/DataKatFace";
 
 function ResultCard({ turn, active, draft, onFill }) {
   const r = turn.result;

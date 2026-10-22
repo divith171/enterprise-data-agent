@@ -6,7 +6,6 @@ import { useAuth } from "@/auth/AuthContext";
 import { AuthLoading } from "@/auth/RequireAuth";
 import { BrandLogo } from "@/components/workspace/Brand";
 import { PreviewIndicator } from "@/components/workspace/Preview";
-import { CatMotif } from "@/components/workspace/CatMotif";
 import { MARKETING_URL } from "@/config";
 
 const TRANSPORT = "We couldn't reach DataKat. Try again.";
@@ -99,7 +98,6 @@ export default function LoginPage() {
       <main className="dk-login">
         <div className="dk-login-brand">
           <BrandLogo className="dk-login-logo" />
-          <CatMotif size={40} />
         </div>
         <h1 className="dk-headline">Sign in to DataKat</h1>
         <p className="dk-login-support">Your AI Data Analyst.</p>
