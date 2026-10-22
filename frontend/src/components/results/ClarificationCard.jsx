@@ -1,4 +1,4 @@
-import { Check } from "lucide-react";
+import { Check, HelpCircle } from "lucide-react";
 
 function Questions({ questions }) {
   if (!questions.length) return null;
@@ -43,7 +43,10 @@ function Interpretations({ items, active, draft, onChoose, turnId }) {
 export function ClarificationCard({ result, turnId, active, draft, onChoose }) {
   return (
     <article className="dk-card" aria-labelledby={`clar-${turnId}`} data-testid={`clarification-card-${turnId}`}>
-      <h3 id={`clar-${turnId}`} className="dk-card-title">Clarification needed</h3>
+      <h3 id={`clar-${turnId}`} className="dk-card-title">
+        <HelpCircle aria-hidden="true" size={18} className="dk-title-icon" />
+        Clarification needed
+      </h3>
       {result.message && <p className="dk-plain">{result.message}</p>}
       <Questions questions={result.questions} />
       <Interpretations items={result.interpretations} active={active} draft={draft} onChoose={onChoose} turnId={turnId} />

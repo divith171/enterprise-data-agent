@@ -1,3 +1,5 @@
+import { AlertCircle, Clock, Info } from "lucide-react";
+
 export const NOTICES = {
   domainError: { tone: "error", title: "Analysis couldn't be completed", body: "DataKat couldn't complete this analysis.", action: "Review and retry" },
   network: {
@@ -18,10 +20,16 @@ export const NOTICES = {
   },
 };
 
+const ICONS = { error: AlertCircle, warning: Clock, neutral: Info };
+
 export function NoticeCard({ tone = "error", title, body, actionLabel, onAction, testId, children }) {
+  const Icon = ICONS[tone];
   return (
     <article className={`dk-card dk-notice dk-notice-${tone}`} data-testid={testId}>
-      <h3 className="dk-card-title">{title}</h3>
+      <h3 className="dk-card-title">
+        <Icon aria-hidden="true" size={18} />
+        {title}
+      </h3>
       {body && <p className="dk-plain">{body}</p>}
       {children}
       {actionLabel && (

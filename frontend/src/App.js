@@ -1,4 +1,4 @@
-import "@/App.css";
+import "@/styles/datakat.css";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/auth/AuthContext";
 import { RequireAuth } from "@/auth/RequireAuth";

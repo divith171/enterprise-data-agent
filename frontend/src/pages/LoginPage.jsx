@@ -5,7 +5,8 @@ import { api } from "@/api";
 import { useAuth } from "@/auth/AuthContext";
 import { AuthLoading } from "@/auth/RequireAuth";
 import { BrandLogo } from "@/components/workspace/Brand";
-import { PreviewBar } from "@/components/workspace/Preview";
+import { PreviewIndicator } from "@/components/workspace/Preview";
+import { CatMotif } from "@/components/workspace/CatMotif";
 import { MARKETING_URL } from "@/config";
 
 const TRANSPORT = "We couldn't reach DataKat. Try again.";
@@ -92,9 +93,14 @@ export default function LoginPage() {
 
   return (
     <div className="dk-login-page" data-testid="login-page">
-      <PreviewBar scope="login" />
+      <div className="dk-login-top">
+        <PreviewIndicator scope="login" testId="preview-indicator" />
+      </div>
       <main className="dk-login">
-        <BrandLogo className="dk-login-logo" />
+        <div className="dk-login-brand">
+          <BrandLogo className="dk-login-logo" />
+          <CatMotif size={40} />
+        </div>
         <h1 className="dk-headline">Sign in to DataKat</h1>
         <p className="dk-login-support">Your AI Data Analyst.</p>
         {auth.sessionEnded && !error && (

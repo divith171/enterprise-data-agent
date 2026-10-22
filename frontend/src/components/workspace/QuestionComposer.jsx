@@ -1,5 +1,6 @@
 import { forwardRef, useImperativeHandle, useLayoutEffect, useRef } from "react";
 import { useMediaQuery } from "@/lib/useMediaQuery";
+import { ArrowUp } from "lucide-react";
 import { formatCount } from "@/lib/session";
 
 export const DRAFT_LIMIT = 8000;
@@ -23,7 +24,7 @@ export const QuestionComposer = forwardRef(function QuestionComposer(
   useLayoutEffect(() => {
     const ta = taRef.current;
     ta.style.height = "auto";
-    ta.style.height = `${ta.scrollHeight + 2}px`;
+    ta.style.height = `${ta.scrollHeight}px`;
   }, [value]);
 
   const len = value.length;
@@ -41,13 +42,11 @@ export const QuestionComposer = forwardRef(function QuestionComposer(
 
   return (
     <form className="dk-composer" onSubmit={(e) => { e.preventDefault(); if (canSend && !over) onSubmit(); }} data-testid="question-composer">
-      <label htmlFor="composer-input" className="dk-composer-label" data-testid="composer-label">{label}</label>
-      <p id="composer-hint" className={hint ? "dk-support" : "sr-only"}>
-        {hint || (desktopEnter ? "Press Enter to send, Shift+Enter for a new line." : "Use Send to submit.")}
-      </p>
+      <div className={`dk-composer-box${disabled ? " dk-composer-disabled" : ""}`}>
       <textarea
         id="composer-input"
         ref={taRef}
+        rows={1}
         className="dk-textarea"
         value={value}
         onChange={(e) => onChange(e.target.value)}
@@ -59,8 +58,15 @@ export const QuestionComposer = forwardRef(function QuestionComposer(
         enterKeyHint={desktopEnter ? "send" : "enter"}
         data-testid="composer-input"
       />
+        <button type="submit" className="dk-send" aria-label="Send" disabled={!canSend || over} data-testid="composer-send-button">
+          <ArrowUp aria-hidden="true" size={20} strokeWidth={2.25} />
+        </button>
+      </div>
       <div className="dk-composer-foot">
-        <div className="dk-composer-meta">
+          <label htmlFor="composer-input" className={label === "Question" ? "sr-only" : "dk-composer-label"} data-testid="composer-label">{label}</label>
+          <p id="composer-hint" className={hint ? "dk-support" : "sr-only"}>
+            {hint || (desktopEnter ? "Press Enter to send, Shift+Enter for a new line." : "Use Send to submit.")}
+          </p>
           {len >= COUNTER_AT && (
             <span id="composer-count" className={over ? "dk-error-text" : "dk-support"} data-testid="composer-counter">
               {formatCount(len)} / {formatCount(DRAFT_LIMIT)}
@@ -72,10 +78,6 @@ export const QuestionComposer = forwardRef(function QuestionComposer(
             </span>
           )}
           {blockedMessage && <span id="composer-blocked" className="dk-support" data-testid="composer-blocked-message">{blockedMessage}</span>}
-        </div>
-        <button type="submit" className="dk-btn dk-btn-primary dk-send" disabled={!canSend || over} data-testid="composer-send-button">
-          Send
-        </button>
       </div>
     </form>
   );

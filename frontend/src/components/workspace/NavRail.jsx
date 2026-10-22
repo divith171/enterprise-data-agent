@@ -1,12 +1,10 @@
 import { Link } from "react-router-dom";
 import { LayoutGrid, Plus } from "lucide-react";
-import { BrandMark } from "@/components/workspace/Brand";
 import { AccountMenu } from "@/components/workspace/AccountMenu";
 
 export function NavRail({ email, onNewAnalysis, newDisabled, onSignOut }) {
   return (
     <nav className="dk-rail" aria-label="Primary" data-testid="nav-rail">
-      <BrandMark className="dk-rail-mark" />
       <Link to="/app" className="dk-rail-item dk-rail-active" aria-current="page" data-testid="rail-workspace-link">
         <LayoutGrid aria-hidden="true" size={20} />
         <span className="dk-rail-label">Workspace</span>

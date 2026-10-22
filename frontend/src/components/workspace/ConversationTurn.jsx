@@ -3,6 +3,7 @@ import { ClarificationCard } from "@/components/results/ClarificationCard";
 import { UnsupportedCard } from "@/components/results/UnsupportedCard";
 import { NoticeCard, NOTICES } from "@/components/results/NoticeCard";
 import { PendingResponse } from "@/components/results/PendingResponse";
+import { AssistantIdentity } from "@/components/workspace/CatMotif";
 
 function ResultCard({ turn, active, draft, onFill }) {
   const r = turn.result;
@@ -20,18 +21,25 @@ function ResultCard({ turn, active, draft, onFill }) {
 
 export function ConversationTurn({ turn, active, draft, onFill }) {
   return (
-    <section className="dk-turn" id={`turn-${turn.id}`} aria-label="Question and result" data-testid={`turn-${turn.id}`}>
+    <section className="dk-turn" id={`turn-${turn.id}`} aria-label="Question and response" data-testid={`turn-${turn.id}`}>
       <div className="dk-question">
-        <p className="dk-question-label">Your question</p>
+        <p className="sr-only">Your question</p>
         <p className="dk-question-text" data-testid={`question-text-${turn.id}`}>{turn.question}</p>
       </div>
-      {turn.result ? (
-        <div id={`result-${turn.id}`} className="dk-result-anchor">
-          <ResultCard turn={turn} active={active} draft={draft} onFill={onFill} />
-        </div>
-      ) : (
-        <PendingResponse startedAt={turn.startedAt} turnId={turn.id} />
-      )}
+      <div className="dk-response-group" id={turn.result ? `result-${turn.id}` : undefined}>
+        <AssistantIdentity
+          pending={!turn.result}
+          sourceName={turn.result?.kind === "success" ? turn.result.source.name : null}
+          testId={`identity-${turn.id}`}
+        />
+        {turn.result ? (
+          <div className="dk-result-anchor dk-reveal">
+            <ResultCard turn={turn} active={active} draft={draft} onFill={onFill} />
+          </div>
+        ) : (
+          <PendingResponse startedAt={turn.startedAt} turnId={turn.id} />
+        )}
+      </div>
     </section>
   );
 }

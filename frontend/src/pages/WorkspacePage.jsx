@@ -1,7 +1,6 @@
 import { NavRail } from "@/components/workspace/NavRail";
 import { WorkspaceHeader } from "@/components/workspace/WorkspaceHeader";
-import { PreviewBar } from "@/components/workspace/Preview";
-import { EmptyWorkspace, UNSAVED_NOTICE } from "@/components/workspace/EmptyWorkspace";
+import { EmptyWorkspace, WelcomeMeta, UNSAVED_NOTICE } from "@/components/workspace/EmptyWorkspace";
 import { SourceStateNotice } from "@/components/workspace/SourceStateNotice";
 import { ConversationTurn } from "@/components/workspace/ConversationTurn";
 import { QuestionComposer } from "@/components/workspace/QuestionComposer";
@@ -50,9 +49,8 @@ export default function WorkspacePage() {
       </a>
       <NavRail email={w.identity.email} onNewAnalysis={w.requestNewAnalysis} newDisabled={w.pending} onSignOut={w.signOut} />
       <div className="dk-main">
-        <PreviewBar scope="app" />
         <WorkspaceHeader source={source} email={w.identity.email} onNewAnalysis={w.requestNewAnalysis} newDisabled={w.pending} onSignOut={w.signOut} />
-        <main id="workspace-main" tabIndex={-1} className="dk-workspace">
+        <main id="workspace-main" tabIndex={-1} className={`dk-workspace${turns.length === 0 ? " dk-empty-mode" : ""}`}>
           <div className="dk-conversation" ref={w.convRef} data-testid="conversation">
             <div className="dk-content dk-conversation-inner">
               {w.logoutError && (
@@ -63,7 +61,7 @@ export default function WorkspacePage() {
               )}
               <SourceStateNotice source={source} />
               {turns.length === 0 ? (
-                <EmptyWorkspace source={source} />
+                <EmptyWorkspace />
               ) : (
                 <>
                   <h2 className="sr-only">Analysis</h2>
@@ -89,6 +87,7 @@ export default function WorkspacePage() {
                 canSend={w.canSend}
                 blockedMessage={blockedMessage(w)}
               />
+              {turns.length === 0 && <WelcomeMeta source={source} />}
             </div>
           </div>
         </main>

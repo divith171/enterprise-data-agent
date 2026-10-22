@@ -2,18 +2,21 @@ import { Plus } from "lucide-react";
 import { BrandLogo } from "@/components/workspace/Brand";
 import { AccountMenu } from "@/components/workspace/AccountMenu";
 import { SourceIndicator } from "@/components/workspace/SourceIndicator";
+import { PreviewIndicator } from "@/components/workspace/Preview";
 
 export function WorkspaceHeader({ source, email, onNewAnalysis, newDisabled, onSignOut }) {
   return (
     <header className="dk-header" data-testid="workspace-header">
       <div className="dk-header-desktop">
-        <h1 className="dk-title">Workspace</h1>
+        <BrandLogo className="dk-header-logo" />
+        <h1 className="sr-only">DataKat workspace</h1>
         <SourceIndicator source={source} />
+        <PreviewIndicator scope="app" testId="preview-indicator" />
       </div>
       <div className="dk-header-mobile">
         <div className="dk-mobile-row1">
           <BrandLogo className="dk-mobile-logo" />
-          <h1 className="sr-only">Workspace</h1>
+          <h1 className="sr-only">DataKat workspace</h1>
           <div className="dk-mobile-actions">
             <button type="button" className="dk-btn dk-btn-small" onClick={onNewAnalysis} disabled={newDisabled} data-testid="mobile-new-analysis-button">
               <Plus aria-hidden="true" size={18} />
@@ -24,6 +27,7 @@ export function WorkspaceHeader({ source, email, onNewAnalysis, newDisabled, onS
         </div>
         <div className="dk-mobile-row2">
           <SourceIndicator source={source} testId="mobile-source-indicator" />
+          <PreviewIndicator scope="app" testId="mobile-preview-indicator" />
         </div>
       </div>
     </header>

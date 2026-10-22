@@ -42,18 +42,18 @@ function Field({ name, onChange }) {
   );
 }
 
-export function PreviewControls({ scope }) {
+export function PreviewControls({ scope, testId }) {
   const [copied, setCopied] = useState(false);
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <button type="button" className="dk-btn dk-btn-small" data-testid="preview-controls-button">
-          Preview controls
+        <button type="button" className="dk-preview-trigger" data-testid={testId}>
+          Preview tools
         </button>
       </SheetTrigger>
       <SheetContent className="dk-preview-sheet" data-testid="preview-controls-panel">
         <SheetHeader>
-          <SheetTitle>Preview controls</SheetTitle>
+          <SheetTitle>Preview tools</SheetTitle>
           <SheetDescription>Development-only sample states. Nothing here is live data.</SheetDescription>
         </SheetHeader>
         <div className="dk-preview-fields">

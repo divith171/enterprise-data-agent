@@ -14,11 +14,8 @@ export function PendingResponse({ startedAt, turnId }) {
   }, [startedAt]);
   return (
     <div className="dk-card dk-pending" aria-busy="true" data-testid={`pending-response-${turnId}`}>
-      <span className="dk-activity" aria-hidden="true" />
-      <div>
-        <p className="dk-pending-title" data-testid={`pending-message-${turnId}`}>{messageFor(elapsed)}</p>
-        <p className="dk-support">Results will appear here when they're ready.</p>
-      </div>
+      <p className="dk-pending-title" data-testid={`pending-message-${turnId}`}>{messageFor(elapsed)}</p>
+      <p className="dk-support">Results will appear here when they're ready.</p>
     </div>
   );
 }

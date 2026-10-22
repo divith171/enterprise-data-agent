@@ -25,7 +25,6 @@ function parseSuccess(body, sourceId) {
     rows,
     rowCount: count,
     truncated,
-    sql,
   };
 }
 
