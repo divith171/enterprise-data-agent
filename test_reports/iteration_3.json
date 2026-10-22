@@ -1,0 +1,31 @@
+{
+  "summary": "Frontend-only regression and redesign test (third visual pass) of DataKat /login and /app in preview mode. Eight Playwright runs against the public URL; every requested check passed. REGRESSION: the auth gate redirects to /login. Login 401, 429 (button disabled) and network messages are correct. Canonical success passes (Charlie 580, 0.10, <strong>3 customers</strong>, '3 rows returned', Export disabled with 'Not available yet'). All 21 other 'Next question response' scenarios show the correct card and title, and each has an identity row with a face. Clarification fill passes: no send, 'In draft', label 'Clarification', replace dialog cancel keeps the user's edits and confirm replaces them. Edit question and Review and retry fill the composer without sending. 401 restores the draft for the same email only, with the restore notice; a different email gets an empty composer. 403 passes. 403-source-removed passes: 'This data source is no longer available.', header shows 'Not available', composer disabled. 429 counts down from 20 ('You can send again in N seconds') and does not auto-send when it ends; the typed draft is kept. Long wait shows the 15s and 45s messages, the draft typed while pending is kept, and Send and New analysis are disabled while pending. The inactivity notice appears and Send stays enabled. New analysis cancel/confirm works on the rail and on mobile. Shift+Enter, the whitespace block and the 8000 limit (hint shown, Send disabled) pass. Sign-out failure shows its message and sign-out success goes to /login. Data-source states none/multiple/failure/long-name/single pass, with no topology strings in the DOM. SQL ABSENCE: no SELECT, View/Hide/Copy SQL or 'SQL used for this result' in the DOM in any fixture. FACE: login has 0 .dk-face and 0 dk-cat elements (its only SVG is the lucide eye icon). The rail face is 36px, the welcome face is 72px, identity faces are 24px with the pending variant. No old cat code remains in src. LAYOUT: the identity row, answer and .dk-evidence (#0D192B) are all inside .dk-response-group (#101D33, 18px radius). The question's left edge equals the group's left edge at every viewport. When scrolled to the bottom, the last response ends 40px above the composer at every viewport. RESPONSIVE: scrollWidth equals innerWidth at all 8 viewports with success-20-columns. The rail shows at >=768 and is hidden below. At 1280x400 the page scrolls and the composer can be reached and typed in. A11Y: Skip to workspace is the first tab stop and moves focus to main. Buttons, interpretation buttons and the composer box (via focus-within) get a 2px #6FE7FF ring. Status messages are 'Question sent.' and 'Result ready. 3 rows returned.' With reduced motion, getAnimations() is [] at login, app, pending and result, and the result has opacity 1. Without reduced motion the only animation is dk-eye-glow while pending, and none after the result settles.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Identity row face (24px)", "issues": ["The head fill is #070C16 on the #101D33 group, with a thin #34496B stroke, so at 24px only the two cyan eyes read ('--'). This may be intended, but the head outline is barely visible."]},
+      {"screen": "Composer at 320x640", "issues": ["The iteration-2 wrap bug is fixed: the placeholder is now one line. It is cut hard ('Ask a question about your da') with no ellipsis."]},
+      {"screen": "Composer after 403-source-removed", "issues": ["The hint is now hidden, but the 'Follow-up' label still shows while the composer is disabled."]},
+      {"screen": "Result table success-20-columns (mobile)", "issues": ["Still there from iteration 2: the long-text cell makes row 1 much taller than the other rows."]}
+    ]
+  },
+  "test_report_links": [],
+  "action_items": [
+    "LOW (optional): make the face head contour a little more visible at 24px on the raised group.",
+    "LOW (optional): add text-overflow: ellipsis to the composer placeholder at narrow widths.",
+    "LOW (optional): hide the 'Follow-up' label when the composer is disabled because the source is unavailable."
+  ],
+  "critical_code_review_comments": [
+    "The reduced-motion media query kills all animations and transitions globally. This works and is verified.",
+    "Preview fixtures still contain SQL and topology sample values. They are not rendered (verified); make sure the preview stays out of production builds."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A (frontend-only)", "frontend": "100% of requested checks passed; 4 low design notes"},
+  "test_credentials": "Preview mode: any email/password (analyst@example.com / secret), as in /app/memory/test_credentials.md.",
+  "seed_data_creation": "None",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "The 403-source-removed revalidation is async: wait about 3-4s after the response before checking for the 'no longer available' notice, or it may look like a failure. Turn ids come from data-testid 'turn-<id>' (filter with /^turn-[^-]+$/). Account menu items are account-email and sign-out-button (role menuitem 'Sign out'). The rail account button is rail-account-button. Rendered <strong> tags carry dev x-* attributes, so match on the text, not the raw HTML string."
+}

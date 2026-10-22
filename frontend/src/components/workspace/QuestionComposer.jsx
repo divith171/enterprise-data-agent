@@ -63,7 +63,7 @@ export const QuestionComposer = forwardRef(function QuestionComposer(
         </button>
       </div>
       <div className="dk-composer-foot">
-          <label htmlFor="composer-input" className={label === "Question" ? "sr-only" : "dk-composer-label"} data-testid="composer-label">{label}</label>
+          <label htmlFor="composer-input" className={label === "Question" || disabled ? "sr-only" : "dk-composer-label"} data-testid="composer-label">{label}</label>
           <p id="composer-hint" className={hint ? "dk-support" : "sr-only"}>
             {hint || (desktopEnter ? "Press Enter to send, Shift+Enter for a new line." : "Use Send to submit.")}
           </p>

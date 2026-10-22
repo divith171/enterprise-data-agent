@@ -30,6 +30,13 @@ Build the authenticated customer-facing DataKat analytical workspace ("Your AI D
 - Preview fixtures sit behind a discreet indicator and a "Preview tools" sheet. The yellow banner and the cropped logo mark are removed. The original white logo is used, since the surfaces are now dark.
 - Testing-agent iteration 2: all regression checks passed. Afterwards fixed: placeholder wrapping at 320px, the misleading follow-up hint when no source is available, and row height (uuid and date cells no longer wrap).
 
+## Redesign v3 (2026-06, iteration 3), based on Dribbble 27242124 (inspected directly)
+- Composition: near-black chrome (rail and header #080D17) wraps one inset conversation plane (#0B1424, 20px radius). Each response is a raised grouping (#101D33, 18px radius): identity row, then the answer, then a darker evidence panel (#0D192B). The composer sits inside the bottom of the plane.
+- New compact face `DataKatFace.jsx`: near-black head, quiet contour, cyan eyes with slit pupils. It appears at 36px in the rail, 72px (64px on mobile) in the welcome, and 24px in identity rows and pending. Pending makes the eyes glow at most 3 cycles of 2.8s. The welcome reveal takes 300ms.
+- The seated line-art cat (`CatMotif.jsx`) is removed everywhere, and the login page shows the wordmark only.
+- Unchanged: API, state, auth, session, parser, fixtures and the 429 countdown.
+- Testing-agent iteration 3: 100% of the requested checks passed. The production build passes, and the bundle contains no fixtures and no SQL strings.
+
 ## Known integration items
 - The `/data-sources` response shape is assumed to be a top-level array, and `type` is assumed to be "postgresql"/"postgres".
 - No documented "analysis cannot continue" response exists, so none is implemented.

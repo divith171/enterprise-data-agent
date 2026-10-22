@@ -415,3 +415,4 @@ ul.dk-plain-list { list-style: disc; }
 .dk-table td.dk-long { min-width: 260px; }
 .dk-table td.dk-nowrap { white-space: nowrap; }
 .dk-table td.dk-num { white-space: nowrap; }
+.dk-identity .dk-face-head, .dk-rail-face .dk-face-head { stroke: #435b84; }
