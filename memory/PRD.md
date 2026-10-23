@@ -37,6 +37,15 @@ Build the authenticated customer-facing DataKat analytical workspace ("Your AI D
 - Unchanged: API, state, auth, session, parser, fixtures and the 429 countdown.
 - Testing-agent iteration 3: 100% of the requested checks passed. The production build passes, and the bundle contains no fixtures and no SQL strings.
 
+## Redesign v4: ChatFrame-inspired (2026-06, iteration 4)
+- Reference: the ChatFrame "AI Assistance" gallery image, inspected directly.
+- Near-black palette: canvas #03060C, chrome #070B12, plane #0B111B. Softened text #D1DCEC / #899BB5. Focus colour #86B8FF. Faint neutral edges in place of blue outlines.
+- Nested composer: a gradient outer shell (28px radius, 6px padding) around a darker inset (22px). The circular Send button rests dark and turns blue when enabled. Soft decorative blue light sits behind the composer only and doesn't affect layout. Height stays content-driven: 72px at rest, textarea capped at about 208px.
+- All generated cat/face artwork removed (`DataKatFace.jsx` deleted). The identity row is now text only (`AssistantIdentity.jsx`). The welcome screen uses a text eyebrow line. The approved wordmark is kept.
+- Login brand group is centred; fields remain left-aligned.
+- Testing-agent iteration 4: 100% of the requested checks passed. The production build passes, with no fixtures, SQL or console calls in the bundle.
+- Known pre-existing behaviour, left unchanged: the composer label stays "Clarification" while a follow-up is pending after a clarification.
+
 ## Known integration items
 - The `/data-sources` response shape is assumed to be a top-level array, and `type` is assumed to be "postgresql"/"postgres".
 - No documented "analysis cannot continue" response exists, so none is implemented.
