@@ -11,7 +11,7 @@ export const QuestionComposer = forwardRef(function QuestionComposer(
   ref,
 ) {
   const desktopEnter = useMediaQuery("(hover: hover) and (pointer: fine)");
-  const narrow = useMediaQuery("(max-width: 359px)");
+  const narrow = useMediaQuery("(max-width: 369px)");
   const taRef = useRef(null);
   useImperativeHandle(ref, () => ({
     focus: (toEnd) => {

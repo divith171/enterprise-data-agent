@@ -428,5 +428,5 @@ ul.dk-plain-list { list-style: disc; }
   .dk-composer-shell::before { height: 160px; bottom: -40px; opacity: 0.6; }
   .dk-composer-foot { padding: 0 14px; }
 }
-@media (min-width: 768px) and (max-width: 1023px) { .dk-composer-shell::before { bottom: -55px; } }
+@media (min-width: 768px) and (max-width: 1023px) { .dk-composer-shell::before { bottom: -52px; } }
 @media (max-height: 499px) { .dk-composer-shell::before { opacity: 0.4; height: 120px; bottom: -24px; } }

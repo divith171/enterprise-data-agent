@@ -1,0 +1,27 @@
+{
+  "summary": "Frontend-only check of the narrow correction pass (D1, D2, N1, N3) plus a quick desktop and mobile composer regression, using the public URL in preview mode. 6 Playwright runs. D1, D2 and N3 pass. N1 is only partly fixed: the page no longer scrolls in the empty workspace, but once a result is shown it still scrolls by 1px at 768, 900 and 1023 wide. D1: the label reads 'Clarification' after a clarification result. Picking an interpretation fills the draft; the replace dialog's cancel keeps the edit and confirm replaces it. While a reply is pending the label reads 'Follow-up' with the normal delay and at 0.5s, 3.5s and 8.5s with the long delay. It goes back to 'Clarification' after another clarification and stays 'Follow-up' after a success. A draft typed while pending is kept. D2: with http-401 the status region shows 'Question sent.' and the app then goes to /login. 300ms and 1.8s later the region is empty and 'Question sent.' is nowhere in the DOM. The session-ended notice shows, signing in again restores the draft, and /app sends you to /login when signed out or after sign-out. Announcements 'Result ready. 3 rows returned.' and 'New analysis started.' work on desktop and mobile. N1: empty workspace has scrollHeight equal to clientHeight at 768, 900, 1023, 1024 and 1440 wide (800 and 1024 high) and at 375x812. With a result, 768, 900 and 1023 wide give scrollHeight 801 vs 800 and 1025 vs 1024; 1024, 1440 and 375 are fine. Hiding .dk-composer-shell::before brings it back to 800, so the glow is confirmed as the cause. The glow is still visible. N3: the rail item is 60px wide (2-62) and the 'Workspace' text is 58px (3-61), so it fits. The active bar sits at left -2px, 2px wide, #245EDB, and is visible. Placeholder: 'Ask about your data…' at 320 and 359, 'Ask a question about your data…' at 360 and up. Neither is cut off (scrollWidth equals clientWidth). The textarea rests at 44px; the shell is 72px on desktop and 70px on mobile. Autosize goes 44 to 92 with 3 lines on desktop and 44 to 116 with 4 lines on mobile, and back to 44. On desktop Shift+Enter adds a newline and Enter sends.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "Composer glow (.dk-composer-shell::before), tablet 768-1023px", "issue": "N1 is not fully fixed. With a result, the composer sits at the bottom (shell bottom 746px at 900x800). The glow has bottom -55px and height 220px, so it reaches 801px, which is 1px past the viewport. The page then scrolls by 1px (scrollHeight 801 vs clientHeight 800; 1025 vs 1024 at 1024 high). The empty workspace is fine.", "selector": ".dk-composer-shell::before", "priority": "MEDIUM"}
+    ],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [],
+  "action_items": [
+    "N1: with a result, the tablet media query (768-1023px) still lets the glow reach 1px past the viewport. Change bottom to -54px or less (e.g. -50px), or shorten its height by 1px or more, or clip the overflow on the plane/layout ancestor (overflow: clip). Then recheck that scrollHeight equals clientHeight at 768, 900 and 1023 wide, 800 and 1024 high, with the success-canonical result shown."
+  ],
+  "critical_code_review_comments": [
+    "At 360px the long placeholder fills the space exactly (text 242px, textarea content box 242px). It is not cut off in Chromium, but a different font rendering could make it ellipsize. You could raise the narrow breakpoint slightly (e.g. max-width 369px) for some margin.",
+    "The 'Workspace' rail label is 58px inside a 60px item, which leaves only 1px on each side. This is acceptable."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A (frontend only)", "frontend": "95% (N1 fails only with a result at 768-1023px)"},
+  "test_credentials": "Preview mode: analyst@example.com / x (any email/password works); /app/memory/test_credentials.md is present.",
+  "seed_data_creation": "None",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "The preview tools trigger is [data-testid=preview-indicator-tools-button]; the selects are preview-select-{login|sources|query|wait|logout}. The 'long' delay is 50s and 'normal' is 1.2s. Interpretation buttons are [data-testid^=interpretation-] excluding the -in-draft suffix, and only the latest clarification card has them. To check N1, send a question with success-canonical first: the overflow only appears when the composer is docked at the bottom with a result. Screenshots are saved in /app/.screenshots when you use element screenshots.",
+  "rca of the issue": "N1: at 768-1023px the rule '.dk-composer-shell::before { bottom: -55px }' combined with height 220px puts the glow's bottom 55px below the shell. With a result, the shell's bottom is 746px in an 800px viewport, so the glow ends at 801px. Repro: 900x800, sign in, send any question (success-canonical), then check document.documentElement.scrollHeight (801) against clientHeight (800). Hiding the pseudo-element brings it back to 800. Fix: reduce the offset by at least 1px or clip the overflow on an ancestor."
+}

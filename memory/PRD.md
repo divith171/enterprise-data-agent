@@ -54,3 +54,10 @@ Build the authenticated customer-facing DataKat analytical workspace ("Your AI D
 ## Backlog
 - P1: retest at 200% text zoom and 400% browser zoom on real devices; check the iOS keyboard.
 - P2: Export (CSV/Excel) once the backend supports it.
+
+## 2026-06 Final targeted correction pass (D1, D2, N1, N3)
+- D1: composer label derives from the newest turn (pending follow-up shows "Follow-up") — useWorkspace.js
+- D2: workspace unmount clears the live region (no stale "Question sent." after 401) — useWorkspace.js
+- N1: tablet (768–1023px) composer glow bottom -52px; no page overflow — datakat.css
+- N3: rail items 60px (active bar left -2px); placeholder "Ask about your data…" at ≤369px — datakat.css, QuestionComposer.jsx
+- Verified: iteration_5 + follow-up screenshot check; production build passes
