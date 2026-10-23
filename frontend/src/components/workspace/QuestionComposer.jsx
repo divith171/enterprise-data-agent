@@ -42,6 +42,7 @@ export const QuestionComposer = forwardRef(function QuestionComposer(
 
   return (
     <form className="dk-composer" onSubmit={(e) => { e.preventDefault(); if (canSend && !over) onSubmit(); }} data-testid="question-composer">
+      <div className="dk-composer-shell">
       <div className={`dk-composer-box${disabled ? " dk-composer-disabled" : ""}`}>
       <textarea
         id="composer-input"
@@ -61,6 +62,7 @@ export const QuestionComposer = forwardRef(function QuestionComposer(
         <button type="submit" className="dk-send" aria-label="Send" disabled={!canSend || over} data-testid="composer-send-button">
           <ArrowUp aria-hidden="true" size={20} strokeWidth={2.25} />
         </button>
+      </div>
       </div>
       <div className="dk-composer-foot">
           <label htmlFor="composer-input" className={label === "Question" || disabled ? "sr-only" : "dk-composer-label"} data-testid="composer-label">{label}</label>

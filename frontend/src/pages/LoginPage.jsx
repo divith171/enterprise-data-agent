@@ -99,8 +99,10 @@ export default function LoginPage() {
         <div className="dk-login-brand">
           <BrandLogo className="dk-login-logo" />
         </div>
-        <h1 className="dk-headline">Sign in to DataKat</h1>
-        <p className="dk-login-support">Your AI Data Analyst.</p>
+        <div className="dk-login-heading">
+          <h1 className="dk-headline">Sign in to DataKat</h1>
+          <p className="dk-login-support">Your AI Data Analyst.</p>
+        </div>
         {auth.sessionEnded && !error && (
           <p className="dk-inline-notice dk-inline-warning" data-testid="session-ended-notice">Your session has ended. Sign in to continue.</p>
         )}
@@ -115,8 +117,10 @@ export default function LoginPage() {
             {submitting ? "Signing in…" : "Sign in"}
           </button>
         </form>
-        <p className="dk-support">Need access? Contact your DataKat administrator.</p>
-        <a href={MARKETING_URL} className="dk-text-link" data-testid="back-to-datakat-link">Back to DataKat</a>
+        <div className="dk-login-foot">
+          <p className="dk-support">Need access? Contact your DataKat administrator.</p>
+          <a href={MARKETING_URL} className="dk-text-link" data-testid="back-to-datakat-link">Back to DataKat</a>
+        </div>
       </main>
     </div>
   );
