@@ -11,6 +11,7 @@ export const QuestionComposer = forwardRef(function QuestionComposer(
   ref,
 ) {
   const desktopEnter = useMediaQuery("(hover: hover) and (pointer: fine)");
+  const narrow = useMediaQuery("(max-width: 359px)");
   const taRef = useRef(null);
   useImperativeHandle(ref, () => ({
     focus: (toEnd) => {
@@ -52,7 +53,7 @@ export const QuestionComposer = forwardRef(function QuestionComposer(
         value={value}
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={onKeyDown}
-        placeholder="Ask a question about your data…"
+        placeholder={narrow ? "Ask about your data…" : "Ask a question about your data…"}
         disabled={disabled}
         aria-describedby={describedBy}
         aria-invalid={over || undefined}

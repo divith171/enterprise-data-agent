@@ -59,8 +59,9 @@ export function useWorkspace() {
     aliveRef.current = true;
     return () => {
       aliveRef.current = false;
+      announce("");
     };
-  }, []);
+  }, [announce]);
 
   const handleAuthLost = useCallback(() => {
     authLost(draftRef.current.trim() ? draftRef.current : inflightRef.current);
@@ -198,8 +199,8 @@ export function useWorkspace() {
     setNewResultId(null);
   };
 
-  const lastDone = [...turns].reverse().find((t) => t.result);
-  const composerLabel = lastDone?.result.kind === "clarification" ? "Clarification" : turns.length ? "Follow-up" : "Question";
+  const lastTurn = turns[turns.length - 1];
+  const composerLabel = lastTurn?.result?.kind === "clarification" ? "Clarification" : turns.length ? "Follow-up" : "Question";
 
   return {
     identity, source, sessionId, turns, draft, setDraft, pending, canSend, submit, fillDraft,

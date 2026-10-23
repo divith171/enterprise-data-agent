@@ -120,14 +120,14 @@ ul.dk-plain-list { list-style: disc; }
   padding: 68px 0 16px; background: var(--dk-rail);
 }
 .dk-rail-item, .dk-account-rail {
-  position: relative; width: 56px; min-height: 56px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+  position: relative; width: 60px; min-height: 56px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
   border-radius: 12px; border: 0; background: transparent; color: var(--dk-text-2); cursor: pointer; text-align: center;
   transition: background-color 130ms var(--dk-ease), color 130ms var(--dk-ease);
 }
 .dk-rail-item:hover:not(:disabled), .dk-account-rail:hover { background: var(--dk-hover); color: var(--dk-text); }
 .dk-rail-item:disabled { color: var(--dk-text-3); cursor: not-allowed; }
 .dk-rail-active { background: rgba(174, 193, 220, 0.07); color: var(--dk-heading); }
-.dk-rail-active::before { content: ""; position: absolute; left: -4px; top: 16px; bottom: 16px; width: 2px; border-radius: 2px; background: var(--dk-primary); }
+.dk-rail-active::before { content: ""; position: absolute; left: -2px; top: 16px; bottom: 16px; width: 2px; border-radius: 2px; background: var(--dk-primary); }
 .dk-rail-label { font-size: 11px; line-height: 14px; font-weight: 500; }
 .dk-rail-bottom { margin-top: auto; }
 
@@ -428,4 +428,5 @@ ul.dk-plain-list { list-style: disc; }
   .dk-composer-shell::before { height: 160px; bottom: -40px; opacity: 0.6; }
   .dk-composer-foot { padding: 0 14px; }
 }
+@media (min-width: 768px) and (max-width: 1023px) { .dk-composer-shell::before { bottom: -55px; } }
 @media (max-height: 499px) { .dk-composer-shell::before { opacity: 0.4; height: 120px; bottom: -24px; } }
