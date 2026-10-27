@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="theme-color" content="#05070D" />
+        <meta
+            name="description"
+            content="DataKat is your AI data analyst. Ask your data a business question in plain English — DataKat finds the relevant data, analyzes it, and explains the answer clearly."
+        />
+        <meta property="og:title" content="DataKat — Your AI Data Analyst" />
+        <meta
+            property="og:description"
+            content="Ask your data a business question in plain English. DataKat finds the relevant data, analyzes it, and explains the answer clearly."
+        />
+        <meta property="og:type" content="website" />
+        <link rel="icon" type="image/svg+xml" href="%PUBLIC_URL%/favicon.svg" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&display=swap"
+            rel="stylesheet"
+        />
+        <title>DataKat — Your AI Data Analyst</title>
+        <script>window.addEventListener("error",function(e){if(e.error instanceof DOMException&&e.error.name==="DataCloneError"&&e.message&&e.message.includes("PerformanceServerTiming")){e.stopImmediatePropagation();e.preventDefault()}},true);</script>
+        <script src="https://assets.emergent.sh/scripts/emergent-main.js"></script>
+    </head>
+    <body>
+        <noscript>
+            <div style="font-family: system-ui, sans-serif; background: #050A12; color: #F3F7FB; padding: 40px 20px; max-width: 760px; margin: 0 auto; line-height: 1.5;">
+                <h1 style="font-size: 32px; margin: 0 0 8px;">DataKat — Your AI Data Analyst</h1>
+                <p style="color: #B6C6D6;">This page's demonstrations need JavaScript. The sample analysis below is available without it.</p>
+                <h2 style="font-size: 22px; margin: 32px 0 8px;">Ask the question. Get the answer.</h2>
+                <p><strong>Which region drove our growth last quarter?</strong> Growth means net revenue in this example. Q3 2026 compared with Q2 2026.</p>
+                <p style="font-size: 20px;">West contributed $220k of the $400k increase — 55% of total revenue growth.</p>
+                <table style="border-collapse: collapse; width: 100%; font-size: 14px;">
+                    <thead><tr><th align="left">Region</th><th align="right">Q2 2026</th><th align="right">Q3 2026</th><th align="right">Change</th><th align="right">Contribution</th></tr></thead>
+                    <tbody>
+                        <tr><td>West</td><td align="right">$800,000</td><td align="right">$1,020,000</td><td align="right">+$220,000</td><td align="right">55.0%</td></tr>
+                        <tr><td>North</td><td align="right">$700,000</td><td align="right">$820,000</td><td align="right">+$120,000</td><td align="right">30.0%</td></tr>
+                        <tr><td>South</td><td align="right">$700,000</td><td align="right">$790,000</td><td align="right">+$90,000</td><td align="right">22.5%</td></tr>
+                        <tr><td>East</td><td align="right">$600,000</td><td align="right">$570,000</td><td align="right">−$30,000</td><td align="right">−7.5%</td></tr>
+                        <tr><td><strong>Total</strong></td><td align="right">$2,800,000</td><td align="right">$3,200,000</td><td align="right">+$400,000</td><td align="right">100.0%</td></tr>
+                    </tbody>
+                </table>
+                <p style="color: #B6C6D6; font-size: 13px;">Illustrative demo · sample data. East declined by $30k, partially offsetting growth elsewhere.</p>
+                <h2 style="font-size: 22px; margin: 32px 0 8px;">Connect. Ask. Analyze. Understand.</h2>
+                <ol>
+                    <li><strong>Connect your company's data.</strong> Start with a company-owned source. This example uses a sample PostgreSQL dataset.</li>
+                    <li><strong>Ask in business language.</strong> Specify the question. Make the metric, period and comparison clear.</li>
+                    <li><strong>Turn the question into a comparison.</strong> Compare complete periods, calculate the change and check the query before execution.</li>
+                    <li><strong>See the answer and its evidence.</strong> West contributed 55% of the total increase. The comparison stays visible beside the explanation.</li>
+                </ol>
+                <h2 style="font-size: 22px; margin: 32px 0 8px;">Built for controlled analytical access.</h2>
+                <p>Conceptual access path · sample request: Authenticated access → Query rate limit → Source ownership → Tenant-aware routing → SQL validation → Company-owned source. A source ownership mismatch stops at Source ownership: request denied.</p>
+                <p style="font-size: 20px; margin-top: 32px;">Not another dashboard. Not another SQL editor. Not another chatbot. <strong>An analyst you can talk to.</strong></p>
+                <p><strong>Your data already knows the answer. What do you want to know?</strong></p>
+                <p><a href="/signup" style="color: #19CDE7;">Get Started</a> · <a href="/login" style="color: #F3F7FB;">Sign in</a></p>
+            </div>
+        </noscript>
+        <div id="root"></div>
+        <script>
+            !(function (t, e) {
+                var o, n, p, r;
+                e.__SV ||
+                    ((window.posthog = e),
+                    (e._i = []),
+                    (e.init = function (i, s, a) {
+                        function g(t, e) {
+                            var o = e.split(".");
+                            2 == o.length && ((t = t[o[0]]), (e = t[1])),
+                                (t[e] = function () {
+                                    t.push(
+                                        [e].concat(
+                                            Array.prototype.slice.call(
+                                                arguments,
+                                                0,
+                                            ),
+                                        ),
+                                    );
+                                });
+                        }
+                        ((p = t.createElement("script")).type =
+                            "text/javascript"),
+                            (p.crossOrigin = "anonymous"),
+                            (p.async = !0),
+                            (p.src =
+                                s.api_host.replace(
+                                    ".i.posthog.com",
+                                    "-assets.i.posthog.com",
+                                ) + "/static/array.js"),
+                            (r =
+                                t.getElementsByTagName(
+                                    "script",
+                                )[0]).parentNode.insertBefore(p, r);
+                        var u = e;
+                        for (
+                            void 0 !== a ? (u = e[a] || (e[a] = [])) : (a = "posthog"),
+                                u.people = u.people || [],
+                                u.toString = function (t) {
+                                    return "posthog" === t ? e : e + "." + t;
+                                },
+                                u.people.toString = function (t) {
+                                    return "posthog" === t ? e : e + "." + t;
+                                },
+                                o =
+                                    "init me ws ys ps bs capture je Di ks register register_once record register_for_session unregister unregister_for_session getFeatureFlag getFeatureFlagPayload isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags setPersonPropertiesForFlags resetPersonPropertiesForFlags reset get_distinct_id getGroups get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException loadToolbar get_property getSessionProperty Es $s createPersonProfile reset_groups set_group_properties_for_flags reset_group_properties_for_flags capturePageview capturePageleave identify group resetGroups set_config capturePageView capture_pageview capture_pageleave set_config identify group reset groups setPersonProperties getPersonProperties opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing".split(
+                                        " ",
+                                    ),
+                                n = 0;
+                            n < o.length;
+                            n++
+                        )
+                            g(u, o[n]);
+                        e._i.push([i, s, a]);
+                    }),
+                    (e.__SV = 1));
+            })(document, window.posthog || []);
+            posthog.init("phc_DbsPb39SRc8z3EiQ6Dhj6ikv4H4rTKcht9d4sZSesceP", {
+                api_host: "https://ap.emergent.sh",
+                person_profiles: "identified_only",
+                session_recording: {
+                    recordCrossOriginIframes: true,
+                    capturePerformance: false,
+                },
+            });
+        </script>
+    </body>
+</html>
