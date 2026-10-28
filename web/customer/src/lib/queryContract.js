@@ -1,4 +1,8 @@
-export const UNSUPPORTED_CODES = ["UNSUPPORTED_OPERATION", "ANALYSIS_NOT_SUPPORTED"];
+export const UNSUPPORTED_CODES = [
+  "UNSUPPORTED_OPERATION",
+  "ANALYSIS_NOT_SUPPORTED",
+  "RESULT_TYPE_NOT_SUPPORTED",
+];
 
 const isStr = (v) => typeof v === "string";
 const isObj = (v) => v !== null && typeof v === "object" && !Array.isArray(v);
