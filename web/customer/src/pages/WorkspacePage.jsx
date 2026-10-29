@@ -1,3 +1,4 @@
+
 import { NavRail } from "@/components/workspace/NavRail";
 import { WorkspaceHeader } from "@/components/workspace/WorkspaceHeader";
 import { EmptyWorkspace, WelcomeMeta, UNSAVED_NOTICE } from "@/components/workspace/EmptyWorkspace";
@@ -11,96 +12,266 @@ function ComposerNotices({ w }) {
   return (
     <>
       {w.newResultId && (
-        <button type="button" className="dk-btn dk-btn-small dk-new-result" onClick={w.showNewResult} data-testid="new-result-button">
+        <button
+          type="button"
+          className="dk-btn dk-btn-small dk-new-result"
+          onClick={w.showNewResult}
+          data-testid="new-result-button"
+        >
           New result
         </button>
       )}
+
       {w.restoreNotice && (
-        <div className="dk-inline-notice dk-inline-warning" data-testid="restore-notice">
-          <p>This is a new analysis. Include any earlier filters in your question.</p>
-          <button type="button" className="dk-link-btn" onClick={w.dismissRestore} data-testid="restore-notice-dismiss">Dismiss</button>
+        <div
+          className="dk-inline-notice dk-inline-warning"
+          data-testid="restore-notice"
+        >
+          <p>
+            This is a new analysis. Include any earlier filters
+            in your question.
+          </p>
+          <button
+            type="button"
+            className="dk-link-btn"
+            onClick={w.dismissRestore}
+            data-testid="restore-notice-dismiss"
+          >
+            Dismiss
+          </button>
         </div>
       )}
+
       {w.inactive && (
-        <div className="dk-inline-notice dk-inline-warning" data-testid="inactivity-notice">
-          <p>This analysis may no longer retain its earlier context.</p>
-          <button type="button" className="dk-link-btn" onClick={w.requestNewAnalysis} data-testid="inactivity-new-analysis">Start new analysis</button>
+        <div
+          className="dk-inline-notice dk-inline-warning"
+          data-testid="inactivity-notice"
+        >
+          <p>
+            This analysis may no longer retain its earlier context.
+          </p>
+          <button
+            type="button"
+            className="dk-link-btn"
+            onClick={w.requestNewAnalysis}
+            data-testid="inactivity-new-analysis"
+          >
+            Start new analysis
+          </button>
         </div>
       )}
-      {w.source.revalidating && <p className="dk-support" role="status" data-testid="access-revalidating">Checking your access…</p>}
+
+      {w.source.revalidating && (
+        <p
+          className="dk-support"
+          role="status"
+          data-testid="access-revalidating"
+        >
+          Checking your access…
+        </p>
+      )}
     </>
   );
 }
 
 function blockedMessage(w) {
-  if (w.retrySeconds > 0) return `You can send again in ${w.retrySeconds} ${w.retrySeconds === 1 ? "second" : "seconds"}.`;
-  if (w.pending) return "You can keep typing. Send is available when the current result arrives.";
+  if (w.retrySeconds > 0) {
+    return `You can send again in ${w.retrySeconds} ${
+      w.retrySeconds === 1 ? "second" : "seconds"
+    }.`;
+  }
+
+  if (w.pending) {
+    return "You can keep typing. Send is available when the current result arrives.";
+  }
+
   return null;
 }
 
 export default function WorkspacePage() {
   const w = useWorkspace();
   const { source, turns } = w;
+
   const replace = w.confirm?.type === "replace";
+  const switchingSource = w.confirm?.type === "source";
+
+  const confirmTitle = replace
+    ? w.confirm.kind === "interpretation"
+      ? "Replace your draft with this interpretation?"
+      : "Replace your draft?"
+    : switchingSource
+      ? "Switch data source?"
+      : "Start a new analysis?";
+
+  const confirmDescription = replace
+    ? null
+    : switchingSource
+      ? "This analysis isn't saved. Switching clears its questions, results and draft, and starts a new analysis using the selected source."
+      : "This workspace isn't saved. Starting again clears this view.";
+
+  const confirmCancelLabel = replace
+    ? "Keep draft"
+    : "Keep working";
+
+  const confirmActionLabel = replace
+    ? "Replace draft"
+    : switchingSource
+      ? "Switch source"
+      : "Start new analysis";
+
+  const confirmTestId = replace
+    ? "replace-draft-dialog"
+    : switchingSource
+      ? "switch-source-dialog"
+      : "new-analysis-dialog";
+
   return (
     <div className="dk-app" data-testid="workspace-page">
-      <a href="#workspace-main" className="dk-skip" onClick={(e) => { e.preventDefault(); document.getElementById("workspace-main").focus(); }} data-testid="skip-to-workspace">
+      <a
+        href="#workspace-main"
+        className="dk-skip"
+        onClick={(e) => {
+          e.preventDefault();
+          document.getElementById("workspace-main")?.focus();
+        }}
+        data-testid="skip-to-workspace"
+      >
         Skip to workspace
       </a>
-      <NavRail email={w.identity.email} onNewAnalysis={w.requestNewAnalysis} newDisabled={w.pending} onSignOut={w.signOut} />
+
+      <NavRail
+        email={w.identity.email}
+        onNewAnalysis={w.requestNewAnalysis}
+        newDisabled={w.pending}
+        onSignOut={w.signOut}
+      />
+
       <div className="dk-main">
-        <WorkspaceHeader source={source} email={w.identity.email} onNewAnalysis={w.requestNewAnalysis} newDisabled={w.pending} onSignOut={w.signOut} />
-        <main id="workspace-main" tabIndex={-1} className={`dk-workspace${turns.length === 0 ? " dk-empty-mode" : ""}`}>
-          <div className="dk-conversation" ref={w.convRef} data-testid="conversation">
+        <WorkspaceHeader
+          source={source}
+          email={w.identity.email}
+          onNewAnalysis={w.requestNewAnalysis}
+          newDisabled={w.pending}
+          onSignOut={w.signOut}
+          onSourceChange={w.requestSourceChange}
+          sourceSelectionDisabled={
+            w.pending || Boolean(w.confirm)
+          }
+        />
+
+        <main
+          id="workspace-main"
+          tabIndex={-1}
+          className={`dk-workspace${
+            turns.length === 0 ? " dk-empty-mode" : ""
+          }`}
+        >
+          <div
+            className="dk-conversation"
+            ref={w.convRef}
+            data-testid="conversation"
+          >
             <div className="dk-content dk-conversation-inner">
               {w.logoutError && (
-                <div className="dk-inline-notice dk-inline-error" role="alert" data-testid="logout-error">
-                  <p>We couldn't sign you out. Your session may still be active.</p>
-                  <button type="button" className="dk-link-btn" onClick={w.dismissLogoutError}>Dismiss</button>
+                <div
+                  className="dk-inline-notice dk-inline-error"
+                  role="alert"
+                  data-testid="logout-error"
+                >
+                  <p>
+                    We couldn't sign you out. Your session may
+                    still be active.
+                  </p>
+                  <button
+                    type="button"
+                    className="dk-link-btn"
+                    onClick={w.dismissLogoutError}
+                  >
+                    Dismiss
+                  </button>
                 </div>
               )}
+
+              {w.sourceChangeError && (
+                <div
+                  className="dk-inline-notice dk-inline-error"
+                  role="alert"
+                  data-testid="source-change-error"
+                >
+                  <p>{w.sourceChangeError}</p>
+                </div>
+              )}
+
               <SourceStateNotice source={source} />
+
               {turns.length === 0 ? (
                 <EmptyWorkspace />
               ) : (
                 <>
                   <h2 className="sr-only">Analysis</h2>
-                  <p className="dk-support" data-testid="unsaved-notice">{UNSAVED_NOTICE}</p>
+
+                  <p
+                    className="dk-support"
+                    data-testid="unsaved-notice"
+                  >
+                    {UNSAVED_NOTICE}
+                  </p>
+
                   {turns.map((t, i) => (
-                    <ConversationTurn key={t.id} turn={t} active={i === turns.length - 1 && Boolean(t.result)} draft={w.draft} onFill={w.fillDraft} />
+                    <ConversationTurn
+                      key={t.id}
+                      turn={t}
+                      active={
+                        i === turns.length - 1 &&
+                        Boolean(t.result)
+                      }
+                      draft={w.draft}
+                      onFill={w.fillDraft}
+                    />
                   ))}
                 </>
               )}
             </div>
           </div>
+
           <div className="dk-composer-row">
             <div className="dk-content">
               <ComposerNotices w={w} />
+
               <QuestionComposer
                 ref={w.composerRef}
                 value={w.draft}
                 onChange={w.setDraft}
                 onSubmit={w.submit}
                 label={w.composerLabel}
-                hint={w.composerLabel === "Follow-up" && source.status === "ready" ? "Follow-ups use this analysis's context." : null}
+                hint={
+                  w.composerLabel === "Follow-up" &&
+                  source.status === "ready"
+                    ? "Follow-ups use this analysis's context."
+                    : null
+                }
                 disabled={source.status !== "ready"}
                 canSend={w.canSend}
                 blockedMessage={blockedMessage(w)}
               />
-              {turns.length === 0 && <WelcomeMeta source={source} />}
+
+              {turns.length === 0 && (
+                <WelcomeMeta source={source} />
+              )}
             </div>
           </div>
         </main>
       </div>
+
       <ConfirmDialog
         open={Boolean(w.confirm)}
-        title={replace ? (w.confirm.kind === "interpretation" ? "Replace your draft with this interpretation?" : "Replace your draft?") : "Start a new analysis?"}
-        description={replace ? null : "This workspace isn't saved. Starting again clears this view."}
-        cancelLabel={replace ? "Keep draft" : "Keep working"}
-        confirmLabel={replace ? "Replace draft" : "Start new analysis"}
+        title={confirmTitle}
+        description={confirmDescription}
+        cancelLabel={confirmCancelLabel}
+        confirmLabel={confirmActionLabel}
         onCancel={w.cancelConfirm}
         onConfirm={w.confirmAction}
-        testId={replace ? "replace-draft-dialog" : "new-analysis-dialog"}
+        testId={confirmTestId}
       />
     </div>
   );

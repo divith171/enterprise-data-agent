@@ -82,15 +82,52 @@ const isPostgres = (t) => isStr(t) && ["postgresql", "postgres"].includes(t.toLo
 export const pickSources = (list) =>
   list.filter(isObj).map(({ id, name, is_active, type }) => ({ id, name, is_active, type }));
 
-export function evaluateSources(body) {
-  if (!Array.isArray(body)) return { status: "error", source: null };
-  const active = pickSources(body).filter((s) => s.is_active === true);
-  if (active.length > 1) return { status: "multiple", source: null };
-  const [only] = active;
-  if (only && isPostgres(only.type) && (isStr(only.id) || Number.isInteger(only.id)) && isStr(only.name)) {
-    return { status: "ready", source: only };
-  }
-  return { status: "none", source: null };
+export function evaluateSources(body, selectedSourceId = null) {
+    const base = { source: null, sources: [], selectedSourceId };
+
+    if (!Array.isArray(body)) {
+      return { ...base, status: "error" };
+    }
+
+    const sources = pickSources(body).filter((s) =>
+      s.is_active === true &&
+      isPostgres(s.type) &&
+      (
+        (isStr(s.id) && s.id.trim() !== "") ||
+        Number.isInteger(s.id)
+      ) &&
+      isStr(s.name) &&
+      s.name.trim() !== ""
+    );
+
+    if (selectedSourceId !== null) {
+      const source =
+        sources.find((s) => s.id === selectedSourceId) || null;
+
+      return {
+        sources,
+        selectedSourceId,
+        source,
+        status: source ? "ready" : "unavailable",
+      };
+    }
+
+    if (sources.length === 1) {
+      const source = sources[0];
+
+      return {
+        status: "ready",
+        source,
+        sources,
+        selectedSourceId: source.id,
+      };
+    }
+
+    return {
+      ...base,
+      sources,
+      status: sources.length ? "multiple" : "none",
+    };
 }
 
 export function validIdentity(b) {
